@@ -1,0 +1,9 @@
+1. Helper
+2. Header (LRVU)
+3. Bar itself
+    config level
+    config segment          v
+    config channel
+
+
+    z. component = the constructed meter
