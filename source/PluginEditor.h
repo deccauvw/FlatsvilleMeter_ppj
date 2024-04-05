@@ -1,9 +1,12 @@
 #pragma once
+#include <juce_audio_proccessors/juce_audio_processors.h>
 
 #include "PluginProcessor.h"
 #include "BinaryData.h"
 #include "melatonin_inspector/melatonin_inspector.h"
 
+#include "DspModules/AnalogVuMeterProcessor.h"
+#include "Components/HorizontalBarMeter.h"
 //==============================================================================
 class PluginEditor : public juce::AudioProcessorEditor
 {
