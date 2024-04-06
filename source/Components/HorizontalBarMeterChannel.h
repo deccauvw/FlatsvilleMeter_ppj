@@ -1,7 +1,3 @@
-//
-// Created by prmir on 2024-04-01.
-//
-
 #ifndef SOURCE_IML_HORIZONTALBARMETERCHANNEL_H
 #define SOURCE_IML_HORIZONTALBARMETERCHANNEL_H
 
@@ -44,7 +40,7 @@ namespace LevelMeter {
 		HorizontalBarMeterChannel(const Options& meterOptions, const juce::String& channelName, ChannelType channelType = ChannelType::unknown);
 
 		//@brief default destr.
-		~HorizontalBarMeterChannel();
+		~HorizontalBarMeterChannel() override;
 		//==========================================
 //utilities
 		//@brief reset the meter (but not the peak hold)
@@ -135,8 +131,18 @@ namespace LevelMeter {
 		//@brief set meter active
 		//void setActive(bool isActive) N/A
 
-		//N/A
-		//void setReferredTypeWidth()
+        /**
+     * @brief Set the referred width (from other meters) used to decide what info to display.
+     *
+     * When this is set to zero, each meter uses his own bounds to decide what to display.
+     * When set to a non zero value (for instance from another meter) this meter will use that
+     * value to decide what to display.
+     * When there is not enough room (width) to display the full description or name, display
+     * the abbreviated type description.
+     *
+     * @param referredTypeWidth The width (in pixels) to use when deciding what to display in the header.
+    */
+		void setReferredTypeWidth(float referredTypeWidth) noexcept;
 
 		//void setMinimalMode()
 
@@ -166,7 +172,7 @@ namespace LevelMeter {
 		void paint(juce::Graphics& g) override;
 		void resized() override;
 		void lookAndFeelChanged() override;
-		void visabilityChanged() override;
+		void visibilityChanged() override;
 
 		//==========================================
 //ColourIDs
@@ -211,4 +217,4 @@ namespace LevelMeter {
 	};
 } // LevelMeter
 
-#endif //SOURCE_IML_HORIZONTALBARMETERCHANNEL_H
+#endif

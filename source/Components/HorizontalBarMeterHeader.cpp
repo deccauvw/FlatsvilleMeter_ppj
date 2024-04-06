@@ -38,6 +38,11 @@ namespace LevelMeter {
 	{
 		meterHeader_Bounds = bounds;
 	}
+
+    void HorizontalBarMeterHeader::setReferredWidth (float referredWidth) noexcept
+    {
+        meterHeader_referredWidth = referredWidth;
+    }
 // ===================================================================================
 	const juce::AudioChannelSet::ChannelType &HorizontalBarMeterHeader::getChannelType() const noexcept {
 		return meterHeader_ChannelType;

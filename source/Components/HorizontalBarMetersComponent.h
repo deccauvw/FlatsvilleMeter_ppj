@@ -15,9 +15,12 @@
 
 namespace LevelMeter
 {
-    class MeterChannel;
+    class HorizontalBarMeterChannel;
 
-    class HorizontalBarMetersComponent final :public juce::Component, private juce::Timer
+    //@brief component containing one or more meters
+    //after setting the channel format it
+    //will auto. create the needed meters and give them proper names.
+    class HorizontalBarMetersComponent final : public juce::Component, private juce::Timer
     {
     public:
         //@brief default constructor
@@ -25,23 +28,22 @@ namespace LevelMeter
 
         //@brief constr. with meter options
         //@param meteroptions the options to use with the meters and the label strip
-        explicit HorizontalBarMetersComponent(const Options& meterOptions);
+        explicit HorizontalBarMetersComponent (const Options& meterOptions);
 
         //@brief constr. which accepts a channel format.
-        //this constr. will auto setup the panel with the right amount of meters, named according to the channel format.
+        //this constr. will auto set up the panel with the right amount of meters, named according to the channel format.
         //channelformat := the channel format to use to init. the panel
-        explicit HorizontalBarMetersComponent(const juce::AudioChannelSet& channelFormat);
+        explicit HorizontalBarMetersComponent (const juce::AudioChannelSet& channelFormat);
 
-        HorizontalBarMetersComponent(const Opotions& meterOptions, const juce::AudioChannelSet& channelFormat);
+        HorizontalBarMetersComponent (const Options& meterOptions, const juce::AudioChannelSet& channelFormat);
 
+        //destr
         ~HorizontalBarMetersComponent() override;
-
 
         // ==========================================================
         //redraw the meteres panel
         //can be manually or internally
-        void refresh(bool forceRefresh = false);
-
+        void refresh (bool forceRefresh = false);
 
         void reset();
 
@@ -52,84 +54,85 @@ namespace LevelMeter
         //clear the level of the meters
         void clearMeters();
 
+        void createMeters(const juce::AudioChannelSet& channelFormat, const std::vector<juce::String>& channelNames);
         //reset all the peak hold indicators and peakValues
         void resetPeakHold();
 
         // ==========================================================
-        void setInputLevel(int channel, float value);
+        void setInputLevel (int channel, float value);
 
         //number of channels
         //
-        void setNumChannels(int numChannels, const std::vector<juce:String>& channelNames = {});
+        void setNumChannels (int numChannels, const std::vector<juce::String>& channelNames = {});
 
         void setChannelFormat (const juce::AudioChannelSet& channels, const std::vector<juce::String>& channelNames = {});
 
-        void setChannelNames(const std::vector<juce::String>& channelNames);
+        void setChannelNames (const std::vector<juce::String>& channelNames);
 
-        void setOptions(const Options& meterOptions);
+        void setOptions (const Options& meterOptions);
 
-        void setRefreshRate(float refreshRate);
+        void setRefreshRate (float refreshRate);
 
-        void setMeterSegments(const std::vector<SegmentOptions>& segmentsOptions);
+        void setMeterSegments (const std::vector<SegmentOptions>& segmentsOptions);
 
-        void setDecay(float decay_ms);
+        void setDecay (float decay_ms);
 
-        void userGradients(bool useGradients);
+        void userGradients (bool useGradients);
 
-        void setLabelStripPosition(LabelStripPosition labelStripPosition);
+        void setLabelStripPosition (LabelStripPosition labelStripPosition);
 
-        void setFont(const juce::Font& font);
+        void setFont (const juce::Font& font);
         // ==========================================================
         [[nodiscard]] int getNumChannels() const noexcept;
 
         [[nodiscard]] int getAutoSizedPanelWidth() const noexcept;
 
-
         // ==========================================================
 
-        void useInternalTiming(bool useInternalTiming) noexcept;
+        void useInternalTiming (bool useInternalTiming) noexcept;
 
-        void showHeader(bool showHeader);
+        void showHeader (bool showHeader);
 
-        void showValue(bool showValue);
+        void showValue (bool showValue);
 
         //enable or disable the panel
-        void enable(bool enabled = true);
+        void enable (bool enabled = true);
 
-        void showTickMarks(bool showTIckMarks);
+        void showTickMarks (bool showTIckMarks);
 
-        void visabilityChanged() override;
+        void visibilityChanged() override;
 
         void lookAndFeelChanged() override;
 
-        void paint(juce::Graphics& g) override;
+        void paint (juce::Graphics& g) override;
 
         void resized() override;
         // ==========================================================
     private:
-    };
-      Options meters_meterOptions {};
-      std::vector<SegmentOptions> meters_segmentsOptions = MeterScales::getDefaultScale();
 
-      using MetersType = juce::OwnedArray<MeterChannel>;
-      MetersType meters_meterChannels {};
-      MeterChannel meters_labelStrip {};
-      LabelStripPosition = meters_labelStripPosition = LabelStripPosition::right;
-      juce::AudioChannelSet meter_channelFormat = juce::AudioChannelSet::stereo();
+    Options meters_meterOptions {};
+    std::vector<SegmentOptions> meters_segmentsOptions = MeterScales::getMeterScaleDefault();
 
-      bool meters_useInternalTimer = true;
-      juce::Font meters_font;
-      int meters_autoSizedPanelWidth = 0;
-      juce::Colour meters_backgroundColour = juce::Colours::black;
+    using MetersType = juce::OwnedArray<HorizontalBarMeterChannel>;
+    MetersType meters_meterChannels {};
+    HorizontalBarMeterChannel meters_labelStrip {};
+    LabelStripPosition  meters_labelStripPosition = LabelStripPosition::upper;
+    juce::AudioChannelSet meters_channelFormat = juce::AudioChannelSet::stereo();
 
-      void TimerCallback() override;
-      void setColours ();
-      void createMeter(const juce::AudioChannelSet& channelFormat, const std::vector<juce::String& channelNames);
-      void deleteMeters();
-      [[nodiscard]] MeterChannel* getMeterChannel(int meterIndex) noexcept;
+    bool meters_useInternalTimer = true;
+    juce::Font meters_font;
+    int meters_autoSizedPanelWidth = 0;
+    juce::Colour meters_backgroundColour = juce::Colours::black;
 
-      JUCE_LEAK_DETECTOR(HorizontalBarMetersComponent)
+    //private methods
+    void TimerCallback() override;
+    void setColours();
+    void createMeter (const juce::AudioChannelSet& channelFormat, const std::vector<juce::String>& channelNames);
+    void deleteMeters();
+    [[nodiscard]] HorizontalBarMeterChannel* getMeterChannel (int meterIndex) noexcept;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HorizontalBarMetersComponent)
+};
 } // LevelMeter
 
 #endif //FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H

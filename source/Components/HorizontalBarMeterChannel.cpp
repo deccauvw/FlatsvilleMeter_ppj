@@ -1,15 +1,13 @@
-//
-// Created by prmir on 2024-04-01.
-//
-
 #include "HorizontalBarMeterChannel.h"
 
 namespace LevelMeter {
 	HorizontalBarMeterChannel::HorizontalBarMeterChannel() noexcept =default;
 
 	HorizontalBarMeterChannel::HorizontalBarMeterChannel(const Options &meterOptions, const juce::String &channelName,
-	                                                     HorizontalBarMeterChannel::ChannelType channelType) {
-		setName(channelName);
+	                                                     HorizontalBarMeterChannel::ChannelType channelType)
+        :HorizontalBarMeterChannel()
+    {
+		setChannelName(channelName);
 		setBufferedToImage(true);
 		setChannelType(channelType);
 		setOptions(meterOptions);
@@ -88,6 +86,10 @@ namespace LevelMeter {
 		setOptions(meterChannel_options);
 	}
 
+    void HorizontalBarMeterChannel::setReferredTypeWidth (float referredTypeWidth) noexcept
+    {
+        meterChannel_header.setReferredWidth(referredTypeWidth);
+    }
 //  ==========================================================================================================
 	void HorizontalBarMeterChannel::setRefreshRate(float refreshRateHz) {
 		meterChannel_Level.setRefreshRate(refreshRateHz);
@@ -152,7 +154,7 @@ namespace LevelMeter {
 	}
 
 	bool HorizontalBarMeterChannel::nameFits(const juce::String &name, int widthAvailable) const {
-		return false;
+		return meterChannel_header.textFits(name, widthAvailable);
 	}
 
 	void HorizontalBarMeterChannel::paint(juce::Graphics &g) {
@@ -181,34 +183,51 @@ namespace LevelMeter {
 	}
 
 	void HorizontalBarMeterChannel::lookAndFeelChanged() {
-		Component::lookAndFeelChanged();
+		visibilityChanged();
 	}
 
-	void HorizontalBarMeterChannel::visabilityChanged() {
-
+	void HorizontalBarMeterChannel::visibilityChanged() {
+        setColours();
 	}
 
-	void HorizontalBarMeterChannel::setDirty(bool isDirty) noexcept {
-
+	void HorizontalBarMeterChannel::setDirty(bool isDirty /*=true*/) noexcept {
+        if(!isShowing())
+            return;
+        meterChannel_dirtyRect = {0, 0, 0, 0};
+        if(isDirty)
+            meterChannel_dirtyRect = getLocalBounds();
 	}
 
 	bool HorizontalBarMeterChannel::isDirty(const juce::Rectangle<int> &rectToCheck) const noexcept {
-		return false;
+		if(rectToCheck.isEmpty())
+            return !meterChannel_dirtyRect.isEmpty();
+        return meterChannel_dirtyRect.intersects(rectToCheck);
 	}
 
 	void HorizontalBarMeterChannel::addDirty(const juce::Rectangle<int> &dirtyRect) noexcept {
-
+        if(!isShowing())
+            return;
+        meterChannel_dirtyRect.getUnion(dirtyRect);
 	}
 
 	void HorizontalBarMeterChannel::drawMeter(juce::Graphics &g) {
-
+        g.setColour(meterChannel_meterColours.colourBackground);
+        g.fillRect(meterChannel_Level.getMeterBounds());
+        meterChannel_Level.drawMeter(g, meterChannel_meterColours);
 	}
 
 	juce::Colour HorizontalBarMeterChannel::getColourFromLnf(int colourId, const juce::Colour &fallbackColour) const {
-		return juce::Colour();
+		if(isColourSpecified((colourId)))
+            return findColour(colourId);
+        if(getLookAndFeel().isColourSpecified((colourId)))
+            return getLookAndFeel().findColour(colourId);
+        return fallbackColour;
 	}
 
 	void HorizontalBarMeterChannel::setColours() {
-
+        meterChannel_meterColours.colourBackground    = getColourFromLnf (backgroundColourId, juce::Colours::black);
+        meterChannel_meterColours.colourText          = getColourFromLnf (textValueColourId, juce::Colours::white.darker (0.6f));  // NOLINT
+        meterChannel_meterColours.colourTickMark      = getColourFromLnf (tickMarkColourId, juce::Colours::white.darker (0.3f).withAlpha (0.5f));  // NOLINT
+        meterChannel_meterColours.colourPeakHold      = getColourFromLnf (peakHoldColourId, juce::Colours::red);
 	}
 } // LevelMeter

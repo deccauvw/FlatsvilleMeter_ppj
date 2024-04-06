@@ -46,6 +46,8 @@ namespace LevelMeter {
 		//@brief Font to be used for the header, value, label strip etc.
 			//param font := the font to use
 		void setFont(const juce::Font& font);
+
+        void setReferredWidth(float referredWidth) noexcept;
 //getters
 
 		//@brief Set the bounds of the "Header" part of the meter (essentially a virtual marquee)
@@ -103,6 +105,7 @@ namespace LevelMeter {
 		float meterHeader_ChannelNameWidth = 0.0f;
 		float meterHeader_ChannelTypeWidth = 0.0f;
 		float meterHeader_MetricTypeWidth = 0.0f;
+        float meterHeader_referredWidth = 0.0f;
 
 		void calculateInfoWidth();
 

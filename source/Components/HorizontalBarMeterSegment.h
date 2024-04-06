@@ -33,7 +33,7 @@ namespace LevelMeter {
 		void resetPeakHold() noexcept;
 
 		//get the peak hold lv.
-		[[nodsicard]] float getPeakHold() const noexcept;
+		[[nodiscard]] float getPeakHold() const noexcept;
 
 		//check if the segment needs to be redrawn (dirty)
 		[[nodiscard]] bool isDirty() const noexcept;
