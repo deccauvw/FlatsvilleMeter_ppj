@@ -318,10 +318,10 @@ namespace LevelMeter
         Component::resized();
     }
     // ==========================================================
-    void HorizontalBarMetersComponent::TimerCallback()
-    {
-        refresh();
-    }
+//    void HorizontalBarMetersComponent::TimerCallback()
+//    {
+//        refresh();
+//    }
     // ==========================================================
     void HorizontalBarMetersComponent::setColours()
     {

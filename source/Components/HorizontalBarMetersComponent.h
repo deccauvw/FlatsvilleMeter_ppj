@@ -108,31 +108,31 @@ namespace LevelMeter
 
         void resized() override;
         // ==========================================================
-    private:
+        private:
 
-    Options meters_meterOptions {};
-    std::vector<SegmentOptions> meters_segmentsOptions = MeterScales::getMeterScaleDefault();
+        Options meters_meterOptions {};
+        std::vector<SegmentOptions> meters_segmentsOptions = MeterScales::getMeterScaleDefault();
 
-    using MetersType = juce::OwnedArray<HorizontalBarMeterChannel>;
-    MetersType meters_meterChannels {};
-    HorizontalBarMeterChannel meters_labelStrip {};
-    LabelStripPosition  meters_labelStripPosition = LabelStripPosition::upper;
-    juce::AudioChannelSet meters_channelFormat = juce::AudioChannelSet::stereo();
+        using MetersType = juce::OwnedArray<HorizontalBarMeterChannel>;
+        MetersType meters_meterChannels {};
+        HorizontalBarMeterChannel meters_labelStrip {};
+        LabelStripPosition  meters_labelStripPosition = LabelStripPosition::upper;
+        juce::AudioChannelSet meters_channelFormat = juce::AudioChannelSet::stereo();
 
-    bool meters_useInternalTimer = true;
-    juce::Font meters_font;
-    int meters_autoSizedPanelWidth = 0;
-    juce::Colour meters_backgroundColour = juce::Colours::black;
+        bool meters_useInternalTimer = true;
+        juce::Font meters_font;
+        int meters_autoSizedPanelWidth = 0;
+        juce::Colour meters_backgroundColour = juce::Colours::black;
 
-    //private methods
-    void TimerCallback() override;
-    void setColours();
-    void createMeter (const juce::AudioChannelSet& channelFormat, const std::vector<juce::String>& channelNames);
-    void deleteMeters();
-    [[nodiscard]] HorizontalBarMeterChannel* getMeterChannel (int meterIndex) noexcept;
+        //private methods
+        //void TimerCallback() override;
+        void setColours();
+        void createMeter (const juce::AudioChannelSet& channelFormat, const std::vector<juce::String>& channelNames);
+        void deleteMeters();
+        [[nodiscard]] HorizontalBarMeterChannel* getMeterChannel (int meterIndex) noexcept;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HorizontalBarMetersComponent)
-};
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HorizontalBarMetersComponent)
+    };
 } // LevelMeter
 
 #endif //FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H

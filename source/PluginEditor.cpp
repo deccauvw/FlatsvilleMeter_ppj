@@ -1,11 +1,29 @@
 #include "PluginEditor.h"
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p)
+    : AudioProcessorEditor (&p), processorRef (p), m_audioProcessor(p)
 {
     juce::ignoreUnused (processorRef);
+    const int refreshRateHz = 30;
+        //set the meter options
+    LevelMeter::Options meterOptions;
+    //meterOptions.faderEnabled = true;
+    meterOptions.headerEnabled = false;
+    meterOptions.valueEnabled = false;
+    meterOptions.refreshRateHz = refreshRateHz;
+    meterOptions.useGradient = true;
+    meterOptions.showPeakHoldIndicator = false;
+    meterOptions.tickMarksEnabled = true;
+    meterOptions.tickMarksOnTopOfTheBar = true;
+    meterOptions.tickMarksInDecibels = Components/orizontalBarMeterHelpers::
+    meterOptions.decayTimeMs = 1000.0f;
 
-    addAndMakeVisible (inspectButton);
+    //set the meter's segment options...
+    m_inputMeters.setOptions(meterOptions);
+    std::vector<LevelMeter::SegmentOptions> segmentOptions
+}
+
+addAndMakeVisible (inspectButton);
 
     // this chunk of code instantiates and opens the melatonin inspector
     inspectButton.onClick = [&] {
