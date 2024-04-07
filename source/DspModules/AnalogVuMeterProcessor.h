@@ -1,16 +1,5 @@
-/*
-  ==============================================================================
-
-    AnalogVuMeterProcessor.h
-    Created: 19 Mar 2024 4:06:42pm
-    Author:  prmir
-
-  ==============================================================================
-*/
-
 #pragma once
-//#ifndef __ANALOG_VU_METER_PROCESSOR__
-//#define __ANALOG_VU_METER_PROCESSOR__
+
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
@@ -55,12 +44,27 @@ private:
     //StateSpaceModelSimulation ssmsRight_i2a;
 
 
-    //state space equation matrices for VOLT -> CUR : System I
+    //state space equation matrices for VOLT -> CUR : System I  =====================================
     float v2i_A[16] = {
-        -10.0,     0.0,     0.0,    -10.0,
-        -9.671e+6,       -45.45,      -9.671e+6,      9.671,
-       -21.28,          0.0,    -21.28,      -2.128e-5,
-        -0.01,            0.0,        1.0,       -0.21
+        -10.0,
+        0.0,
+        0.0,
+        -10.0,
+
+        -9.671e+6,
+        -45.45,
+        -9.671e+6,
+        9.671,
+
+        -21.28,
+        0.0,
+        -21.28,
+        -2.128e-5,
+
+        -0.01,
+        0.0,
+        1.0,
+        -0.21
     };
 
     float v2i_B[4] = {
@@ -71,7 +75,10 @@ private:
     };
 
     float v2i_C[4] = {
-        8.674e-19, - 8.674e-19,   8.078e-28, -1.654e-24
+        8.674e-19,
+        -8.674e-19,
+        8.078e-28,
+        -1.654e-24
     };
 
     float v2i_D[1] = {
@@ -84,13 +91,27 @@ private:
     mat ssm_v2i_C;
     mat ssm_v2i_D;
 
-
-    //state space equation matrices for CUR -> ANGLE : system II
+    //state space equation matrices for CUR -> ANGLE : system II=====================================
     float i2a_A[16] = {
-        -19.84,      8.746,     -39.940,    -1232.0,
-        169.6,       -100.0,      456.7,      14080.0,
-        26.18,          0.0,    -24.41,      -150.6 ,
-        0.0,            0.0,        1.0,        0.0
+        -19.84,
+        8.746,
+        -39.940,
+        -1232.0,
+
+        169.6,
+        -100.0,
+        456.7,
+        14080.0,
+
+        26.18,
+        0.0,
+        -24.41,
+        -150.6,
+
+        0.0,
+        0.0,
+        1.0,
+        0.0
     };
 
     float i2a_B[4] = {
@@ -101,7 +122,10 @@ private:
     };
 
     float i2a_C[4] = {
-        1.696, 0, 4.567, 140.8
+        1.696,
+        0,
+        4.567,
+        140.8
     };
 
     float i2a_D[1] = {
@@ -133,7 +157,7 @@ private:
 
     juce::AudioBuffer<float> bufferForInitialStateSystemI; //previous 4 samples
     juce::AudioBuffer<float> bufferForInitialStateSystemII; //previous 4 samples
-    juce::dsp::ProcessSpec spec; //samplerate etc.
+    juce::dsp::ProcessSpec spec; //sample rate etc.
     float vuLevelArrayLeft;
     float vuLevelArrayRight;
 

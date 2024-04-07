@@ -3,7 +3,7 @@
 
     StateSpaceModelSimulation.cpp
     Created: 25 Mar 2024 8:51:42pm
-    Author:  prmir
+    Author: Orstphone @ github
 
   ==============================================================================
 */
@@ -34,53 +34,52 @@ StateSpaceModelSimulation::StateSpaceModelSimulation() :
     timeRowVector.clear();
 }
 
-StateSpaceModelSimulation::~StateSpaceModelSimulation()
-{
-}
+StateSpaceModelSimulation::~StateSpaceModelSimulation() = default;
 
-//sets A B C D
-
-void StateSpaceModelSimulation::setInitStateVector(juce::AudioBuffer<float> &initialBuffer, int systemSize)
+//setters
+//set x0  ===================================================
+void StateSpaceModelSimulation::setInitStateBuffer(juce::AudioBuffer<float> &initialBuffer, size_t systemSize)
 {
     //creates x0 where dim ~ [0:sysDim)
-    //transform initialBuffer to matices vector where v[ch] == corresponding data
+    //transform initialBuffer to matrices vector where v[ch] == corresponding data
     jassert(initialBuffer.getNumSamples() == systemSize);
 
-    std::vector<mat> initialStateMatrixMultiChannel;
+    std::vector<mat> initialStateMatrix_multiChannel;
     for (int channel = 0; channel < initialBuffer.getNumChannels(); ++channel)
-    {
-        mat singleInitChannelMatrix(systemSize, 1);
-        singleInitChannelMatrix.clear();
+    {   //channel-wise computation
+        mat initialStateMatrix_singleChannel(systemSize, 1);   //systemSize == 4
+        initialStateMatrix_singleChannel.clear();
         const float* in = initialBuffer.getReadPointer(channel);
-
+        //create chains of 1x1 matrix using vector
         for (int i = 0; i < initialBuffer.getNumSamples(); ++i)
         {
-            singleInitChannelMatrix(i, 0) = in[i];
+            initialStateMatrix_singleChannel(i, 0) = in[i];
         }
-        initialStateMatrixMultiChannel.push_back(singleInitChannelMatrix);
+        initialStateMatrix_multiChannel.push_back(initialStateMatrix_singleChannel);
     }
 
-    this->x0 = initialStateMatrixMultiChannel;
+    this->x0 = initialStateMatrix_multiChannel;
 }
-
-void StateSpaceModelSimulation::setInitStateVector(std::vector<mat> &initialState, int systemSize)
+//set x0  ===================================================
+void StateSpaceModelSimulation::setInitStateVector(std::vector<mat> &initialState, size_t systemSize)
 {
     jassert(initialState.at(0).getNumRows() == systemSize);
     this->x0 = initialState;
 }
 
-//buffer to nChannel matrix vector
+//set u from audioBuffer<float> =====================================
 void StateSpaceModelSimulation::setInputSequence(juce::AudioBuffer<float>& buffer)
 {
+    size_t numChannels = buffer.getNumChannels();
+    size_t numSamples = buffer.getNumSamples();
     //creates u[n] matrix u(1, samples)
-    //transform audioBuffer to float vectors vector where v[ch] == corresponding data
     jassert(buffer.getNumChannels() == numChannels);
 
-    std::vector<mat> inputSequenceMatrixVectorMultiChannel;
+    std::vector<mat> inputSequenceMatrix_multiChannel;
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
-        mat singleChannelInputSequenceMatrix(1, numChannels);
+        mat inputSequenceMatrix_singleChannel(1, numChannels);
 
         const float* in = buffer.getReadPointer(channel);
         std::vector<float> singleChannelArray;

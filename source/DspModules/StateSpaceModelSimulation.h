@@ -43,10 +43,10 @@ public:
 
 
     //sets x0 with buffer
-    void setInitStateVector(juce::AudioBuffer<float> &initialBuffer, int systemSize);
+    void setInitStateBuffer(juce::AudioBuffer<float> &initialBuffer, size_t systemSize);
     
     //sets x0 with matrix vector
-    void setInitStateVector(std::vector<mat> &initialState, int systemSize);
+    void setInitStateVector(std::vector<mat> &initialState, size_t systemSize);
 
     //Audiobuffer to 1x1 mat u
     void setInputSequence(juce::AudioBuffer<float>& buffer);

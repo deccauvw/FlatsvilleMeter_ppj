@@ -18,7 +18,7 @@ namespace LevelMeter {
 		static constexpr auto kGuiSizeHeight = 230;
 		static constexpr auto kLevelPeakHoldHeight = 2;//height of the peak hold strip (in pixels)
 
-		//textpadding is "spacing" between numeric values
+		//text padding is "spacing" between numeric values
 		static constexpr auto kLabelStripTextPadding = 2;
 
 		//header is virtually the "LR MS" thing.
