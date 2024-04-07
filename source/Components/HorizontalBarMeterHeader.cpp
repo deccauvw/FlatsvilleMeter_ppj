@@ -1,6 +1,7 @@
 //
 // Created by prmir on 2024-04-01.
 //
+#pragma once
 
 #include "HorizontalBarMeterHeader.h"
 

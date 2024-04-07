@@ -1,6 +1,7 @@
 //
 // Created by prmir on 2024-04-05.
 //
+#pragma once
 
 #include "HorizontalBarMetersComponent.h"
 
@@ -26,7 +27,7 @@ namespace LevelMeter
     {
         setName(Constants::kMetersId);
         addAndMakeVisible(meters_labelStrip);
-        startTimerHz(static_cast<int>(std::round(meters_meterOptions.refreshRateHz)));
+        startTimer(static_cast<int>(std::round((1000.0f / meters_meterOptions.refreshRateHz))));
         createMeters(channelFormat, {});
     }
 
@@ -184,7 +185,7 @@ namespace LevelMeter
         if(meters_useInternalTimer)
         {
             stopTimer();
-            startTimerHz(juce::roundToInt(refreshRate));
+            startTimer(juce::roundToInt(1000.f / refreshRate));
         }
     }
     // ==========================================================
@@ -241,7 +242,7 @@ namespace LevelMeter
         meters_useInternalTimer = useInternalTiming;
         stopTimer();
         if(useInternalTiming)
-            startTimerHz(static_cast<int> (std::round(meters_meterOptions.refreshRateHz)));
+            startTimer(static_cast<int>(std::round((1000.0f / meters_meterOptions.refreshRateHz))));
     }
     // ==========================================================
     void HorizontalBarMetersComponent::showHeader (bool showHeader)
@@ -318,10 +319,10 @@ namespace LevelMeter
         Component::resized();
     }
     // ==========================================================
-//    void HorizontalBarMetersComponent::TimerCallback()
-//    {
-//        refresh();
-//    }
+    void HorizontalBarMetersComponent::hiResTimerCallback()
+    {
+        refresh();
+    }
     // ==========================================================
     void HorizontalBarMetersComponent::setColours()
     {

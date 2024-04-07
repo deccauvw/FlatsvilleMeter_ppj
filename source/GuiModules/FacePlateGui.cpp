@@ -8,14 +8,15 @@
   ==============================================================================
 */
 
-#include "juce_graphics/juce_graphics.h"
+//#include "juce_graphics/juce_graphics.h"
 #include "FacePlateGui.h"
 #include <vector>
+
 using ImageFileFormat = juce::ImageFileFormat;
 using File = juce::File;
 //==============================================================================
-Gui::FacePlateGui::FacePlateGui()
-{
+Gui::FacePlateGui::FacePlateGui() = default;
+//{
 //    imageFaceplateDisplay(ImageFileFormat::loadFrom(filedirFaceplateDisplay)),
 //    imageFaceplateFrameBody(ImageFileFormat::loadFrom(filedirFaceplateFrameBody)),
 //    imageFrameGuardRail(ImageFileFormat::loadFrom(filedirFrameGuardRail)),
@@ -23,7 +24,7 @@ Gui::FacePlateGui::FacePlateGui()
 //    imageNumericPrintedValuesLrVu(ImageFileFormat::loadFrom(filedirNumericPrintedValuesLrVu)),
 //    imageHorizontalSmallDisplay(ImageFileFormat::loadFrom(filedirHorizontalSmallDisplay)),
 //    imageTickpointAtZero(ImageFileFormat::loadFrom(filedirTickpointAtZero))
-}
+//}
 
 
 void Gui::FacePlateGui::loadAssets()
@@ -38,6 +39,7 @@ void Gui::FacePlateGui::loadAssets()
 
 void Gui::FacePlateGui::paint (juce::Graphics& g)
 {
+    juce::ignoreUnused(g);
 }
 
 //void Gui::FacePlateGui::paintOverChildren(juce::Graphics& g){}

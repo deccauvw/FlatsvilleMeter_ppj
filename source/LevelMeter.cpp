@@ -1,3 +1,4 @@
+#pragma once
 #include "LevelMeter.h"
 #include "Components/HorizontalBarMeterHelpers.cpp"
 #include "Components/HorizontalBarMeterChannel.cpp"

@@ -9,8 +9,8 @@
 */
 
 #pragma once
-#ifndef __ANALOG_VU_METER_PROCESSOR__
-#define __ANALOG_VU_METER_PROCESSOR__
+//#ifndef __ANALOG_VU_METER_PROCESSOR__
+//#define __ANALOG_VU_METER_PROCESSOR__
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
@@ -142,4 +142,4 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogVuMeterProcessor)
 };
 
-#endif //__ANALOG_VU_METER_PROCESSOR__
+//#endif //__ANALOG_VU_METER_PROCESSOR__

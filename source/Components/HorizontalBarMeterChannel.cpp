@@ -1,3 +1,5 @@
+#pragma once
+
 #include "HorizontalBarMeterChannel.h"
 
 namespace LevelMeter {

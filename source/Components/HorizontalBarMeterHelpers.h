@@ -3,12 +3,13 @@
 //presumes the plugin is STEREO only
 //
 
-#ifndef SOURCE_IML_HORIZONTALBARMETERHELPERS_H
-#define SOURCE_IML_HORIZONTALBARMETERHELPERS_H
-
+//#ifndef SOURCE_IML_HORIZONTALBARMETERHELPERS_H
+//#define SOURCE_IML_HORIZONTALBARMETERHELPERS_H
+#pragma once
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <vector>
+
 
 namespace LevelMeter {
 	//@brief various horizontal bar meter helper constants
@@ -154,9 +155,13 @@ namespace LevelMeter {
 	namespace Helpers
 	{
 		//[[nodiscard]] juce::Rectangle<int> applyPadding (const juce::Rectangle<int>& rectToPad, Padding paddingToApply) noexcept;
-		[[nodiscard]] static constexpr bool containsUpTo(juce::Range<float> levelRange, float levelDecibels) noexcept;
+		[[nodiscard]] static constexpr bool containsUpTo(juce::Range<float> levelRange, float levelDecibels) noexcept
+        {
+            return levelDecibels > levelRange.getStart() && levelDecibels <= levelRange.getEnd();
+        }
+
 	}
 
 } // LevelMeter
 
-#endif //SOURCE_IML_HORIZONTALBARMETERHELPERS_H
+//#endif //SOURCE_IML_HORIZONTALBARMETERHELPERS_H

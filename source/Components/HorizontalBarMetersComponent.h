@@ -1,10 +1,10 @@
 //
 // Created by decca on 2024-04-05.
 //
-
-#ifndef FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H
-#define FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H
-
+//
+//#ifndef FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H
+//#define FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H
+#pragma once
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
@@ -20,7 +20,7 @@ namespace LevelMeter
     //@brief component containing one or more meters
     //after setting the channel format it
     //will auto. create the needed meters and give them proper names.
-    class HorizontalBarMetersComponent final : public juce::Component, private juce::Timer
+    class HorizontalBarMetersComponent : public juce::Component, private juce::HighResolutionTimer
     {
     public:
         //@brief default constructor
@@ -40,9 +40,13 @@ namespace LevelMeter
         //destr
         ~HorizontalBarMetersComponent() override;
 
+        void hiResTimerCallback() override;
+
         // ==========================================================
         //redraw the meteres panel
         //can be manually or internally
+
+
         void refresh (bool forceRefresh = false);
 
         void reset();
@@ -125,7 +129,7 @@ namespace LevelMeter
         juce::Colour meters_backgroundColour = juce::Colours::black;
 
         //private methods
-        //void TimerCallback() override;
+
         void setColours();
         void createMeter (const juce::AudioChannelSet& channelFormat, const std::vector<juce::String>& channelNames);
         void deleteMeters();
@@ -135,4 +139,4 @@ namespace LevelMeter
     };
 } // LevelMeter
 
-#endif //FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H
+//#endif //FLATSVILLEMETER_PPJ_HORIZONTALBARMETERCOMPONENT_H

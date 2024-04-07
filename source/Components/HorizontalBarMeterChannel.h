@@ -1,7 +1,6 @@
-#ifndef SOURCE_IML_HORIZONTALBARMETERCHANNEL_H
-#define SOURCE_IML_HORIZONTALBARMETERCHANNEL_H
 
 #pragma once
+
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_core/juce_core.h>
@@ -11,6 +10,7 @@
 #include "HorizontalBarMeterHelpers.h"
 #include "HorizontalBarMeterLevel.h"
 
+
 namespace LevelMeter {
 	/*
 	 * @brief an individual meter channel.
@@ -18,7 +18,7 @@ namespace LevelMeter {
 	 * this represents a single meter.
 	 * use the metersComponent to create multiple meters matching the specified channel format
 	 */
-	class HorizontalBarMeterChannel final:
+	class HorizontalBarMeterChannel:
 		public juce::Component,
 		private juce::SettableTooltipClient
 	{
@@ -33,13 +33,13 @@ namespace LevelMeter {
 		/*
 		 * MeterOptions := meter options to use, defining aesthetics and functionality.
 		 * padding := N/A
-		 * channelname := channel name set by the user
-		 * isLableStrip := N/A
+		 * channel name := channel name set by the user
+		 * isLabelStrip := N/A
 		 * channelType := the channelType(L R M S etc)
 		 */
 		HorizontalBarMeterChannel(const Options& meterOptions, const juce::String& channelName, ChannelType channelType = ChannelType::unknown);
 
-		//@brief default destr.
+		//@brief default destructor.
 		~HorizontalBarMeterChannel() override;
 		//==========================================
 //utilities
@@ -47,15 +47,15 @@ namespace LevelMeter {
 		//see@ResetPeakHold
 		void reset();
 
-		//@brief reset the peakhold
-		//resets the peakhold indicator and value
+		//@brief reset the peak hold
+		//resets the peak hold indicator and value
 		void resetPeakHold();
 
 		//@brief show(and hide) hte peak hold indicator
 		void showPeakHold(bool showPeakHold = true);
 
 		//@brief show the peak 'value' part of the meter.
-		//the peak value part will be shown above and below the each meter (in dB)
+		//the peak value part will be shown above and below each meter (in dB)
 		//same level as the peak hold bar
 		//showValue := if true : 'value' will be shown
 		void showValue(bool showValue = true);
@@ -64,25 +64,25 @@ namespace LevelMeter {
 		//headerVisible := when true, header will be visible
 		void showHeader(bool headerVisible);
 
-		//@brief enable tickmarks on the meter (divider lines)
+		//@brief enable tick marks on the meter (divider lines)
 		void showTickMarks(bool showTickMarks);
 
 		//@brief show the tick marks on top of the level or below it.
-		//when below, meter will "cover" the tickmarks.
+		//when below, meter will "cover" the tickMarks.
 		void showTickMarksOnTop(bool showTickMarksOnTop);
 
 		//@brief Refresh the meter with the current input level
 		//@forceRefresh := when set to true will be forced to repaint (even if not Dirty)
 		void refresh(bool forceRefresh);
 
-		//@brief use gradients instead of hard segment b oundaries.
-		//if true : smooth gradients. flase gives hard seg. boundaries.
+		//@brief use gradients instead of hard segment boundaries.
+		//if true : smooth gradients. false gives hard seg. boundaries.
 		void useGradients(bool useGradients);
 
 		//==========================================
 //setter
 		//@brief Sets the meter refresh rate
-		//set this to optim. the meter's decay rate
+		//set this to optimize the meter's decay rate
 		//@refreshRateHz:= refresh rate in Hz
 		void setRefreshRate(float refreshRateHz);
 
@@ -90,8 +90,8 @@ namespace LevelMeter {
 		//decayMs := meterDecay in ms
 		void  setDecay(float decayMs);
 
-		//@brief set the level of the tickmarks.
-		//tickMarks := list of the tickmark values in dB
+		//@brief set the level of the tick marks.
+		//tickMarks := list of the tick mark values in dB
 		void setTickMarks(const std::vector<float>& tickMarks);
 
 		//@brief set the input level from the audio engine
@@ -101,7 +101,7 @@ namespace LevelMeter {
 
 		//@brief set the meter's options.
 		//options determine the appearance and func. of the meter
-		//meterOptions := metero ptions to use
+		//meterOptions := meter options to use
 		void setOptions(const Options& meterOptions);
 
 		//@brief set the segments the meter is made out of.
@@ -110,12 +110,12 @@ namespace LevelMeter {
 		void setMeterSegments(const std::vector<SegmentOptions>& segmentsOptions);
 
 		//@brief set the meter font.
-		//font used in everything to draw something : header, value, labelstrip etc.
+		//font used in everything to draw something : header, value, label strip etc.
 		//font := font to use
 		void setFont(const juce::Font& font);
 
-		//@brief Set the channelname
-		//sets the channelname belonging to the track feeding the meter.
+		//@brief Set the channel name
+		//sets the channel name belonging to the track feeding the meter.
 		void setChannelName(const juce::String& channelName);
 
 		//@brief set the channelType
@@ -155,7 +155,7 @@ namespace LevelMeter {
 		//meter will have small horizontal display on the right : checks if the text bound exceeds there.
 		[[nodiscard]] float getChannelNameWidth() const noexcept;
 
-		//get the width(pixels) of the channeltype(LRMS) of the headerpart.
+		//get the width(pixels) of the channel type(L R M S) of the header part.
 		[[nodiscard]] float getChannelTypeWidth() const noexcept;
 
 		//get the bounds of the meter and header parts combined.
@@ -164,7 +164,7 @@ namespace LevelMeter {
 
 		//==========================================
 //Anything that prevents meter aesthetics going "Dirty"
-		//used with "getChannelxxxwidth fn.
+		//used with "getChannel ~ width fn.
 		[[nodiscard]] bool nameFits(const juce::String& name, int widthAvailable) const;
 
 		//==========================================
@@ -177,7 +177,7 @@ namespace LevelMeter {
 		//==========================================
 //ColourIDs
 		//@brief ColourIDs that can be used to custom the colours.
-		//this can be done by overridinng juce's lookand feel class
+		//this can be done by overriding the look and feel class
 		enum ColourIds
 		{
 			backgroundColourId     = 0x1a03201,  ///< Background colour.
@@ -186,7 +186,7 @@ namespace LevelMeter {
 		//	faderColourId          = 0x1a03204,  ///< Fader colour.
 			textValueColourId      = 0x1a03205,  ///< Value text colour.
 		//	mutedColourId          = 0x1a03206,  ///< Muted button colour.
-		//	solodColourId          = 0x1a03207,  ///< Soloed button colour.
+		//	soloedColourId          = 0x1a03207,  ///< Soloed button colour.
 		//	mutedMouseOverColourId = 0x1a03208,  ///< Muted mouse over button colour.
 		//	inactiveColourId       = 0x1a03209,  ///< Inactive (muted) colour.
 			peakHoldColourId       = 0x1a03210   ///< Peak hold colour.
@@ -200,7 +200,7 @@ namespace LevelMeter {
 //aesthetics
 		juce::Font           meterChannel_font;
 		MeterColours         meterChannel_meterColours{};
-//dirts
+//dirty stuff
 		juce::Rectangle<int> meterChannel_dirtyRect{};
 
 		void setDirty(bool isDirty = true) noexcept;
@@ -216,5 +216,3 @@ namespace LevelMeter {
 		void setColours();
 	};
 } // LevelMeter
-
-#endif

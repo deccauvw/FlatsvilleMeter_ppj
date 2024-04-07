@@ -1,10 +1,7 @@
 //
 // Created by prmir on 2024-04-01.
 //
-
-#ifndef SOURCE_IML_HORIZONTALBARMETERSEGMENT_H
-#define SOURCE_IML_HORIZONTALBARMETERSEGMENT_H
-
+#pragma once
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include "HorizontalBarMeterHelpers.h"
@@ -69,4 +66,4 @@ namespace LevelMeter {
 	};
 } // LevelMeter
 
-#endif //SOURCE_IML_HORIZONTALBARMETERSEGMENT_H
+//#endif //SOURCE_IML_HORIZONTALBARMETERSEGMENT_H

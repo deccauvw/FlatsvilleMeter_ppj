@@ -2,15 +2,15 @@
 // Created by prmir on 2024-04-01.
 //
 
-#ifndef SOURCE_IML_HORIZONTALBARMETERHEADER_H
-#define SOURCE_IML_HORIZONTALBARMETERHEADER_H
+//#ifndef SOURCE_IML_HORIZONTALBARMETERHEADER_H
+//#define SOURCE_IML_HORIZONTALBARMETERHEADER_H
 #pragma once
+
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_core/juce_core.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "HorizontalBarMeterHelpers.h"
-
 // ===================================================================================
 /*
  *@brief Class responsible for the meters' HEADER part
@@ -114,4 +114,4 @@ namespace LevelMeter {
 
 } // LevelMeter
 
-#endif //SOURCE_IML_HORIZONTALBARMETERHEADER_H
+//#endif //SOURCE_IML_HORIZONTALBARMETERHEADER_H

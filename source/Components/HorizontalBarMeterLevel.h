@@ -2,8 +2,8 @@
 // Created by prmir on 2024-04-01.
 //
 
-#ifndef SOURCE_IML_HORIZONTALBARMETERLEVEL_H
-#define SOURCE_IML_HORIZONTALBARMETERLEVEL_H
+//#ifndef SOURCE_IML_HORIZONTALBARMETERLEVEL_H
+//#define SOURCE_IML_HORIZONTALBARMETERLEVEL_H
 #pragma once
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_core/juce_core.h>
@@ -139,4 +139,4 @@ namespace LevelMeter {
 
 } // LevelMeter
 
-#endif //SOURCE_IML_HORIZONTALBARMETERLEVEL_H
+//#endif //SOURCE_IML_HORIZONTALBARMETERLEVEL_H

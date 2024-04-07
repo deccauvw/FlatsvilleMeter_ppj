@@ -1,3 +1,4 @@
+#pragma once
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -14,9 +15,7 @@ PluginProcessor::PluginProcessor()
 {
 }
 
-PluginProcessor::~PluginProcessor()
-{
-}
+PluginProcessor::~PluginProcessor() = default;
 
 //==============================================================================
 const juce::String PluginProcessor::getName() const
@@ -87,8 +86,12 @@ void PluginProcessor::changeProgramName (int index, const juce::String& newName)
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    // initialisation that you need...
     juce::ignoreUnused (sampleRate, samplesPerBlock);
+    auto numOutputChannels = getTotalNumOutputChannels();
+    auto* editor = dynamic_cast<PluginEditor*>(getActiveEditor());
+    if(editor)
+        editor->setChannelFormat(m_outputFormat);
 }
 
 void PluginProcessor::releaseResources()
@@ -144,11 +147,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        juce::ignoreUnused (channelData);
-        // ..do something to the data...
+    {        // ..do something to the data..
+        setPeakLevel(channel, buffer.getMagnitude(channel, 0, buffer.getNumSamples()));
     }
+    buffer.clear();
 }
 
 //==============================================================================
@@ -159,7 +161,7 @@ bool PluginProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* PluginProcessor::createEditor()
 {
-    return new PluginEditor (*this);
+    return new PluginEditor(*this);
 }
 
 //==============================================================================
@@ -176,6 +178,19 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
     juce::ignoreUnused (data, sizeInBytes);
+}
+void PluginProcessor::setPeakLevel (int channelIndex, float peakLevel)
+{
+    if(!juce::isPositiveAndBelow(channelIndex, m_peakLevels.size()))
+        return;
+    m_peakLevels[channelIndex].store(std::max(peakLevel, m_peakLevels[channelIndex].load()));
+}
+
+float PluginProcessor::getPeakLevel (int channelIndex)
+{
+    if(!juce::isPositiveAndBelow(channelIndex, m_peakLevels.size()))
+        return 0.0f;
+    return m_peakLevels[channelIndex].exchange(0.0f);
 }
 
 //==============================================================================
