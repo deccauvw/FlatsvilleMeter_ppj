@@ -3,7 +3,8 @@
 
 #include "PluginProcessor.h"
 #include "juce_audio_processors/juce_audio_processors.h"
-#include "juce_gui_basics/components/juce_Component.h"
+//#include "juce_gui_basics/components/juce_Component.h"
+
 #include "LevelMeter.h"
 //#include "DspModules/AnalogVuMeterProcessor.h"
 

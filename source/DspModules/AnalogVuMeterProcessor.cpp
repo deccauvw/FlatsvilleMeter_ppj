@@ -143,7 +143,7 @@ void AnalogVuMeterProcessor::feedToSteadyStateEquation(juce::AudioBuffer<float>&
     }
 
     //save prev 4 values for all channels
-    auto& outputPostSystemI = ssms_v2i.getSimulatedOutputMatrix();
+    auto outputPostSystemI = ssms_v2i.getSimulatedOutputMatrix();
 
     keepPreviousStateForNextInitSystemI();
 
