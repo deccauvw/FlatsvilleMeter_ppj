@@ -14,7 +14,7 @@ namespace DspLine
     namespace Constants{
         //System Dimension (Order 4) =====================================================================
         static constexpr auto kSystemOrder = 4;
-
+        static constexpr auto kMinimalReturnValue = -20.0f;
         //Matrix element data for System Voltage to Current (System I) ==================================
         float v2i_A[kSystemOrder * kSystemOrder] = {
             -10.0,
@@ -97,23 +97,25 @@ namespace DspLine
             0
         };
 
-        //Matrix constructing ==============================
 
     }; //struct Constant
+    //Matrix constructing ==============================
 
 //Matrix initializing=============================================================================
-    using namespace Constants;
-    class initializeMatrices
+    //using namespace Constants;
+    class SystemMatrices
     {
-    private:
-        //initializeMatrices();
     public:
         using mat = juce::dsp::Matrix<float>;
-        explicit initializeMatrices();
-        ~initializeMatrices();
-        //==================================================
+        explicit SystemMatrices();
+        ~SystemMatrices();
+        //member functions ====
+        void setMatrices();
+
+        //member variables ====
         //for system I
         size_t systemDim;
+
         mat ssm_v2i_x;
         mat ssm_v2i_x0;
         mat ssm_v2i_A;
@@ -127,6 +129,6 @@ namespace DspLine
         mat ssm_i2a_B;
         mat ssm_i2a_C;
         mat ssm_i2a_D;
+    private:
     };
-
 } // DspLine

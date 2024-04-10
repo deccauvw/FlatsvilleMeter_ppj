@@ -4,16 +4,18 @@
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
 #include "StateSpaceModelSimulation.h"
+#include "DspModulesHelper.h"
 //==============================================================================
-
-class AnalogVuMeterProcessor  : public juce::Component
+class AnalogVuMeterProcessor  : public juce::Component, private DspLine::SystemMatrices
 {
 public:
     AnalogVuMeterProcessor();
     ~AnalogVuMeterProcessor() override;
+    //JUCE functions=========================
+    void prepareToPlay(double  SampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock);
+    void processBlock(juce::AudioBuffer<float> &buffer);
 
-    void prepareToPlay(double  SampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock); 
-
+    //member functions=========================
     using mat = juce::dsp::Matrix<float>;
 
     void feedToSteadyStateEquation(juce::AudioBuffer<float>& buffer, int systemSize);
@@ -22,7 +24,6 @@ public:
     void keepPreviousStateForNextInitSystemII();
 
 
-    void processBlock(juce::AudioBuffer<float> &buffer);
 
     void reset();
 
@@ -30,139 +31,43 @@ public:
 
 
 private:
-    //for rectifying
-    const size_t sysDim = 4;
+    //system dimension = 4
+    const size_t sysDim = SystemMatrices::systemDim;
+    //systemMatricesInit
+    DspLine::SystemMatrices systemMatrices;
 
     //state space model simulation classes for stereo
     StateSpaceModelSimulation ssms;
     StateSpaceModelSimulation ssms_v2i; //for n-channels
     StateSpaceModelSimulation ssms_i2a; //for n-channels
 
-    //StateSpaceModelSimulation ssmsLeft_v2i;
-    //StateSpaceModelSimulation ssmsRight_v2i;
-    //StateSpaceModelSimulation ssmsLeft_i2a;
-    //StateSpaceModelSimulation ssmsRight_i2a;
-
-
-    //state space equation matrices for VOLT -> CUR : System I  =====================================
-    float v2i_A[16] = {
-        -10.0,
-        0.0,
-        0.0,
-        -10.0,
-
-        -9.671e+6,
-        -45.45,
-        -9.671e+6,
-        9.671,
-
-        -21.28,
-        0.0,
-        -21.28,
-        -2.128e-5,
-
-        -0.01,
-        0.0,
-        1.0,
-        -0.21
-    };
-
-    float v2i_B[4] = {
-        10.0,
-        9.671e+6,
-        21.28,
-        0.01
-    };
-
-    float v2i_C[4] = {
-        8.674e-19,
-        -8.674e-19,
-        8.078e-28,
-        -1.654e-24
-    };
-
-    float v2i_D[1] = {
-        -8.674e-19
-    };
-
-    mat ssm_v2i_x, ssm_v2i_x0;
-    mat ssm_v2i_A;
-    mat ssm_v2i_B;
-    mat ssm_v2i_C;
-    mat ssm_v2i_D;
-
-    //state space equation matrices for CUR -> ANGLE : system II=====================================
-    float i2a_A[16] = {
-        -19.84,
-        8.746,
-        -39.940,
-        -1232.0,
-
-        169.6,
-        -100.0,
-        456.7,
-        14080.0,
-
-        26.18,
-        0.0,
-        -24.41,
-        -150.6,
-
-        0.0,
-        0.0,
-        1.0,
-        0.0
-    };
-
-    float i2a_B[4] = {
-        0.2572,
-        0,
-        0,
-        0
-    };
-
-    float i2a_C[4] = {
-        1.696,
-        0,
-        4.567,
-        140.8
-    };
-
-    float i2a_D[1] = {
-        0
-    };
-
-    mat ssm_i2a_x, ssm_i2a_x0;
-    mat ssm_i2a_A;
-    mat ssm_i2a_B;
-    mat ssm_i2a_C;
-    mat ssm_i2a_D;
-
+    //memory for System II from system I
     juce::HeapBlock<float> z1;
     juce::HeapBlock<float> z2;
     juce::HeapBlock<float> z3;
     juce::HeapBlock<float> z4;
 
+    //memory for next block of System I from system II
     juce::HeapBlock<float> w1;
     juce::HeapBlock<float> w2;
     juce::HeapBlock<float> w3;
     juce::HeapBlock<float> w4;
 
-
     //==============================================================================
 
     juce::AudioBuffer<float> bufferForMeasurement;
-    std::vector<mat> outputPostSystemI;
-    std::vector<mat> outputPostSystemII;
+    juce::AudioBuffer<float> outputBufferSytemI;
+    juce::AudioBuffer<float> outputBufferSystemII;
 
-    juce::AudioBuffer<float> bufferForInitialStateSystemI; //previous 4 samples
-    juce::AudioBuffer<float> bufferForInitialStateSystemII; //previous 4 samples
+    juce::AudioBuffer<float> initialStateBufferForSystemI; //previous 4 samples
+    juce::AudioBuffer<float> initialStateBufferForSystemII; //previous 4 samples
     juce::dsp::ProcessSpec spec; //sample rate etc.
-    float vuLevelArrayLeft;
-    float vuLevelArrayRight;
+    std::vector<float> vuLevelsVector;
 
-    static const float minimalReturnValue; // virtual -INF
+    static constexpr float minimalReturnLevelDecibels = DspLine::Constants::kMinimalReturnValue; // virtual -INF
 
+
+    //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogVuMeterProcessor)
 };
 

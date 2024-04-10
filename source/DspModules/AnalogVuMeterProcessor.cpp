@@ -8,37 +8,23 @@
     https://github.com/AleksandarHaber/Simulation-of-State-Space-Models-of-Dynamical-Systems-in-Cpp--Eigen-Matrix-Library-Tutorial/blob/master/SimulateSystem.cpp
   ==============================================================================
 */
-
+#pragma once
 
 #include "AnalogVuMeterProcessor.h"
 //#include "StateSpaceModelSimulation.h"
 #include <cmath>
-//static member constants-
-
-const float AnalogVuMeterProcessor::minimalReturnValue = static_cast<float>(std::pow(10, - 120));
 
 using mat = juce::dsp::Matrix<float>;
 
 //==============================================================================
-AnalogVuMeterProcessor::AnalogVuMeterProcessor() :
-    ssm_v2i_x(1, 1),
-    ssm_v2i_x0(1, 1),
-    ssm_v2i_A(1, 1),
-    ssm_v2i_B(1, 1),
-    ssm_v2i_C(1, 1),
-    ssm_v2i_D(1, 1),
-    ssm_i2a_x(1, 1),
-    ssm_i2a_x0(1, 1),
-    ssm_i2a_A(1, 1),
-    ssm_i2a_B(1, 1),
-    ssm_i2a_C(1, 1),
-    ssm_i2a_D(1, 1)
+AnalogVuMeterProcessor::AnalogVuMeterProcessor()
 {
     // If this class is used without caution and processBlock
     // is called before prepareToPlay, divisions by zero
     // might occure. E.g. if numberOfSamplesInAllBins = 0.
     // To prevent this, prepareToPlay is called here with
     // some arbitrary arguments.
+    systemMatrices.setMatrices();
     prepareToPlay(48000.0, 2, 1024);
 }
 
