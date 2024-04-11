@@ -16,7 +16,7 @@
 
 using mat = juce::dsp::Matrix<float>;
 
-//==============================================================================
+//default constructors destructors========================================================
 AnalogVuMeterProcessor::AnalogVuMeterProcessor()
 {
     // If this class is used without caution and processBlock
@@ -25,7 +25,10 @@ AnalogVuMeterProcessor::AnalogVuMeterProcessor()
     // To prevent this, prepareToPlay is called here with
     // some arbitrary arguments.
     systemMatrices.setMatrices();
-    prepareToPlay(48000.0, 2, 1024);
+    spec.numChannels = 2;
+    spec.maximumBlockSize = 1024;
+    spec.sampleRate = 48000;
+    prepareToPlay(spec.sampleRate, spec.numChannels,spec.maximumBlockSize);
 }
 
 AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
@@ -40,8 +43,10 @@ AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
     w4.free();
 }
 
+//JUCE related functions ========================================================
 void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock)
 {
+    //init. spec
     spec.sampleRate =sampleRate;
     spec.numChannels = numberOfInputChannels;
     spec.maximumBlockSize = estimatedSamplesPerBlock;
@@ -51,7 +56,7 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
     bufferForMeasurement.clear();
 
 
-    //for state space equation : 4 past values for "next init x0"
+    //for state space equation : 4 past values for "next init x0 for system I / II"
     z1.calloc(numberOfInputChannels);
     z2.calloc(numberOfInputChannels);
     z3.calloc(numberOfInputChannels);
@@ -61,22 +66,21 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
     w3.calloc(numberOfInputChannels);
     w4.calloc(numberOfInputChannels);
 
-
-
-    bufferForInitialStateSystemI.setSize(numberOfInputChannels, sysDim);
+    //initialize buffer with past values
+    initialStateBufferForSystemI.setSize(numberOfInputChannels, sysDim);
     for (int channel = 0; channel < numberOfInputChannels; ++channel)
     {
-        float* init = bufferForInitialStateSystemI.getWritePointer(channel);
+        float* init = initialStateBufferForSystemI.getWritePointer(channel);
         init[0] = z4[channel];
         init[1] = z3[channel];
         init[2] = z2[channel];
         init[3] = z1[channel];
     }
 
-    bufferForInitialStateSystemII.setSize(numberOfInputChannels, sysDim);
+    initialStateBufferForSystemII.setSize(numberOfInputChannels, sysDim);
     for (int channel = 0; channel < numberOfInputChannels; ++channel)
     {
-        float* init = bufferForInitialStateSystemII.getWritePointer(channel);
+        float* init = initialStateBufferForSystemII.getWritePointer(channel);
         init[0] = w4[channel];
         init[1] = w3[channel];
         init[2] = w2[channel];
@@ -84,42 +88,47 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
     }
 
 
+    //init. every matrix required
+    systemMatrices.setMatrices();
     //matrices for system I (voltage to current)
-    ssm_v2i_x = mat(sysDim, 1); ssm_v2i_x.clear(); //zeroize mono input
-    ssm_v2i_x0 = mat(sysDim, 1); ssm_v2i_x0.clear(); //zeroize mono init cond
-    ssm_v2i_A = ssms.convertArrayTo2dMatrix(v2i_A, sysDim, sysDim);
-    ssm_v2i_B = ssms.convertArrayTo2dMatrix(v2i_B, 1, sysDim);
-    ssm_v2i_C = ssms.convertArrayTo2dMatrix(v2i_C, sysDim, 1);
-    ssm_v2i_D = ssms.convertArrayTo2dMatrix(v2i_D, 1, 1);
-
     //matrices for system II(current to galvanometer)
-    ssm_i2a_x = mat(sysDim, 1); ssm_i2a_x.clear(); //zeroize mono input
-    ssm_i2a_x0 = mat(sysDim, 1); ssm_i2a_x0.clear(); //zeroize mono init cond
-    ssm_i2a_A = ssms.convertArrayTo2dMatrix(i2a_A, sysDim, sysDim);
-    ssm_i2a_B = ssms.convertArrayTo2dMatrix(i2a_B, 1, sysDim);
-    ssm_i2a_C = ssms.convertArrayTo2dMatrix(i2a_C, sysDim, 1);
-    ssm_i2a_D = ssms.convertArrayTo2dMatrix(i2a_D, 1, 1);
 
 
-
-    ssms_v2i.hardReset(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, bufferForMeasurement, bufferForInitialStateSystemI, sysDim);
-
-    ssms_i2a.hardReset(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, bufferForMeasurement, bufferForInitialStateSystemII, sysDim);   
+    ssms_v2i.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, bufferForMeasurement, outputBufferSystemI, sysDim);
+    ssms_i2a.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, bufferForMeasurement, outputBufferSystemII, sysDim);
 }
 
 
-//virtually the main function
-void AnalogVuMeterProcessor::feedToSteadyStateEquation(juce::AudioBuffer<float>& buffer, int systemSize) //_buffer == rectified one
+//virtually the main function ====================================================
+void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> p1, juce::HeapBlock<float> p2, juce::HeapBlock<float> p3, juce::HeapBlock<float> p4 )
 {
+    auto numChannels = initialStateBuffer.getNumChannels();
+    for(int channel = 0;channel<numChannels;++channel)
+    {
+        float* in = initialStateBuffer.getWritePointer(channel);
+        in[0] = z4[channel];
+        in[1] = z3[channel];
+        in[2] = z2[channel];
+        in[3] = z1[channel];
+    }
+}
+
+
+void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& buffer)
+{
+    /*buffer := audio buffer input
+     * systemSize (=4) := order of the steady state model
+     */
 
     //initialize everything
+    //sysDim = systemSize (=4)
     const int numberOfChannels = buffer.getNumChannels();
-    //const int numberOfSamples = buffer.getNumSamples();
-    //const int sr = spec.sampleRate;
-    const size_t sysDim = systemSize;
+    const int numberOfSamples = buffer.getNumSamples();
+    const double sr = spec.sampleRate;
 
-    //*********************************************************  System I Voltage To Current 
-    ssms_v2i.setInitStateVector(bufferForInitialStateSystemI, sysDim);
+    //*********************************************************  System I Voltage To Current
+    createInitialStateBuffer(initialStateBufferForSystemI, z1, z2, z3, z4);
+    ssms_v2i.setInitStateBuffer(initialStateBufferForSystemI, sysDim);
     ssms_v2i.setInputSequence(buffer);
 
     for (int ch = 0; ch < numberOfChannels; ++ch)

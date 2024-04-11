@@ -17,8 +17,8 @@ public:
 
     //member functions=========================
     using mat = juce::dsp::Matrix<float>;
-
-    void feedToSteadyStateEquation(juce::AudioBuffer<float>& buffer, int systemSize);
+    void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> p1, juce::HeapBlock<float> p2, juce::HeapBlock<float> p3, juce::HeapBlock<float> p4);
+    void feedToSteadyStateModel(juce::AudioBuffer<float>& buffer);
  
     void keepPreviousStateForNextInitSystemI();
     void keepPreviousStateForNextInitSystemII();
@@ -32,7 +32,7 @@ public:
 
 private:
     //system dimension = 4
-    const size_t sysDim = SystemMatrices::systemDim;
+    const int sysDim = static_cast<int>(SystemMatrices::systemDim);
     //systemMatricesInit
     DspLine::SystemMatrices systemMatrices;
 
@@ -56,7 +56,7 @@ private:
     //==============================================================================
 
     juce::AudioBuffer<float> bufferForMeasurement;
-    juce::AudioBuffer<float> outputBufferSytemI;
+    juce::AudioBuffer<float> outputBufferSystemI;
     juce::AudioBuffer<float> outputBufferSystemII;
 
     juce::AudioBuffer<float> initialStateBufferForSystemI; //previous 4 samples
