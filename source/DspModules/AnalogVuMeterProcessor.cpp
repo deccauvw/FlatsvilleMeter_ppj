@@ -114,7 +114,7 @@ void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& 
 }
 
 
-void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& buffer)
+void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& buffer) //  virtually A processBlock
 {
     /*buffer := audio buffer input
      * systemSize (=4) := order of the steady state model
@@ -155,7 +155,9 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
     recordPreviousStateForNextSystem(w1, w2, w3, w4, outputBufferSystemII);
 
     DBG("System 2 ends here");
-    //
+    //acquire channel-wise VU levels
+
+    //outputBufferSystemII should hold the VU level
 
 }
 
@@ -176,21 +178,10 @@ void AnalogVuMeterProcessor::recordPreviousStateForNextSystem(juce::HeapBlock<fl
     }
 }
 
-
-//==============================================================================
-
-
-//
-//void AnalogVuMeterProcessor::processBlock(juce::AudioBuffer<float>& buffer)
-//{
-//
-//    //feedToSteadyStateEquation(buffer, sysDim);
-//
-//    DBG("Single processBlock finished...");
-//}
-//
-
-
+std::vector<float> AnalogVuMeterProcessor::getNeedlePointsValuesVector()
+{
+    return needlePointsValuesVector;
+}
 
 void AnalogVuMeterProcessor::reset()
 {

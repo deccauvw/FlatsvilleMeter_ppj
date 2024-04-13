@@ -8,7 +8,8 @@
 //#endif
 #pragma once
 #include<juce_audio_processors/juce_audio_processors.h>
-
+#include<juce_dsp/juce_dsp.h>
+#include "DspModules/AnalogVuMeterProcessor.h"
 //==============================================================================
 
 
@@ -50,9 +51,13 @@ public:
     float getPeakLevel(int channelIndex);
 
 private:
+    juce::dsp::ProcessSpec specs;
+    int maximumEstimatedSamplesPerBlock;
     juce::AudioChannelSet m_outputFormat;
     std::array<std::atomic<float>, 128> m_peakLevels;
+    std::array<std::atomic<float>, 128> m_vuLevels;
 
+    AnalogVuMeterProcessor vuMeterProcessor;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };

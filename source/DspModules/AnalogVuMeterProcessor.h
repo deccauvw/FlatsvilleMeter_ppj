@@ -22,7 +22,7 @@ public:
  
     static void recordPreviousStateForNextSystem(juce::HeapBlock<float> &p1, juce::HeapBlock<float> &p2, juce::HeapBlock<float> &p3, juce::HeapBlock<float> &p4, juce::AudioBuffer<float>& outputBuffer);
 
-
+    std::vector<float> getNeedlePointsValuesVector();
 
     void reset();
 
@@ -61,7 +61,7 @@ private:
     juce::AudioBuffer<float> initialStateBufferForSystemI; //previous 4 samples
     juce::AudioBuffer<float> initialStateBufferForSystemII; //previous 4 samples
     juce::dsp::ProcessSpec spec; //sample rate etc.
-    std::vector<float> needlePointsValueVector;
+    std::vector<float> needlePointsValuesVector; //channel-wise values vector
 
     static constexpr float minimalReturnLevelDecibels = DspLine::Constants::kMinimalReturnValue; // virtual -INF
 

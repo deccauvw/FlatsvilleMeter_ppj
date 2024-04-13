@@ -88,10 +88,18 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     // Use this method as the place to do any pre-playback
     // initialisation that you need...
     juce::ignoreUnused (sampleRate, samplesPerBlock);
+    this->specs.sampleRate = sampleRate;
+    this->specs.maximumBlockSize = samplesPerBlock;
+    this->specs.numChannels = 2; //presume stereo
+
     auto numOutputChannels = getTotalNumOutputChannels();
     auto* editor = dynamic_cast<PluginEditor*>(getActiveEditor());
     if(editor)
         editor->setChannelFormat(m_outputFormat);
+
+    //vumeter init
+    vuMeterProcessor.reset();
+
 }
 
 void PluginProcessor::releaseResources()
@@ -137,6 +145,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
+
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
@@ -146,10 +155,17 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
+
+    //>>>
+    //Acquire Peak value
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {        // ..do something to the data..
+    {        // do something to the data
         setPeakLevel(channel, buffer.getMagnitude(channel, 0, buffer.getNumSamples()));
     }
+
+    //Acquire VU value
+    vuMeterProcessor.feedToSteadyStateModel(buffer);
+    //setVuLevel( ... )
     buffer.clear();
 }
 
