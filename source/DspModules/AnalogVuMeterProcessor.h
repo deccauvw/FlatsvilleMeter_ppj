@@ -13,15 +13,14 @@ public:
     ~AnalogVuMeterProcessor() override;
     //JUCE functions=========================
     void prepareToPlay(double  SampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock);
-    void processBlock(juce::AudioBuffer<float> &buffer);
+    //void processBlock(juce::AudioBuffer<float> &buffer);
 
     //member functions=========================
     using mat = juce::dsp::Matrix<float>;
-    void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> p1, juce::HeapBlock<float> p2, juce::HeapBlock<float> p3, juce::HeapBlock<float> p4);
+    void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float>& p1, juce::HeapBlock<float>& p2, juce::HeapBlock<float>& p3, juce::HeapBlock<float>& p4);
     void feedToSteadyStateModel(juce::AudioBuffer<float>& buffer);
  
-    void keepPreviousStateForNextInitSystemI();
-    void keepPreviousStateForNextInitSystemII();
+    static void recordPreviousStateForNextSystem(juce::HeapBlock<float> &p1, juce::HeapBlock<float> &p2, juce::HeapBlock<float> &p3, juce::HeapBlock<float> &p4, juce::AudioBuffer<float>& outputBuffer);
 
 
 
@@ -62,7 +61,7 @@ private:
     juce::AudioBuffer<float> initialStateBufferForSystemI; //previous 4 samples
     juce::AudioBuffer<float> initialStateBufferForSystemII; //previous 4 samples
     juce::dsp::ProcessSpec spec; //sample rate etc.
-    std::vector<float> vuLevelsVector;
+    std::vector<float> needlePointsValueVector;
 
     static constexpr float minimalReturnLevelDecibels = DspLine::Constants::kMinimalReturnValue; // virtual -INF
 

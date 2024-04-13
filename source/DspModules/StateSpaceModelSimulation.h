@@ -60,18 +60,19 @@ public:
     void setMatrices(mat ssmA, mat ssmB, mat ssmC, mat ssmD, int sysDim);
 
     //stateSpaceModel for mono channel
-    void runSimulation(juce::AudioBuffer<float>& buffer);
+    void runSimulation(int channel);
 
 
     std::vector<mat> getSimulatedOutputMatrix();
 
-    //preprocessing
+    //matrix to buffer
+    juce::AudioBuffer<float> getSimulatedOutputBuffer();
+
+
     //audioBuffer to n channel vector 
-    std::vector<std::vector<float>> convertBufferToVector(juce::AudioBuffer<float>& buffer);
+    //std::vector<std::vector<float>> convertBufferToVector(juce::AudioBuffer<float>& buffer);
 
     //float arr[] for juce::dsp::Matrix constructor input argument.
-    mat convertArrayTo2dMatrix(float arr[], int row, int col); //for everything else
-
 
 
 

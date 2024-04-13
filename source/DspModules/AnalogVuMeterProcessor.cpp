@@ -94,13 +94,13 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
     //matrices for system II(current to galvanometer)
 
 
-    ssms_v2i.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, bufferForMeasurement, outputBufferSystemI, sysDim);
-    ssms_i2a.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, bufferForMeasurement, outputBufferSystemII, sysDim);
+    ssms_v2i.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, sysDim);
+    ssms_i2a.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, sysDim);
 }
 
 
 //virtually the main function ====================================================
-void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> p1, juce::HeapBlock<float> p2, juce::HeapBlock<float> p3, juce::HeapBlock<float> p4 )
+void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float>& p1, juce::HeapBlock<float>& p2, juce::HeapBlock<float>& p3, juce::HeapBlock<float>& p4 )
 {
     auto numChannels = initialStateBuffer.getNumChannels();
     for(int channel = 0;channel<numChannels;++channel)
@@ -126,73 +126,53 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
     const int numberOfSamples = buffer.getNumSamples();
     const double sr = spec.sampleRate;
 
-    //*********************************************************  System I Voltage To Current
-    createInitialStateBuffer(initialStateBufferForSystemI, z1, z2, z3, z4);
-    ssms_v2i.setInitStateBuffer(initialStateBufferForSystemI, sysDim);
-    ssms_v2i.setInputSequence(buffer);
 
+    createInitialStateBuffer(initialStateBufferForSystemI, z1, z2, z3, z4);
+    ssms_v2i.set_x0(initialStateBufferForSystemI);
+    createInitialStateBuffer(initialStateBufferForSystemII, w1,w2,w3,w4);
+    ssms_i2a.set_x0(initialStateBufferForSystemII);
+
+    //  System I Voltage To Current
+    ssms_v2i.set_x(buffer);
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {
         //channel-wise simulation will be stored in the class
         ssms_v2i.runSimulation(ch);
     }
 
-    //save prev 4 values for all channels
-    auto outputPostSystemI = ssms_v2i.getSimulatedOutputMatrix();
-
-    keepPreviousStateForNextInitSystemI();
-
-    DBG("System I ends here");
-
-    //*********************************************************  System II Current to Needlepoint Angle
-    outputPostSystemI = ssms_v2i.getSimulatedOutputMatrix();
-
-    //prep x and x0
-    ssms_i2a.setInitStateVector(bufferForInitialStateSystemII, sysDim);
-    ssms_i2a.setInputSequence(outputPostSystemI);
-
+    outputBufferSystemI = ssms_v2i.getSimulatedOutputBuffer();
+    recordPreviousStateForNextSystem(z1, z2, z3, z4, outputBufferSystemI);
+    DBG("System 1 ends here");
+    //  System II Current to Angular Desplacement
+    ssms_i2a.set_x(outputBufferSystemI);
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {
         //channel-wise simulation will be stored in the class
         ssms_i2a.runSimulation(ch);
     }
 
-    outputPostSystemII = ssms_i2a.getSimulatedOutputMatrix();
-    keepPreviousStateForNextInitSystemII(); //for next block; : prepareToPlay will be skipped next time.
-    DBG("System II ends here");
+    outputBufferSystemII = ssms_v2i.getSimulatedOutputBuffer();
+    recordPreviousStateForNextSystem(w1, w2, w3, w4, outputBufferSystemII);
+
+    DBG("System 2 ends here");
+    //
 
 }
 
 
 
-void AnalogVuMeterProcessor::keepPreviousStateForNextInitSystemI()
+void AnalogVuMeterProcessor::recordPreviousStateForNextSystem(juce::HeapBlock<float> &p1, juce::HeapBlock<float> &p2, juce::HeapBlock<float> &p3, juce::HeapBlock<float> &p4, juce::AudioBuffer<float>& outputBuffer)
 {
-    auto numChannels = bufferForInitialStateSystemI.getNumChannels();
-    auto numSamples = bufferForInitialStateSystemI.getNumSamples();
+    auto numChannels = outputBuffer.getNumChannels();
+    auto numSamples = outputBuffer.getNumSamples();
 
     for (int ch = 0; ch < numChannels; ++ch)
     {
-        float* init = bufferForInitialStateSystemI.getWritePointer(ch);
-        init[0] = z4[ch];
-        init[1] = z3[ch];
-        init[2] = z2[ch];
-        init[3] = z1[ch];
-    }
-}
-
-
-void AnalogVuMeterProcessor::keepPreviousStateForNextInitSystemII()
-{
-    auto numChannels = bufferForInitialStateSystemII.getNumChannels();
-    auto numSamples = bufferForInitialStateSystemII.getNumSamples();
-
-    for (int ch = 0; ch < numChannels; ++ch)
-    {
-        float* init = bufferForInitialStateSystemII.getWritePointer(ch);
-        init[0] = w4[ch];
-        init[1] = w3[ch];
-        init[2] = w2[ch];
-        init[3] = w1[ch];
+        float* init = outputBuffer.getWritePointer(ch);
+        init[numSamples - 4] = p4[ch];
+        init[numSamples - 3] = p3[ch];
+        init[numSamples - 2] = p2[ch];
+        init[numSamples - 1] = p1[ch];
     }
 }
 
@@ -200,14 +180,15 @@ void AnalogVuMeterProcessor::keepPreviousStateForNextInitSystemII()
 //==============================================================================
 
 
-
-void AnalogVuMeterProcessor::processBlock(juce::AudioBuffer<float>& buffer)
-{
-
-    //feedToSteadyStateEquation(buffer, sysDim);
-    DBG("Single processBlock finished...");
-}
-
+//
+//void AnalogVuMeterProcessor::processBlock(juce::AudioBuffer<float>& buffer)
+//{
+//
+//    //feedToSteadyStateEquation(buffer, sysDim);
+//
+//    DBG("Single processBlock finished...");
+//}
+//
 
 
 
