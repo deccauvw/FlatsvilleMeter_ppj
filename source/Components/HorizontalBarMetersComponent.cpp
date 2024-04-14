@@ -97,8 +97,8 @@ namespace LevelMeter
     void HorizontalBarMetersComponent::setInputLevel (int channel, float value)
     {
         if (auto* meterChannel = getMeterChannel((channel)))
-            if (meterChannel)
-                meterChannel->setInputLevel(value);
+
+        meterChannel->setInputLevel(value);
     }
     // ==========================================================
     void HorizontalBarMetersComponent::setNumChannels (int numChannels, const std::vector<juce::String>& channelNames /* = {};*/)

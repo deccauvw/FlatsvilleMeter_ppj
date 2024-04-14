@@ -50,11 +50,14 @@ public:
     void setPeakLevel(int channelIndex, float peakLevel);
     float getPeakLevel(int channelIndex);
 
+    void setVuLevel(int channelIndex, float vuLevel);
+    float getVuLevel(int channelIndex);
+
 private:
     juce::dsp::ProcessSpec specs;
     int maximumEstimatedSamplesPerBlock;
     juce::AudioChannelSet m_outputFormat;
-    std::array<std::atomic<float>, 128> m_peakLevels;
+    std::array<std::atomic<float>, 128> m_peakLevels; //each index is channel number : 128 max channel
     std::array<std::atomic<float>, 128> m_vuLevels;
 
     AnalogVuMeterProcessor vuMeterProcessor;

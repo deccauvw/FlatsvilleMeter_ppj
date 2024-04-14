@@ -12,7 +12,7 @@
 
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
-#include "DspModules/DspModulesHelper.h"
+#include "../DspModules/DspModulesHelper.h"
 
 //==============================================================================
 /*
@@ -27,7 +27,7 @@
     timeSamples = inputSequence.cols ~ number of time samples
     initstate : `x0' (dim, 1)
     stateSequenceSimulated : simulated state sequence `x` (dim, samples)
-    outp.SequenceSimulated : simulated outpt sequence `y` (samples)
+    outp.SequenceSimulated : simulated output sequence `y` (samples)
 
 */
 
@@ -47,6 +47,7 @@ public:
     void setNumChannels(size_t channels) noexcept;
 
     //void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> z1, juce::HeapBlock<float> z2, juce::HeapBlock<float> z3, juce::HeapBlock<float> z4 );
+
 
     //sets x0 with buffer
     void setInitStateBuffer(juce::AudioBuffer<float> &initialBuffer, size_t systemSize);
@@ -78,7 +79,7 @@ public:
 
     //==============================================================================
 private:
-    size_t numChannels;
+    size_t stateSpaceModelChannels;
     size_t sysDim;
     size_t m, n, r, timeSamples;
     mat A, B, C, D;

@@ -1,10 +1,8 @@
 //
-// Created by Orstphone on 2024-03-31.
+// Created by orstphone on 2024-03-31.
 //presumes the plugin is STEREO only
 //
 
-//#ifndef SOURCE_IML_HORIZONTALBARMETERHELPERS_H
-//#define SOURCE_IML_HORIZONTALBARMETERHELPERS_H
 #pragma once
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
@@ -36,9 +34,9 @@ namespace LevelMeter {
 		static constexpr auto kHeaderMetricTypeFontHeight = 19.0f;
 
 		//label strip is the "20 10 5 3 2 1 0 3" thing showing where the meter is indicating
-		static constexpr auto kLabelstripPositionX = 114;
-		static constexpr auto kLabelstripPositionY = 105;
-		static constexpr auto kLabelstripFontHeight = 21.0f;
+		static constexpr auto kLabelStripPositionX = 114;
+		static constexpr auto kLabelStripPositionY = 105;
+		static constexpr auto kLabelStripFontHeight = 21.0f;
 
 		//text jargon position
 			//horizontal small display
@@ -106,15 +104,15 @@ namespace LevelMeter {
 //  ==============================================================================================
 //@brief EVERY available meter options for aesthetics and functionality.
 	struct Options{
-		bool enabled = true;  //enable the meber
+		bool enabled = true;  //enable the meter
 		bool headerEnabled = true;  //enable the header
 		bool valueEnabled = true;  //enable the value
 		float decayTimeMs = Constants::kLevelDefaultDecayMs;
 		float refreshRateHz = 24.0f; //meter refresh rate when using internal timing;
-		bool tickMarksEnabled = true; //show tickmarks := divider lines on meter at certain dB level point.
-		bool tickMarksOnTopOfTheBar = true; //show the tickmarks above the level meter.
+		bool tickMarksEnabled = true; //show tickMarks := divider lines on meter at certain dB level point.
+		bool tickMarksOnTopOfTheBar = true; //show the tickMarks above the level meter.
 		bool useGradient = true; //use gradients for meter segments. if False use Solid Colours.
-		bool showPeakHoldIndicator = true; //enable peakhold indicator.
+		bool showPeakHoldIndicator = true; //enable peakHold indicator.
 		std::vector<float> tickMarksInDecibels = {3.0f, 2.0f, 1.0f, 0.0f, -1.0f, -2.0f, -3.0f, -5.0f, -7.0f, -10.0f, -20.0f}; //VU LU RMS Scale all in dB
 	};
 //  ==============================================================================================
@@ -125,7 +123,7 @@ namespace LevelMeter {
 		juce::Colour colourLabelStripOverZero = juce::Colours::orangered; //+1 2 3dB
 		juce::Colour colourText = juce::Colours::aliceblue; //indigo screen with aqua color
 		juce::Colour colourTickMark = juce::Colours::white; //colour of tickMarks
-		juce::Colour colourPeakHold = juce::Colours::orange; //colour of the peakhold indicator.
+		juce::Colour colourPeakHold = juce::Colours::orange; //colour of the peakHold indicator.
 	};
 //  ==============================================================================================
 //@brief A class with static functions to create different types of meter scales.
@@ -163,5 +161,3 @@ namespace LevelMeter {
 	}
 
 } // LevelMeter
-
-//#endif //SOURCE_IML_HORIZONTALBARMETERHELPERS_H

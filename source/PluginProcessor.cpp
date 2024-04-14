@@ -12,6 +12,7 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        )
+,maximumEstimatedSamplesPerBlock(1024) //arbitrary number to prevent div 0 error
 {
 }
 
@@ -92,12 +93,12 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     this->specs.maximumBlockSize = samplesPerBlock;
     this->specs.numChannels = 2; //presume stereo
 
-    auto numOutputChannels = getTotalNumOutputChannels();
+    //auto numOutputChannels = getTotalNumOutputChannels();
     auto* editor = dynamic_cast<PluginEditor*>(getActiveEditor());
     if(editor)
         editor->setChannelFormat(m_outputFormat);
 
-    //vumeter init
+    //vu meter init
     vuMeterProcessor.reset();
 
 }
@@ -195,6 +196,7 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
     // whose contents will have been created by the getStateInformation() call.
     juce::ignoreUnused (data, sizeInBytes);
 }
+//==============================================================================
 void PluginProcessor::setPeakLevel (int channelIndex, float peakLevel)
 {
     if(!juce::isPositiveAndBelow(channelIndex, m_peakLevels.size()))
@@ -207,6 +209,20 @@ float PluginProcessor::getPeakLevel (int channelIndex)
     if(!juce::isPositiveAndBelow(channelIndex, m_peakLevels.size()))
         return 0.0f;
     return m_peakLevels[channelIndex].exchange(0.0f);
+}
+// ==
+void PluginProcessor::setVuLevel (int channelIndex, float vuLevel)
+{
+    if(!juce::isPositiveAndBelow(channelIndex, m_vuLevels.size()))
+        return;
+    m_vuLevels[channelIndex].store(vuLevel);
+}
+
+float PluginProcessor::getVuLevel (int channelIndex)
+{
+    if(!juce::isPositiveAndBelow(channelIndex, m_vuLevels.size()))
+        return 0.0f;
+    return m_vuLevels[channelIndex].exchange(0.0f);
 }
 
 //==============================================================================

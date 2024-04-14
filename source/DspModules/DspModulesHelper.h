@@ -1,9 +1,9 @@
 //
-// Created by prmir on 2024-04-07.
+// Created by orstphone@github on 2024-04-07.
 //
 
 #pragma once
-#include "juce_audio_processors/juce_audio_processors.h"  //juceheader
+#include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
 
@@ -11,7 +11,8 @@
 namespace DspLine
 {
     //@brief constant Matrix contents.
-    namespace Constants{
+    namespace Constants
+    {
         //System Dimension (Order 4) =====================================================================
         static constexpr auto kSystemOrder = 4;
         static constexpr auto kMinimalReturnValue = -20.0f;
@@ -97,9 +98,7 @@ namespace DspLine
             0
         };
 
-
-    }; //struct Constant
-    //Matrix constructing ==============================
+    } //struct Constant
 
 //Matrix initializing=============================================================================
     //using namespace Constants;

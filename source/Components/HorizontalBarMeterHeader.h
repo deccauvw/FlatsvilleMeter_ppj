@@ -69,7 +69,7 @@ namespace LevelMeter {
 
 		//@brief get the information txt. displayed in the "header"
 			//this can be either the channel name (when set  by the user)
-			//or the channel type description(LRMS), or the metric type (LU, VU etc)
+			//or the channel type description(LRMS), or the metric type (LU, VU etc.)
 			//returns the info text displayed in the header
 			//see getChannelName, getChannelType, getMetricType
 	//	[[nodiscard]] juce::String getChannelInfo() const noexcept;

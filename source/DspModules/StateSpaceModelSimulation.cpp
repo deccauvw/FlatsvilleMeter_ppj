@@ -12,7 +12,7 @@
 
 using mat = juce::dsp::Matrix<float>;
 
-StateSpaceModelSimulation::StateSpaceModelSimulation() : numChannels (0),
+StateSpaceModelSimulation::StateSpaceModelSimulation() : stateSpaceModelChannels (0),
                                                          sysDim(DspLine::Constants::kSystemOrder),
                                                          m (0),
                                                          n (0),
@@ -59,6 +59,8 @@ void StateSpaceModelSimulation::setInitStateBuffer (juce::AudioBuffer<float>& in
 }
 //  ===================================================
 
+
+
 void StateSpaceModelSimulation::setSystemSize (size_t systemSize) noexcept
 {
     this->sysDim = systemSize;
@@ -66,7 +68,7 @@ void StateSpaceModelSimulation::setSystemSize (size_t systemSize) noexcept
 
 void StateSpaceModelSimulation::setNumChannels (size_t channels) noexcept
 {
-    this->numChannels = channels;
+    this->stateSpaceModelChannels = channels;
 }
 
 void StateSpaceModelSimulation::setMatrices (mat ssmA, mat ssmB, mat ssmC, mat ssmD, int systemSize)
@@ -83,7 +85,7 @@ void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& initialStateBu
 {
     jassert (initialStateBuffer.getNumSamples() == sysDim);
     std::vector<mat> x0_multi;
-    for (int channel = 0; channel < numChannels; ++channel)
+    for (int channel = 0; channel < stateSpaceModelChannels; ++channel)
     {
         mat x0_mono (sysDim, 1);
         const float* in = initialStateBuffer.getReadPointer (channel);
@@ -101,11 +103,11 @@ void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& initialStateBu
 void StateSpaceModelSimulation::set_x (juce::AudioBuffer<float>& buffer)
 {
     auto numSamples = buffer.getNumSamples();
-    jassert (buffer.getNumChannels() == numChannels);
+    jassert (buffer.getNumChannels() == stateSpaceModelChannels);
 
     std::vector<mat> x_multi;
 
-    for (int channel = 0; channel < numChannels; ++channel)
+    for (int channel = 0; channel < stateSpaceModelChannels; ++channel)
     {
         const float* in = buffer.getReadPointer (channel);
         mat u_inputTrain (1, numSamples);
@@ -174,5 +176,6 @@ juce::AudioBuffer<float> StateSpaceModelSimulation::getSimulatedOutputBuffer()
     }
     return bufferOut;
 }
+
 
 

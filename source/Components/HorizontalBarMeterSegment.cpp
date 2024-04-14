@@ -1,5 +1,5 @@
 //
-// Created by prmir on 2024-04-01.
+// Created by orstphone@github on 2024-04-01.
 //
 #pragma once
 #include "HorizontalBarMeterSegment.h"
@@ -57,7 +57,7 @@ namespace LevelMeter {
 	void HorizontalBarMeterSegment::setMeterOptions(const LevelMeter::Options &meterOptions) {
 		meterSegment_meterOptions = meterOptions;
 
-		//find all tickmarks in this segment range
+		//find all tick marks in this segment range
 		meterSegment_tickMarks.clear();
 		for(const auto& tick: meterOptions.tickMarksInDecibels){
 			if(Helpers::containsUpTo(meterSegment_segmentOptions.levelRange, tick))

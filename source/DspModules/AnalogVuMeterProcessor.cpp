@@ -4,15 +4,13 @@
     AnalogVuMeterProcessor.cpp
     Created: 19 Mar 2024 4:06:42pm
     Author:  orstphone@github.com
-    statespace models simulation code ref :
+    state space models simulation code ref :
     https://github.com/AleksandarHaber/Simulation-of-State-Space-Models-of-Dynamical-Systems-in-Cpp--Eigen-Matrix-Library-Tutorial/blob/master/SimulateSystem.cpp
   ==============================================================================
 */
 #pragma once
 
 #include "AnalogVuMeterProcessor.h"
-//#include "StateSpaceModelSimulation.h"
-#include <cmath>
 
 using mat = juce::dsp::Matrix<float>;
 
@@ -21,14 +19,14 @@ AnalogVuMeterProcessor::AnalogVuMeterProcessor()
 {
     // If this class is used without caution and processBlock
     // is called before prepareToPlay, divisions by zero
-    // might occure. E.g. if numberOfSamplesInAllBins = 0.
+    // might occur. E.g. if numberOfSamplesInAllBins = 0.
     // To prevent this, prepareToPlay is called here with
     // some arbitrary arguments.
     systemMatrices.setMatrices();
-    spec.numChannels = 2;
-    spec.maximumBlockSize = 1024;
-    spec.sampleRate = 48000;
-    prepareToPlay(spec.sampleRate, spec.numChannels,spec.maximumBlockSize);
+    spec.numChannels = (juce::uint32)2;
+    spec.maximumBlockSize = (juce::uint32)1024;
+    spec.sampleRate = (juce::uint32)48000;
+    prepareToPlay(48000, 2,1024); //arbitrary input
 }
 
 AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
@@ -106,10 +104,10 @@ void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& 
     for(int channel = 0;channel<numChannels;++channel)
     {
         float* in = initialStateBuffer.getWritePointer(channel);
-        in[0] = z4[channel];
-        in[1] = z3[channel];
-        in[2] = z2[channel];
-        in[3] = z1[channel];
+        in[0] = p4[channel];
+        in[1] = p3[channel];
+        in[2] = p2[channel];
+        in[3] = p1[channel];
     }
 }
 
@@ -123,8 +121,8 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
     //initialize everything
     //sysDim = systemSize (=4)
     const int numberOfChannels = buffer.getNumChannels();
-    const int numberOfSamples = buffer.getNumSamples();
-    const double sr = spec.sampleRate;
+    //const int numberOfSamples = buffer.getNumSamples();
+    //const double sr = spec.sampleRate;
 
 
     createInitialStateBuffer(initialStateBufferForSystemI, z1, z2, z3, z4);
@@ -143,7 +141,7 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
     outputBufferSystemI = ssms_v2i.getSimulatedOutputBuffer();
     recordPreviousStateForNextSystem(z1, z2, z3, z4, outputBufferSystemI);
     DBG("System 1 ends here");
-    //  System II Current to Angular Desplacement
+    //  System II Current to Angular Displacement
     ssms_i2a.set_x(outputBufferSystemI);
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {

@@ -70,8 +70,10 @@ void PluginEditor::hiResTimerCallback()
 {
     for(int meterIndex = 0; meterIndex < m_inputMeters.getNumChannels(); ++meterIndex)
     {
-        //get the level, of the specified meter[ch] from the audioprocessor.
-        m_inputMeters.setInputLevel(meterIndex, m_audioProcessor.getPeakLevel(meterIndex)); //set to "Peak"
+        //get the level, of the specified meter[ch] from the audio processor.
+        auto audioLevelPeak = m_audioProcessor.getPeakLevel (meterIndex);
+        //auto audioLevelVu = m_audioProcessor.getVuLevel (meterIndex);
+        m_inputMeters.setInputLevel (meterIndex, audioLevelPeak);
+        m_inputMeters.refresh();
     }
-    m_inputMeters.refresh();
 }

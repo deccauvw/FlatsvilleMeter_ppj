@@ -1,5 +1,5 @@
 //
-// Created by prmir on 2024-04-01.
+// Created by orstphone@github on 2024-04-01.
 //
 #pragma once
 #include <juce_core/juce_core.h>
@@ -66,4 +66,3 @@ namespace LevelMeter {
 	};
 } // LevelMeter
 
-//#endif //SOURCE_IML_HORIZONTALBARMETERSEGMENT_H
