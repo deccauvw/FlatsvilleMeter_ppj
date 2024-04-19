@@ -11,12 +11,12 @@
 #include <juce_graphics/juce_graphics.h>
 
 //meter "needle point" line
-#include "Components/HorizontalBarMeterHelpers.h"
-#include "Components/HorizontalBarMeterChannel.h"
-#include "Components/HorizontalBarMeterLevel.h"
-#include "Components/HorizontalBarMeterHeader.h"
-#include "Components/HorizontalBarMeterSegment.h"
-#include "Components/HorizontalBarMetersComponent.h"
+//#include "Components/HorizontalBarMeterHelpers.h"
+//#include "Components/HorizontalBarMeterChannel.h"
+//#include "Components/HorizontalBarMeterLevel.h"
+//#include "Components/HorizontalBarMeterHeader.h"
+//#include "Components/HorizontalBarMeterSegment.h"
+//#include "Components/HorizontalBarMetersComponent.h"
 
 //dsp line
 //#include "DspModules/DspModulesHelper.h"
