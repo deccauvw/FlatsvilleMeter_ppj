@@ -3,16 +3,8 @@
 
 #include "PluginProcessor.h"
 #include "juce_audio_processors/juce_audio_processors.h"
-//#include "juce_gui_basics/components/juce_Component.h"
 
 #include "LevelMeter.h"
-//#include "DspModules/AnalogVuMeterProcessor.h"
-
-
-//#include "Components/HorizontalBarMetersComponent.h"
-//#include "BinaryData.h"
-//#include "melatonin_inspector/melatonin_inspector.h"
-//#include "Components/HorizontalBarMeter.h"
 //==============================================================================
 class PluginEditor :
     public juce::AudioProcessorEditor, //has component class included

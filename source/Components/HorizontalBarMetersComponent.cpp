@@ -1,5 +1,5 @@
 //
-// Created by prmir on 2024-04-05.
+// Created by  on 2024-04-05.
 //
 #pragma once
 
@@ -64,9 +64,11 @@ namespace LevelMeter
     // ==========================================================
     void HorizontalBarMetersComponent::clearMeters()
     {
-        for(auto* meter : meters_meterChannels)
+        for (auto* meter : meters_meterChannels)
+        {
             if (meter)
-                meter->setInputLevel(0.0f);
+                meter->setInputLevel (0.0f);
+        }
         refresh(true);
     }
     // ==========================================================
@@ -80,7 +82,7 @@ namespace LevelMeter
             //meterChannel->addMouseListener(this, true);
             addChildComponent (meterChannel.get());
             meters_meterChannels.add (meterChannel.release());
-            //meters_labelStrip.setactive (true);
+
         }
 
         setChannelNames(channelNames);
@@ -117,7 +119,7 @@ namespace LevelMeter
         //make sure the number of meters matches the num. of channels
         if(channels.size() != meters_meterChannels.size())
         {
-            deleteMeters(); //ifnot then del. all prev. meters
+            deleteMeters(); //if not then del. all prev. meters
             createMeters(channels, channelNames); // and create new ones. matching the req. channel format
         }
     }
@@ -156,7 +158,7 @@ namespace LevelMeter
                     meter->setReferredTypeWidth(defaultMeterWidth);
         }
         //calc. default mixer width
-        //this is the width @ wich all channel names can be displayed
+        //this is the width @ which all channel names can be displayed
         meters_autoSizedPanelWidth = static_cast<int> (defaultMeterWidth * static_cast<float>(numMeters));//min. width need for ch. names
 //        m_autoSizedPanelWidth += numMeters * (2 * Constants::kFaderRightPadding);  // Add the padding that is on the right side of the channels.
 //        m_autoSizedPanelWidth += Constants::kDefaultHeaderLabelWidth + Constants::kLabelStripLeftPadding;  // Add master fader width (incl. padding).
@@ -205,7 +207,7 @@ namespace LevelMeter
                 meter->setDecay(decay_ms);
     }
     // ==========================================================
-    void HorizontalBarMetersComponent::userGradients (bool useGradients)
+    void HorizontalBarMetersComponent::useGradients (bool useGradients)
     {
         for (auto* meter: meters_meterChannels)
             if(meter)

@@ -71,7 +71,7 @@ namespace LevelMeter {
 			return;
 		}
 			const auto levelRatio = std::clamp((meterSegment_currentLevelDecibels - meterSegment_segmentOptions.levelRange.getStart()) / meterSegment_segmentOptions.levelRange.getLength(), 0.0f, 1.0f);
-			const auto levelBounds = meterSegment_segmentBounds.withTop(meterSegment_segmentBounds.getY() + meterSegment_meterBounds.proportionOfHeight(1.0f - levelRatio));
+			const auto levelBounds = meterSegment_segmentBounds.withTop(meterSegment_segmentBounds.getY() + static_cast<float>(meterSegment_meterBounds.proportionOfHeight(1.0f - levelRatio)));
 
 			if(meterSegment_drawnBounds == levelBounds)
 				return;

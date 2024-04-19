@@ -27,12 +27,12 @@ namespace LevelMeter
         HorizontalBarMetersComponent();
 
         //@brief constr. with meter options
-        //@param meteroptions the options to use with the meters and the label strip
+        //@param meter options the options to use with the meters and the label strip
         explicit HorizontalBarMetersComponent (const Options& meterOptions);
 
         //@brief constr. which accepts a channel format.
         //this constr. will auto set up the panel with the right amount of meters, named according to the channel format.
-        //channelformat := the channel format to use to init. the panel
+        //channel format := the channel format to use to init. the panel
         explicit HorizontalBarMetersComponent (const juce::AudioChannelSet& channelFormat);
 
         HorizontalBarMetersComponent (const Options& meterOptions, const juce::AudioChannelSet& channelFormat);
@@ -43,7 +43,7 @@ namespace LevelMeter
         void hiResTimerCallback() override;
 
         // ==========================================================
-        //redraw the meteres panel
+        //redraw the meters panel
         //can be manually or internally
 
 
@@ -52,7 +52,7 @@ namespace LevelMeter
         void reset();
 
         //reset all meters
-        //reset all meterse to zero but not the peak hold
+        //reset all meters to zero but not the peak hold
         void resetMeters();
 
         //clear the level of the meters
@@ -81,7 +81,7 @@ namespace LevelMeter
 
         void setDecay (float decay_ms);
 
-        void userGradients (bool useGradients);
+        void useGradients (bool useGradients);
 
         void setLabelStripPosition (LabelStripPosition labelStripPosition);
 

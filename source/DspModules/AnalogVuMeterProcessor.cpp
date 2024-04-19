@@ -92,8 +92,8 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
     //matrices for system II(current to galvanometer)
 
 
-    ssms_v2i.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, sysDim);
-    ssms_i2a.setMatrices(ssm_v2i_A, ssm_v2i_B, ssm_v2i_C, ssm_v2i_D, sysDim);
+    ssms_v2i.setMatrices(DspLine::SystemMatrices::ssm_v2i_A, DspLine::SystemMatrices::ssm_v2i_B, DspLine::SystemMatrices::ssm_v2i_C, DspLine::SystemMatrices::ssm_v2i_D, sysDim);
+    ssms_i2a.setMatrices(DspLine::SystemMatrices::ssm_v2i_A, DspLine::SystemMatrices::ssm_v2i_B, DspLine::SystemMatrices::ssm_v2i_C, DspLine::SystemMatrices::ssm_v2i_D, sysDim);
 }
 
 
@@ -183,7 +183,7 @@ std::vector<float> AnalogVuMeterProcessor::getNeedlePointsValuesVector()
 
 void AnalogVuMeterProcessor::reset()
 {
-    auto numChannels = spec.numChannels;
+    int numChannels = spec.numChannels;
 
     for (int ch = 0; ch < numChannels; ++ch)
     {

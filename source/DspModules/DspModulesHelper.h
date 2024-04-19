@@ -18,84 +18,84 @@ namespace DspLine
         static constexpr auto kMinimalReturnValue = -20.0f;
         //Matrix element data for System Voltage to Current (System I) ==================================
         float v2i_A[kSystemOrder * kSystemOrder] = {
-            -10.0,
-            0.0,
-            0.0,
-            -10.0,
+            -10.0f,
+            0.0f,
+            0.0f,
+            -10.0f,
 
-            -9.671e+6,
-            -45.45,
-            -9.671e+6,
-            9.671,
+            -9.671e+6f,
+            -45.45f,
+            -9.671e+6f,
+            9.671f,
 
-            -21.28,
-            0.0,
-            -21.28,
-            -2.128e-5,
+            -21.28f,
+            0.0f,
+            -21.28f,
+            -2.128e-5f,
 
-            -0.01,
-            0.0,
-            1.0,
-            -0.21
+            -0.01f,
+            0.0f,
+            1.0f,
+            -0.21f
         };
 
         float v2i_B[kSystemOrder] = {
-            10.0,
-            9.671e+6,
-            21.28,
-            0.01
+            10.0f,
+            9.671e+6f,
+            21.28f,
+            0.01f
         };
 
         float v2i_C[kSystemOrder] = {
-            8.674e-19,
-            -8.674e-19,
-            8.078e-28,
-            -1.654e-24
+            8.674e-19f,
+            -8.674e-19f,
+            8.078e-28f,
+            -1.654e-24f
         };
 
         float v2i_D[kSystemOrder] = {
-            -8.674e-19
+            -8.674e-19f
         };
 
         //state space equation matrices for CUR -> ANGLE : system II=====================================
         float i2a_A[kSystemOrder * kSystemOrder] = {
-            -19.84,
-            8.746,
-            -39.940,
-            -1232.0,
+            -19.84f,
+            8.746f,
+            -39.940f,
+            -1232.0f,
 
-            169.6,
-            -100.0,
-            456.7,
-            14080.0,
+            169.6f,
+            -100.0f,
+            456.7f,
+            14080.0f,
 
-            26.18,
-            0.0,
-            -24.41,
-            -150.6,
+            26.18f,
+            0.0f,
+            -24.41f,
+            -150.6f,
 
-            0.0,
-            0.0,
-            1.0,
-            0.0
+            0.0f,
+            0.0f,
+            1.0f,
+            0.0f
         };
 
         float i2a_B[kSystemOrder] = {
-            0.2572,
-            0,
-            0,
-            0
+            0.2572f,
+            0.f,
+            0.f,
+            0.f,
         };
 
         float i2a_C[kSystemOrder] = {
-            1.696,
-            0,
-            4.567,
-            140.8
+            1.696f,
+            0.0f,
+            4.567f,
+            140.8f
         };
 
         float i2a_D[kSystemOrder] = {
-            0
+            0.0f
         };
 
     } //struct Constant
