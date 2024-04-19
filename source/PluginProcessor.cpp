@@ -50,27 +50,15 @@ bool PluginProcessor::isMidiEffect() const
     return false;
    #endif
 }
+//==============================================================================
 
-double PluginProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
+double PluginProcessor::getTailLengthSeconds() const {return 0.0;}
 
-int PluginProcessor::getNumPrograms()
-{
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
-}
+int PluginProcessor::getNumPrograms(){return 1;}
 
-int PluginProcessor::getCurrentProgram()
-{
-    return 0;
-}
+int PluginProcessor::getCurrentProgram(){return 0;}
 
-void PluginProcessor::setCurrentProgram (int index)
-{
-    juce::ignoreUnused (index);
-}
+void PluginProcessor::setCurrentProgram (int index){    juce::ignoreUnused (index);}
 
 const juce::String PluginProcessor::getProgramName (int index)
 {
@@ -83,31 +71,8 @@ void PluginProcessor::changeProgramName (int index, const juce::String& newName)
     juce::ignoreUnused (index, newName);
 }
 
-//==============================================================================
-void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need...
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
-    this->specs.sampleRate = sampleRate;
-    this->specs.maximumBlockSize = samplesPerBlock;
-    this->specs.numChannels = 2; //presume stereo
 
-    //auto numOutputChannels = getTotalNumOutputChannels();
-    auto* editor = dynamic_cast<PluginEditor*>(getActiveEditor());
-    if(editor)
-        editor->setChannelFormat(m_outputFormat);
-
-    //vu meter init
-    vuMeterProcessor.reset();
-
-}
-
-void PluginProcessor::releaseResources()
-{
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
-}
+void PluginProcessor::releaseResources(){}
 
 bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
@@ -131,11 +96,19 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
   #endif
 }
 
+//==============================================================================================================================================================
+void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+{
+    //juce::ignoreUnused (sampleRate, samplesPerBlock);
+    this->specs.sampleRate = sampleRate;
+    this->specs.maximumBlockSize = samplesPerBlock;
+    this->specs.numChannels = 2; //presume stereo
+}
+
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
                                               juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused (midiMessages);
-
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -150,24 +123,40 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-
     //>>>
-    //Acquire Peak value
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {        // do something to the data
-        setPeakLevel(channel, buffer.getMagnitude(channel, 0, buffer.getNumSamples()));
-    }
+    if(!(getBus(false, 0)->isEnabled() && getBus(true,0)->isEnabled())) return;
+    auto mainOutput = getBusBuffer(buffer, false, 0); //if we have audio busses at all,
+    auto mainInput = getBusBuffer(buffer, true, 0);// they're now main output and input.
 
-    //Acquire VU value
-    vuMeterProcessor.feedToSteadyStateModel(buffer);
-    //setVuLevel( ... )
-    buffer.clear();
+    UiToAudioMessage uim;
+    while(uiToAudio.pop(uim))
+    {
+        switch(uim.what)
+        {
+            case UiToAudioMessage::NEW_VALUE: params[uim.which]->setValueNotifyingHost(params[uim.which]->convertTo0to1(uim.newValue)); break;
+            case UiToAudioMessage::BEGIN_EDIT: params[uim.which]->beginChangeGesture(); break;
+            case UiToAudioMessage::END_EDIT: params[uim.which]->endChangeGesture(); break;
+        }
+    }//handle inbound messages from the ui thread
+
+    double rmsSize = (1881.0/44100.0)*getSampleRate(); //higher is slower with larger RMS buffers
+    double zeroCrossScale = (1.0/getSampleRate())*44100.0;
+
+    for(int i = 0;i<buffer.getNumSamples();++i)
+    {
+        auto outL = mainOutput.getWritePointer(0, i);
+        auto outR = mainOutput.getWritePointer(1, i);
+        auto inL = mainInput.getReadPointer(0, i);
+        auto inR = mainInput.getReadPointer(1, i);; //specified we can only be stereo and never mono.
+        float currentslewL = (fabs(*inL-(float)previousLeft)/28000.0f)*(float)getSampleRate();
+        float currentslewR = (fabs(*inR-(float)previousRight)/28000.0f)*(float)getSampleRate();
+        if (currentslewL > slewLeft) slewLeft = currentslewL;
+        if (currentslewR > slewRight) slewRight = currentslewR;
+        previousLeft = *inL;
+        previousRight = *inR;
+        //slew measurement is NOT rectified
+
+    }
 }
 
 //==============================================================================
@@ -196,33 +185,22 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
     // whose contents will have been created by the getStateInformation() call.
     juce::ignoreUnused (data, sizeInBytes);
 }
-//==============================================================================
-void PluginProcessor::setPeakLevel (int channelIndex, float peakLevel)
+void PluginProcessor::parameterGestureChanged (int parameterIndex, bool starting)
 {
-    if(!juce::isPositiveAndBelow(channelIndex, m_peakLevels.size()))
-        return;
-    m_peakLevels[channelIndex].store(std::max(peakLevel, m_peakLevels[channelIndex].load()));
+    juce::ignoreUnused(parameterIndex, starting);
 }
 
-float PluginProcessor::getPeakLevel (int channelIndex)
+void PluginProcessor::processBlock (juce::AudioBuffer<double>&, juce::MidiBuffer&)
 {
-    if(!juce::isPositiveAndBelow(channelIndex, m_peakLevels.size()))
-        return 0.0f;
-    return m_peakLevels[channelIndex].exchange(0.0f);
+    AudioProcessor::processBlock (<unnamed>, <unnamed>);
 }
-// ==
-void PluginProcessor::setVuLevel (int channelIndex, float vuLevel)
+void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
-    if(!juce::isPositiveAndBelow(channelIndex, m_vuLevels.size()))
-        return;
-    m_vuLevels[channelIndex].store(vuLevel);
-}
-
-float PluginProcessor::getVuLevel (int channelIndex)
-{
-    if(!juce::isPositiveAndBelow(channelIndex, m_vuLevels.size()))
-        return 0.0f;
-    return m_vuLevels[channelIndex].exchange(0.0f);
+    AudioToUiMessage msg;
+    msg.what = AudioToUiMessage::NEW_VALUE;
+    msg.which = (PluginProcessor::Parameters)parameterIndex;
+    msg.newValue = params[parameterIndex]->convertFrom0to1(newValue);
+    audioToUi.push(msg);
 }
 
 //==============================================================================
