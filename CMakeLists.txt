@@ -163,7 +163,7 @@ include(Benchmarks)
 # Pass some config to GA (like our PRODUCT_NAME)
 include(GitHubENV)
 
-
+set_target_properties("${PROJECT_NAME}" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/vst3)
 #file too big error issues
 #Check Compiler and Toolchain Versions: Ensure that you're using compatible versions of GCC (GNU Compiler Collection) and other tools. Sometimes, certain versions might have bugs or limitations that cause such issues.
 ##

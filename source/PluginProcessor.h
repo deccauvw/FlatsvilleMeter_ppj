@@ -28,7 +28,7 @@ public:
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
-    void processBlock (juce::AudioBuffer<double>&, juce::MidiBuffer&) override;
+
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -159,8 +159,12 @@ public:
 //
 //    void setVuLevel(int channelIndex, float vuLevel);
 //    float getVuLevel(int channelIndex);
+    float getRmsValue (const int channel) const;
 
 private:
+    juce::AudioBuffer<float> bufferForMeter;
+    float levelRmsLeft = 0.0f;
+    float levelRmsRight = 0.0f;
     juce::dsp::ProcessSpec specs;
     int maximumEstimatedSamplesPerBlock;
     juce::AudioChannelSet m_outputFormat;

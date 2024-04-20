@@ -10,7 +10,9 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_graphics/juce_graphics.h>
 
+
 //meter "needle point" line
+#include "GuiComponents/BarMeterComponent.h"
 //#include "Components/HorizontalBarMeterHelpers.h"
 //#include "Components/HorizontalBarMeterChannel.h"
 //#include "Components/HorizontalBarMeterLevel.h"

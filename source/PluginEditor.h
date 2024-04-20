@@ -8,31 +8,23 @@
 //==============================================================================
 class PluginEditor :
     public juce::AudioProcessorEditor, //has component class included
-    private juce::HighResolutionTimer
+    private juce::Timer
 {
 public:
     explicit PluginEditor (PluginProcessor&);
     ~PluginEditor() override;
 
     //==============================================================================
-    //void paint (juce::Graphics&) override;
+    void paint (juce::Graphics&) override;
     void resized() override;
-
-    void setChannelFormat(const juce::AudioChannelSet& metersFormat)
-    {
-        m_inputMeters.setChannelFormat(metersFormat);
-    }
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PluginProcessor& m_audioProcessor;
-    LevelMeter::HorizontalBarMetersComponent m_inputMeters;
-    //Field type 'LevelMeter::HorizontalBarMetersComponent' is an abstract class
-    juce::ComponentBoundsConstrainer m_sizeConstrainer;
-    //juce::ResizableCornerComponent m_cornerResizer;
 
-    void hiResTimerCallback() override;
+    Gui::BarMeterComponent barMeterComponentChannelL, barMeterComponentChannelR;
+    void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)
 };

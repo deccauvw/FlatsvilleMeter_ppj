@@ -8,72 +8,39 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (1012, 230);
+    setSize (BarMeter::Constants::kGuiSizeWidth, BarMeter::Constants::kGuiSizeHeight);
     juce::ignoreUnused (m_audioProcessor);
-    const int refreshRateHz = 30;
-        //set the meter options
 
-    LevelMeter::Options meterOptions;
-    //meterOptions.faderEnabled = true;
-    meterOptions.headerEnabled = false;
-    meterOptions.valueEnabled = false;
-    meterOptions.refreshRateHz = refreshRateHz;
-    meterOptions.useGradient = true;
-    meterOptions.showPeakHoldIndicator = false;
-    meterOptions.tickMarksEnabled = true;
-    meterOptions.tickMarksOnTopOfTheBar = true;
-    meterOptions.tickMarksInDecibels = {3.0f, 2.0f, 1.0f, 0.0f, -1.0f, -2.0f, -3.0f, -5.0f, -7.0f, -10.0f, -20.0f}; //from Helpers
-    meterOptions.decayTimeMs = 1000.0f;
+    //show everything here (draw everything)
+    addAndMakeVisible(barMeterComponentChannelL);
+    addAndMakeVisible(barMeterComponentChannelR);
 
-    //set the meter's segment options...
-    m_inputMeters.setOptions(meterOptions);
-
-    juce::Colour coloursForMeterRange_at20 = juce::Colours::steelblue; //colour of the bar under zero dB cross line
-    juce::Colour coloursForMeterRange_at0 = juce::Colours::aliceblue; //colour of the bar under zero dB cross line
-    juce::Colour coloursForMeterRange_at3 = juce::Colours::orange; //colour of the bar over zero dB cross line
-    std::vector<LevelMeter::SegmentOptions> segmentOptions =
-                                                            {{{-20.0f, 0.0f}, {0.0f, 0.8696f}, coloursForMeterRange_at20, coloursForMeterRange_at0},
-                                                            {{0.0f, 3.0f}, {0.8696f, 1.0f}, coloursForMeterRange_at0, coloursForMeterRange_at3}};
-
-    //use or don't use the label strip in between two meters
-    m_inputMeters.setLabelStripPosition(LevelMeter::LabelStripPosition::upper);
-    m_inputMeters.setChannelFormat(p.getOutputFormat());
-    addAndMakeVisible(m_inputMeters);
-
-
-    startTimer(static_cast<int>(std::round((1000.0f / refreshRateHz))));
+    startTimer(static_cast<int>(std::round((1000.0f / BarMeter::Constants::kInitialRefreshRateHz))));
 }//constructor
 
 PluginEditor::~PluginEditor() =default;
 
-//void PluginEditor::paint (juce::Graphics& g)
-//{
-//    // (Our component is opaque, so we must completely fill the background with a solid colour)
-//    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-//
-//    auto area = getLocalBounds();
-//    g.setColour (juce::Colours::white);
-//    g.setFont (16.0f);
-//    auto helloWorld = juce::String ("Hello from ") + PRODUCT_NAME_WITHOUT_VERSION + " v" VERSION + " running in " + CMAKE_BUILD_TYPE;
-//    g.drawText (helloWorld, area.removeFromTop (150), juce::Justification::centred, false);
-//}
+void PluginEditor::paint (juce::Graphics& g)
+{
+    g.fillAll(juce::Colours::darkgrey); //opaque filling
+
+}
 
 void PluginEditor::resized()
 {
-//    // layout the positions of your child components here
-//    m_inputMeters.setBounds(getLocalBounds());
-//    //const int cornerResizerSize = 15;
+    auto boundsChannelL = juce::Rectangle<int>(BarMeter::Constants::kMeterPositionAx,BarMeter::Constants::kMeterPositionAy, BarMeter::Constants::kMeterBarWidth, BarMeter::Constants::kMeterBarHeight);
+    auto boundsChannelR = juce::Rectangle<int>(BarMeter::Constants::kMeterPositionBx,BarMeter::Constants::kMeterPositionBy, BarMeter::Constants::kMeterBarWidth, BarMeter::Constants::kMeterBarHeight);
+    barMeterComponentChannelL.setBounds(boundsChannelL);
+    barMeterComponentChannelR.setBounds(boundsChannelR);
 }
 
 
-void PluginEditor::hiResTimerCallback()
+void PluginEditor::timerCallback()
 {
-    for(int meterIndex = 0; meterIndex < m_inputMeters.getNumChannels(); ++meterIndex)
-    {
-        //get the level, of the specified meter[ch] from the audio processor.
-        auto audioLevelPeak = m_audioProcessor.getPeakLevel (meterIndex);
-        //auto audioLevelVu = m_audioProcessor.getVuLevel (meterIndex);
-        m_inputMeters.setInputLevel (meterIndex, audioLevelPeak);
-        m_inputMeters.refresh();
-    }
+    //set value here
+    barMeterComponentChannelL.setLevel(m_audioProcessor.getRmsValue(0));
+    barMeterComponentChannelR.setLevel(m_audioProcessor.getRmsValue(1));
+
+    barMeterComponentChannelR.repaint();
+    barMeterComponentChannelL.repaint();
 }

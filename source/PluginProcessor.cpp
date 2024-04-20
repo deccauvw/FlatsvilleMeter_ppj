@@ -112,7 +112,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
+    bufferForMeter = buffer;
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -120,43 +120,15 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+//    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+//        buffer.clear (i, 0, buffer.getNumSamples());
 
     //>>>
-    if(!(getBus(false, 0)->isEnabled() && getBus(true,0)->isEnabled())) return;
-    auto mainOutput = getBusBuffer(buffer, false, 0); //if we have audio busses at all,
-    auto mainInput = getBusBuffer(buffer, true, 0);// they're now main output and input.
+    levelRmsLeft = bufferForMeter.getRMSLevel(0, 0, bufferForMeter.getNumSamples());
+    levelRmsRight = bufferForMeter.getRMSLevel(1, 0, bufferForMeter.getNumSamples());
+//    DBG("levelRmsLeft = " + juce::String(levelRmsLeft));
+//    DBG("levelRmsRigt = " + juce::String(levelRmsRight));
 
-    UiToAudioMessage uim;
-    while(uiToAudio.pop(uim))
-    {
-        switch(uim.what)
-        {
-            case UiToAudioMessage::NEW_VALUE: params[uim.which]->setValueNotifyingHost(params[uim.which]->convertTo0to1(uim.newValue)); break;
-            case UiToAudioMessage::BEGIN_EDIT: params[uim.which]->beginChangeGesture(); break;
-            case UiToAudioMessage::END_EDIT: params[uim.which]->endChangeGesture(); break;
-        }
-    }//handle inbound messages from the ui thread
-
-    double rmsSize = (1881.0/44100.0)*getSampleRate(); //higher is slower with larger RMS buffers
-    double zeroCrossScale = (1.0/getSampleRate())*44100.0;
-
-    for(int i = 0;i<buffer.getNumSamples();++i)
-    {
-        auto outL = mainOutput.getWritePointer(0, i);
-        auto outR = mainOutput.getWritePointer(1, i);
-        auto inL = mainInput.getReadPointer(0, i);
-        auto inR = mainInput.getReadPointer(1, i);; //specified we can only be stereo and never mono.
-        float currentslewL = (fabs(*inL-(float)previousLeft)/28000.0f)*(float)getSampleRate();
-        float currentslewR = (fabs(*inR-(float)previousRight)/28000.0f)*(float)getSampleRate();
-        if (currentslewL > slewLeft) slewLeft = currentslewL;
-        if (currentslewR > slewRight) slewRight = currentslewR;
-        previousLeft = *inL;
-        previousRight = *inR;
-        //slew measurement is NOT rectified
-
-    }
 }
 
 //==============================================================================
@@ -190,10 +162,7 @@ void PluginProcessor::parameterGestureChanged (int parameterIndex, bool starting
     juce::ignoreUnused(parameterIndex, starting);
 }
 
-void PluginProcessor::processBlock (juce::AudioBuffer<double>&, juce::MidiBuffer&)
-{
-    AudioProcessor::processBlock (<unnamed>, <unnamed>);
-}
+
 void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
     AudioToUiMessage msg;
@@ -201,6 +170,18 @@ void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
     msg.which = (PluginProcessor::Parameters)parameterIndex;
     msg.newValue = params[parameterIndex]->convertFrom0to1(newValue);
     audioToUi.push(msg);
+}
+
+float PluginProcessor::getRmsValue(const int channel) const
+{
+    jassert(channel == 0 || channel == 1);
+    if(channel == 0)
+        return levelRmsLeft;
+    else if(channel == 1)
+        return levelRmsRight;
+    else{
+        return -12.f;
+    }
 }
 
 //==============================================================================
