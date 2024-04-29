@@ -24,6 +24,7 @@ private:
     PluginProcessor& m_audioProcessor;
 
     Gui::BarMeterComponent barMeterComponentChannelL, barMeterComponentChannelR;
+    Face::FacePlateGui facePlate;
     void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

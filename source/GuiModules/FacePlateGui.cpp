@@ -11,57 +11,56 @@
 //#include "juce_graphics/juce_graphics.h"
 #include "FacePlateGui.h"
 #include <vector>
-
+using namespace Face;
 using ImageFileFormat = juce::ImageFileFormat;
 using File = juce::File;
 //==============================================================================
-Gui::FacePlateGui::FacePlateGui() = default;
-//{
-//    imageFaceplateDisplay(ImageFileFormat::loadFrom(filedirFaceplateDisplay)),
-//    imageFaceplateFrameBody(ImageFileFormat::loadFrom(filedirFaceplateFrameBody)),
-//    imageFrameGuardRail(ImageFileFormat::loadFrom(filedirFrameGuardRail)),
-//    imageGlassSheenReflection(ImageFileFormat::loadFrom(filedirGlassSheenReflection)),
-//    imageNumericPrintedValuesLrVu(ImageFileFormat::loadFrom(filedirNumericPrintedValuesLrVu)),
-//    imageHorizontalSmallDisplay(ImageFileFormat::loadFrom(filedirHorizontalSmallDisplay)),
-//    imageTickpointAtZero(ImageFileFormat::loadFrom(filedirTickpointAtZero))
-//}
+Face::FacePlateGui::FacePlateGui() = default;
 
 
-void Gui::FacePlateGui::loadAssets()
+void FacePlateGui::loadAssets()
 {
     imageFaceplateBody = juce::ImageCache::getFromFile(filedirFaceplateBody);
     imageGlassSheenReflection = juce::ImageCache::getFromFile(filedirGlassSheenReflection);
     imageNumericPrintedValuesLrVu = juce::ImageCache::getFromFile(filedirNumericPrintedValuesLrVu);
-    //juce::Image can be sized with rectangle
+    //convert these into binary data
+    extern const char imageFaceplateBody[];
 }
 
 
 
-void Gui::FacePlateGui::paint (juce::Graphics& g)
+void FacePlateGui::paint (juce::Graphics& g)
 {
-    juce::ignoreUnused(g);
+    g.drawImage(
+        imageFaceplateBody,
+        Face::Constants::kFacePositionX,
+        Face::Constants::kFacePositionY,
+        Face::Constants::kFaceSizeWidth,
+        Face::Constants::kFaceSizeHeight,
+        Face::Constants::kFacePositionX,
+        Face::Constants::kFacePositionY,
+        imageFaceplateBody.getWidth(),
+        imageFaceplateBody.getHeight());
 }
 
-//void Gui::FacePlateGui::paintOverChildren(juce::Graphics& g){}
-
-void Gui::FacePlateGui::resized()
+void FacePlateGui::resized()
 {
 }
 
-juce::Image Gui::FacePlateGui::getFaceplateFrameBody() const
+juce::Image FacePlateGui::getFaceplateFrameBody() const
 {
     return imageFaceplateBody;
 }
 
 
-juce::Image Gui::FacePlateGui::getImageGlassSheenReflection() const
+juce::Image FacePlateGui::getImageGlassSheenReflection() const
 {
     return imageGlassSheenReflection;
 }
 
 
 
-juce::Image Gui::FacePlateGui::getImageNumericPrintedValuesLrVu() const
+juce::Image FacePlateGui::getImageNumericPrintedValuesLrVu() const
 {
     return imageNumericPrintedValuesLrVu;
 }

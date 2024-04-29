@@ -11,9 +11,12 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     setSize (BarMeter::Constants::kGuiSizeWidth, BarMeter::Constants::kGuiSizeHeight);
     juce::ignoreUnused (m_audioProcessor);
 
-    //show everything here (draw everything)
+    //show ballistic bar meters
     addAndMakeVisible(barMeterComponentChannelL);
     addAndMakeVisible(barMeterComponentChannelR);
+
+    //show faceplate
+    addAndMakeVisible(facePlate);
 
     startTimer(static_cast<int>(std::round((1000.0f / BarMeter::Constants::kInitialRefreshRateHz))));
 }//constructor
@@ -23,7 +26,8 @@ PluginEditor::~PluginEditor() =default;
 void PluginEditor::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey); //opaque filling
-
+    facePlate.loadAssets();
+    facePlate.paint(g);
 }
 
 void PluginEditor::resized()

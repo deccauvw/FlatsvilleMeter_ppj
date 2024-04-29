@@ -12,10 +12,11 @@
 
 #include "juce_graphics/juce_graphics.h"
 #include "juce_gui_basics/juce_gui_basics.h"
+#include "FacePlateHelper.h"
 #pragma once
 //==============================================================================
 
-namespace Gui {
+namespace Face {
     class FacePlateGui : public juce::Component
     {
     public:
