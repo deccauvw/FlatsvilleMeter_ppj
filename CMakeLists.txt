@@ -128,6 +128,8 @@ target_compile_definitions(SharedCode
     PRODUCT_NAME_WITHOUT_VERSION="FlatsvilleMeter"
 )
 
+file(GLOB_RECURSE AssetFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Assets/*")
+juce_add_binary_data(FlatsvilleAssets SOURCES ${AssetFiles})
 
 
 # Link to any other modules you added (with juce_add_module) here!
@@ -138,6 +140,7 @@ target_compile_definitions(SharedCode
 target_link_libraries(SharedCode
     INTERFACE
     Assets
+    FlatsvilleAssets
     melatonin_inspector
     juce_audio_utils
     juce_audio_processors

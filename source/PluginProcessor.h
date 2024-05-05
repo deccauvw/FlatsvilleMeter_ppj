@@ -17,7 +17,9 @@
 //==============================================================================
 
 
-class PluginProcessor : public juce::AudioProcessor, public::juce::AudioProcessorParameter::Listener
+class PluginProcessor : public juce::AudioProcessor,
+                        public juce::AudioProcessorParameter::Listener,
+                        public juce::Timer
 {
 public:
     PluginProcessor();

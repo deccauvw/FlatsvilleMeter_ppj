@@ -1,9 +1,7 @@
 
 #pragma once
-
 #include "PluginProcessor.h"
 #include "juce_audio_processors/juce_audio_processors.h"
-
 #include "LevelMeter.h"
 //==============================================================================
 class PluginEditor :
@@ -23,8 +21,11 @@ private:
     // access the processor object that created it.
     PluginProcessor& m_audioProcessor;
 
+    using APVTS = juce::AudioProcessorValueTreeState;
+
     Gui::BarMeterComponent barMeterComponentChannelL, barMeterComponentChannelR;
-    Face::FacePlateGui facePlate;
+    Face::FacePlateGui facePlateGui;
+
     void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

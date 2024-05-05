@@ -8,12 +8,12 @@
   ==============================================================================
 */
 
-
-
+#pragma once
+#include "juce_core/juce_core.h"
 #include "juce_graphics/juce_graphics.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "FacePlateHelper.h"
-#pragma once
+
 //==============================================================================
 
 namespace Face {
@@ -21,35 +21,19 @@ namespace Face {
     {
     public:
         FacePlateGui();
-        //~FacePlateGui() = default;
-
+        ~FacePlateGui() override;
         void loadAssets();
-
         void paint(juce::Graphics& g) override;
-
-        //void paintOverChildren(juce::Graphics& g) override;
-
+        void paintOverChildren(juce::Graphics& g) override;
         void resized() override;
-
 
         ///assets getters     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         [[nodiscard]] juce::Image getFaceplateFrameBody() const;
-        [[nodiscard]] juce::Image getImageGlassSheenReflection() const;
-        [[nodiscard]] juce::Image getImageNumericPrintedValuesLrVu() const;
-
-
 
 
     private:
-        //directories
-        juce::File filedirFaceplateBody = juce::String("Assets\\FaceplateCanvas.png");
-        juce::File filedirGlassSheenReflection = juce::String("Assets\\glassSheen.png");
-        juce::File filedirNumericPrintedValuesLrVu = juce::String("Assets\\Values.png");
-
         //image instances
         juce::Image imageFaceplateBody;
-        juce::Image imageGlassSheenReflection;
-        juce::Image imageNumericPrintedValuesLrVu;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FacePlateGui)
     };

@@ -6,6 +6,11 @@
 
 namespace Gui
 {
+    BarMeterComponent::BarMeterComponent (std::function<float>&& valueFunction) : valueSupplier(std::move(valueFunction))
+    {
+        startTimerHz(24);
+        //grill = ...
+    }
     BarMeterComponent::~BarMeterComponent() = default;
 
 

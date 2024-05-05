@@ -12,14 +12,14 @@
 namespace Gui
 {
 
-    class BarMeterComponent: public juce::Component
+    class BarMeterComponent: public juce::Component, public juce::Timer
     {
     public:
-        BarMeterComponent():m_levelValue(0.0f)
-        {}
+        BarMeterComponent(std::function<float>&& valueFunction);
         ~BarMeterComponent() override;
 
         void paint (juce::Graphics& g)override;
+        //void paintOverChildren(juce::Graphics& g) override;
         void setLevel (float value);
 
     private:

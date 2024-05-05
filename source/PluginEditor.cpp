@@ -4,21 +4,20 @@
 #include "LevelMeter.h"
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), m_audioProcessor(p)
+    : AudioProcessorEditor (&p), m_audioProcessor(p), facePlateGui()
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (BarMeter::Constants::kGuiSizeWidth, BarMeter::Constants::kGuiSizeHeight);
-    juce::ignoreUnused (m_audioProcessor);
+    //juce::ignoreUnused (m_audioProcessor);
 
     //show ballistic bar meters
     addAndMakeVisible(barMeterComponentChannelL);
     addAndMakeVisible(barMeterComponentChannelR);
 
     //show faceplate
-    addAndMakeVisible(facePlate);
+    addAndMakeVisible(facePlateGui);
 
     startTimer(static_cast<int>(std::round((1000.0f / BarMeter::Constants::kInitialRefreshRateHz))));
+    setSize (BarMeter::Constants::kGuiSizeWidth, BarMeter::Constants::kGuiSizeHeight);
+
 }//constructor
 
 PluginEditor::~PluginEditor() =default;
@@ -26,8 +25,6 @@ PluginEditor::~PluginEditor() =default;
 void PluginEditor::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey); //opaque filling
-    facePlate.loadAssets();
-    facePlate.paint(g);
 }
 
 void PluginEditor::resized()
