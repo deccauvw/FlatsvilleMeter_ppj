@@ -13,7 +13,7 @@ namespace BarMeter
         static constexpr auto kGuiSizeWidth = 1012;
         static constexpr auto kGuiSizeHeight = 230;
         static constexpr auto kLevelPeakHoldHeight = 2;//height of the peak hold strip (in pixels)
-        static constexpr auto kInitialRefreshRateHz = 30.0f;
+        static constexpr auto kInitialRefreshRateHz = 24.0f;
 
         //header is virtually the "LR MS" thing.
         static constexpr auto kDefaultHeaderHeight = 25;

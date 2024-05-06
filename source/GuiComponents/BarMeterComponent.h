@@ -12,7 +12,7 @@
 namespace Gui
 {
 
-    class BarMeterComponent: public juce::Component, public juce::Timer
+    class BarMeterComponent: public juce::Component
     {
     public:
         BarMeterComponent();
@@ -20,11 +20,11 @@ namespace Gui
 
         void paint (juce::Graphics& g)override;
         //void paintOverChildren(juce::Graphics& g) override;
-        void setLevel (float value);
+        void setLevel (const float value);
 
-        void timerCallback() override;
+
     private:
-        float m_levelValue = -10.0f;
+        float m_levelValue = 0.0f;
 
     };
 

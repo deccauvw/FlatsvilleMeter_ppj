@@ -52,10 +52,10 @@ public:
     void parameterGestureChanged(int parameterIndex, bool starting) override;
 
 
-    float m_RmsLevelChannel0 = 0.0f;
-    float m_RmsLevelChannel1 = 0.0f;
-    float m_peakLevelChannel0 = 0.0f;
-    float m_peakLevelChannel1 = 0.0f;
+    float m_RmsLevelChannel0;
+    float m_RmsLevelChannel1;
+    float m_peakLevelChannel0;
+    float m_peakLevelChannel1;
 //    float m_vuLevelChannel0 = 0.0f;
 //    float m_vuLevelChannel1 = 0.0f;
 

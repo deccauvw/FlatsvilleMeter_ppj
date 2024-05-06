@@ -12,7 +12,11 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        )
-,maximumEstimatedSamplesPerBlock(1024) //arbitrary number to prevent div 0 error
+    ,maximumEstimatedSamplesPerBlock(1024),
+      m_RmsLevelChannel0(-INFINITY),
+      m_RmsLevelChannel1(-INFINITY),
+      m_peakLevelChannel0(-INFINITY),
+      m_peakLevelChannel1(-INFINITY)
 {
 }
 
@@ -112,7 +116,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    bufferForMeter = buffer;
+    buffer.makeCopyOf(bufferForMeter, false);
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -120,16 +124,27 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
 
-//    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-//        buffer.clear (i, 0, buffer.getNumSamples());
 
+    //if the plugin is NOT connected
+    if(bufferForMeter.getNumChannels() == 0) // not connected
+    {
+        bufferForMeter.setSize(specs.numChannels, specs.maximumBlockSize, false, false, false);
+        for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
+            buffer.clear (ch, 0, bufferForMeter.getNumSamples());
+    }
+
+    //else:
+
+
+    DBG("#Channels = " + juce::String(bufferForMeter.getNumChannels()));
+    DBG("#Samples  = " + juce::String(bufferForMeter.getNumSamples()));
     //>>>
     m_RmsLevelChannel0 = bufferForMeter.getRMSLevel(0, 0, bufferForMeter.getNumSamples());
     m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, bufferForMeter.getNumSamples());
     m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, bufferForMeter.getNumSamples());
     m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, bufferForMeter.getNumSamples());
-//    DBG("levelRmsLeft = " + juce::String(levelRmsLeft));
-//    DBG("levelRmsRigt = " + juce::String(levelRmsRight));
+    DBG("levelRmsLeft = " + juce::String(levelRmsLeft));
+    DBG("levelRmsRigt = " + juce::String(levelRmsRight));
 
 }
 

@@ -22,7 +22,8 @@ Face::FacePlateGui::~FacePlateGui() = default;
 void FacePlateGui::loadAssets()
 {
     imageFaceplateBody = juce::ImageCache::getFromMemory(BinaryData::FaceplateCanvas_png, BinaryData::FaceplateCanvas_pngSize);
-    imageLabelNumericStrip = juce::ImageCache::getFromMemory(BinaryData::label)
+    imageLabelNumericStrip = juce::ImageCache::getFromMemory(BinaryData::label_numeric_value_png, BinaryData::label_numeric_value_pngSize);
+
 }
 
 
@@ -31,8 +32,22 @@ void FacePlateGui::paint (juce::Graphics& g)
 {
     loadAssets();
     g.drawImage(
-        imageFaceplateBody,0, 0, Face::Constants::kFaceSizeWidth,Face::Constants::kFaceSizeHeight,
-        0, 0, imageFaceplateBody.getWidth(), imageFaceplateBody.getHeight());
+        imageFaceplateBody,
+        0,
+        0,
+        Face::Constants::kFaceSizeWidth,
+        Face::Constants::kFaceSizeHeight,
+        0,
+        0,
+        imageFaceplateBody.getWidth(),
+        imageFaceplateBody.getHeight());
+
+    g.drawImage(imageLabelNumericStrip,
+        Face::Constants::kVolumeLabelPositionX,
+        Face::Constants::kVolumeLabelPositionY,
+        Face::Constants::kVolumeLabelPositionWidth,
+        Face::Constants::kVolumeLabelPositionHeight,
+        0, 0, imageLabelNumericStrip.getWidth(), imageLabelNumericStrip.getHeight());
 
 }
 

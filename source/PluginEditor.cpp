@@ -22,6 +22,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
 PluginEditor::~PluginEditor() =default;
 
+//=============================================================
 void PluginEditor::paint (juce::Graphics& g)
 {
     //g.fillAll(juce::Colours::darkgrey); //opaque filling
