@@ -13,5 +13,10 @@ namespace Face
         static constexpr auto kFaceSizeHeight = 230; //equal to GuiSize Width Height from BarMeterHelpers
         static constexpr auto kFacePositionX = 0;
         static constexpr auto kFacePositionY = 0;
+
+        static constexpr auto kVolumeLabelPositionX = 114;
+        static constexpr auto kVolumeLabelPositionY = 105;
+        static constexpr auto kVolumeLabelPositionHeight = 21;
+        static constexpr auto kVolumeLabelPositionWidth = 468;
     }
 } // Face

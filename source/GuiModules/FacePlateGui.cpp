@@ -22,6 +22,7 @@ Face::FacePlateGui::~FacePlateGui() = default;
 void FacePlateGui::loadAssets()
 {
     imageFaceplateBody = juce::ImageCache::getFromMemory(BinaryData::FaceplateCanvas_png, BinaryData::FaceplateCanvas_pngSize);
+    imageLabelNumericStrip = juce::ImageCache::getFromMemory(BinaryData::label)
 }
 
 

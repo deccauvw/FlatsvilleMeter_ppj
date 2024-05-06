@@ -24,8 +24,10 @@ PluginEditor::~PluginEditor() =default;
 
 void PluginEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::darkgrey); //opaque filling
-    facePlateGui.paint(g);
+    //g.fillAll(juce::Colours::darkgrey); //opaque filling
+    //render everything here
+    facePlateGui.paint(g); //faceplate render
+
 }
 
 void PluginEditor::resized()

@@ -34,6 +34,7 @@ namespace Face {
     private:
         //image instances
         juce::Image imageFaceplateBody;
+        juce::Image imageLabelNumericStrip;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FacePlateGui)
     };
