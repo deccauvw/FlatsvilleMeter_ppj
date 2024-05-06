@@ -15,15 +15,16 @@ namespace Gui
     class BarMeterComponent: public juce::Component, public juce::Timer
     {
     public:
-        BarMeterComponent(std::function<float>&& valueFunction);
+        BarMeterComponent();
         ~BarMeterComponent() override;
 
         void paint (juce::Graphics& g)override;
         //void paintOverChildren(juce::Graphics& g) override;
         void setLevel (float value);
 
+        void timerCallback() override;
     private:
-        float m_levelValue = 0.0f;
+        float m_levelValue = -10.0f;
 
     };
 

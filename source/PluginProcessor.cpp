@@ -124,8 +124,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 //        buffer.clear (i, 0, buffer.getNumSamples());
 
     //>>>
-    levelRmsLeft = bufferForMeter.getRMSLevel(0, 0, bufferForMeter.getNumSamples());
-    levelRmsRight = bufferForMeter.getRMSLevel(1, 0, bufferForMeter.getNumSamples());
+    m_RmsLevelChannel0 = bufferForMeter.getRMSLevel(0, 0, bufferForMeter.getNumSamples());
+    m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, bufferForMeter.getNumSamples());
+    m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, bufferForMeter.getNumSamples());
+    m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, bufferForMeter.getNumSamples());
 //    DBG("levelRmsLeft = " + juce::String(levelRmsLeft));
 //    DBG("levelRmsRigt = " + juce::String(levelRmsRight));
 
@@ -157,6 +159,7 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
     // whose contents will have been created by the getStateInformation() call.
     juce::ignoreUnused (data, sizeInBytes);
 }
+
 void PluginProcessor::parameterGestureChanged (int parameterIndex, bool starting)
 {
     juce::ignoreUnused(parameterIndex, starting);
@@ -165,20 +168,27 @@ void PluginProcessor::parameterGestureChanged (int parameterIndex, bool starting
 
 void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
-    AudioToUiMessage msg;
-    msg.what = AudioToUiMessage::NEW_VALUE;
-    msg.which = (PluginProcessor::Parameters)parameterIndex;
-    msg.newValue = params[parameterIndex]->convertFrom0to1(newValue);
-    audioToUi.push(msg);
+    //empty
 }
 
-float PluginProcessor::getRmsValue(const int channel) const
+float PluginProcessor::getLevelValueRms (const int channel) const
 {
     jassert(channel == 0 || channel == 1);
     if(channel == 0)
-        return levelRmsLeft;
+        return m_RmsLevelChannel0;
     else if(channel == 1)
-        return levelRmsRight;
+        return m_RmsLevelChannel1;
+    else{
+        return -12.f;
+    }
+}
+float PluginProcessor::getLevelValuePeak (const int channel) const
+{
+    jassert(channel == 0 || channel == 1);
+    if(channel == 0)
+        return m_peakLevelChannel0;
+    else if(channel == 1)
+        return m_peakLevelChannel1;
     else{
         return -12.f;
     }
@@ -188,5 +198,5 @@ float PluginProcessor::getRmsValue(const int channel) const
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new PluginProcessor();
+    return new PluginProcessor;
 }

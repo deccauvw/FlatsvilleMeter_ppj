@@ -9,8 +9,8 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     //juce::ignoreUnused (m_audioProcessor);
 
     //show ballistic bar meters
-    addAndMakeVisible(barMeterComponentChannelL);
-    addAndMakeVisible(barMeterComponentChannelR);
+    addAndMakeVisible(barMeterComponentChannel0);
+    addAndMakeVisible(barMeterComponentChannel1);
 
     //show faceplate
     addAndMakeVisible(facePlateGui);
@@ -25,23 +25,24 @@ PluginEditor::~PluginEditor() =default;
 void PluginEditor::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::darkgrey); //opaque filling
+    facePlateGui.paint(g);
 }
 
 void PluginEditor::resized()
 {
     auto boundsChannelL = juce::Rectangle<int>(BarMeter::Constants::kMeterPositionAx,BarMeter::Constants::kMeterPositionAy, BarMeter::Constants::kMeterBarWidth, BarMeter::Constants::kMeterBarHeight);
     auto boundsChannelR = juce::Rectangle<int>(BarMeter::Constants::kMeterPositionBx,BarMeter::Constants::kMeterPositionBy, BarMeter::Constants::kMeterBarWidth, BarMeter::Constants::kMeterBarHeight);
-    barMeterComponentChannelL.setBounds(boundsChannelL);
-    barMeterComponentChannelR.setBounds(boundsChannelR);
+    barMeterComponentChannel0.setBounds(boundsChannelL);
+    barMeterComponentChannel1.setBounds(boundsChannelR);
 }
 
 
 void PluginEditor::timerCallback()
 {
     //set value here
-    barMeterComponentChannelL.setLevel(m_audioProcessor.getRmsValue(0));
-    barMeterComponentChannelR.setLevel(m_audioProcessor.getRmsValue(1));
+    barMeterComponentChannel0.setLevel(m_audioProcessor.getLevelValueRms(0));
+    barMeterComponentChannel1.setLevel(m_audioProcessor.getLevelValueRms(1));
 
-    barMeterComponentChannelR.repaint();
-    barMeterComponentChannelL.repaint();
+    barMeterComponentChannel0.repaint();
+    barMeterComponentChannel1.repaint();
 }

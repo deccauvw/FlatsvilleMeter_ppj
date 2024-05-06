@@ -6,7 +6,7 @@
 
 namespace Gui
 {
-    BarMeterComponent::BarMeterComponent (std::function<float>&& valueFunction) : valueSupplier(std::move(valueFunction))
+    BarMeterComponent::BarMeterComponent ()
     {
         startTimerHz(24);
         //grill = ...
@@ -28,6 +28,9 @@ namespace Gui
     void BarMeterComponent::setLevel(float value)
     {
         m_levelValue = value;
+    }
+    void BarMeterComponent::timerCallback()
+    {
     }
 
 } // Gui

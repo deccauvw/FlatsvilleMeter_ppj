@@ -23,7 +23,9 @@ private:
 
     using APVTS = juce::AudioProcessorValueTreeState;
 
-    Gui::BarMeterComponent barMeterComponentChannelL, barMeterComponentChannelR;
+    Gui::BarMeterComponent
+        barMeterComponentChannel0,
+        barMeterComponentChannel1;
     Face::FacePlateGui facePlateGui;
 
     void timerCallback() override;

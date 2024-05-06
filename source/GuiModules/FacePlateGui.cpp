@@ -28,14 +28,17 @@ void FacePlateGui::loadAssets()
 
 void FacePlateGui::paint (juce::Graphics& g)
 {
-    //empty
+    loadAssets();
+    g.drawImage(
+        imageFaceplateBody,0, 0, Face::Constants::kFaceSizeWidth,Face::Constants::kFaceSizeHeight,
+        0, 0, imageFaceplateBody.getWidth(), imageFaceplateBody.getHeight());
+
 }
 
 void FacePlateGui::paintOverChildren(juce::Graphics& g)
 {
-    g.drawImage(
-        imageFaceplateBody, getLocalBounds().toFloat());
-}
+    juce::ignoreUnused(g);
+ }
 
 
 void FacePlateGui::resized()
