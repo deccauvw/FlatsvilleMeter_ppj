@@ -15,6 +15,12 @@ namespace Gui
 
     void TinyStripComponent::paint (juce::Graphics& g)
     {
+    }
+
+    void TinyStripComponent::draw (juce::Graphics& g , MeterColours &meterColours)
+    {
+        //draw numeric value in the TinyStrip.
+        const auto tinyStripText = getNumericValue();
         g.setFont (m_fontDefault);
         g.setColour (m_meterColours.colourText);
 
@@ -26,41 +32,48 @@ namespace Gui
         }
         else
         {
-            s = juce::String("Dirty");
+            s = juce::String("initialize");
         }
 
-        g.drawText (s,
+        g.drawFittedText (s,
             Gui::Constants::kTinyStripTextPositionX,
             Gui::Constants::kTinyStripTextPositionY,
-            Gui::Constants::kTinyStripTextPositionWidth,
+            Gui::Constants::kTinyStripTextPositionWidth - Gui::Constants::kTinyStripTextMargin,
             Gui::Constants::kTinyStripTextPositionHeight,
-            juce::Justification::centred,
+            juce::Justification::left,
             true);
 
 
     }
 
+    float TinyStripComponent::getNumericValue()
+    {
+        return m_numericValue;
+    }
 
     void TinyStripComponent::setNumericValue (const float value)
     {
-        if(juce::approximatelyEqual(m_numericValue, value))
+        auto valueDb = juce::jmax(juce::Decibels::gainToDecibels(value), Gui::Constants::kLevelMinInDecibels);
+        if(m_numericValue == valueDb)
         {
             m_isDirty = false;
         }
         else
         {
             m_isDirty = true;
-            m_numericValue = value;
+            m_numericValue = truncateValue(valueDb, 4);
+
         }
+
     }
 
-    void TinyStripComponent::timerCallback()
+
+    float TinyStripComponent::truncateValue (float f, int upto)
     {
-        if(m_isDirty)
-        {
-            m_isDirty = false;
-            repaint();
-        }
+        auto p = static_cast<float>(std::pow(10, upto));
+        f *= p;
+        f = ceil(f);
+        f /= p;
+        return f;
     }
-
 } // gui

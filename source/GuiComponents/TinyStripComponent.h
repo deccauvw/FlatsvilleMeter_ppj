@@ -10,24 +10,29 @@
 #include "BarMeterHelper.h"
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
+#include <cmath>
 
 namespace Gui
 {
 
-    class TinyStripComponent : public juce::Component, public juce::Timer
+    class TinyStripComponent : public juce::Component
     {
     public:
         TinyStripComponent();
         ~TinyStripComponent() override;
 
         void paint(juce::Graphics& g) override;
+        void draw(juce::Graphics& g, MeterColours &meterColours);
+        float getNumericValue();
         void setNumericValue(const float value);
-        void timerCallback() override;
+
     private:
         float m_numericValue;
         bool m_isDirty;
         MeterColours m_meterColours;
         juce::Font m_fontDefault;
+
+        float truncateValue(float f, int upto);
     };
 
 } // gui

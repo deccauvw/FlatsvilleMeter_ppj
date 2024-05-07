@@ -135,12 +135,12 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
             bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
-        m_randomValueForDebugging = 1111111.f;
+        //m_randomValueForDebugging = 1111111.f;
     }
     else
     {
         bufferForMeter.makeCopyOf(buffer);
-        m_randomValueForDebugging = 2222222.f;
+        //m_randomValueForDebugging = 2222222.f;
     }
 
 
@@ -149,6 +149,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, numSamples);
     m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, numSamples);
     m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, numSamples);
+    m_randomValueForDebugging++;
 
 
 }

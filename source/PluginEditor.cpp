@@ -50,10 +50,8 @@ void PluginEditor::timerCallback()
     auto levelValuePeak0 = m_audioProcessor.getLevelValuePeak(0);
     auto levelValuePeak1 = m_audioProcessor.getLevelValuePeak(1);
 
-    tinyStripComponent.setNumericValue((float)timerCallbackCount++);
-
     barMeterComponentChannel0.setLevel(levelValuePeak0);
-    barMeterComponentChannel0.repaint();
     barMeterComponentChannel1.setLevel(levelValuePeak1);
+    barMeterComponentChannel0.repaint();
     barMeterComponentChannel1.repaint();
 }
