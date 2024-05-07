@@ -8,8 +8,8 @@
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 
+#include "BarMeterBar.h"
 #include "BarMeterHelper.h"
-#include "HorizontalMeterBar.h"
 #include "TinyStripComponent.h"
 //this "MeterComponent" will be staying @ plugin Editor.
 
@@ -58,8 +58,8 @@ namespace Gui
         void paint (juce::Graphics& g)override;
 
     private:
-        Gui::HorizontalMeterBar horizontalMeterBar0;
-        Gui::HorizontalMeterBar horizontalMeterBar1;
+        Gui::BarMeterBar horizontalMeterBar0;
+        Gui::BarMeterBar horizontalMeterBar1;
 
 
         float m_levelValueChannel0 = Gui::Constants::kLevelMinInDecibels;

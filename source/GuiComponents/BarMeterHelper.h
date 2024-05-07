@@ -31,6 +31,12 @@ namespace Gui
         static constexpr auto kTinyStripTextPositionHeight = 23;
         static constexpr auto kTinyStripTextMargin = 25;
 
+        static constexpr auto kPeakHoldLevelTextPositionX = 520;
+        static constexpr auto kPeakHoldLevelTextPositionYup = 45;
+        static constexpr auto kPeakHoldLevelTextPositionYdn = 163;
+        static constexpr auto kPeakHoldLevelTextPositionWidth = 56;
+        static constexpr auto kPeakHoldLevelTextPositionHeight = 22;
+
         static constexpr auto kHeaderMetricTypePositionX = 590;
         static constexpr auto kHeaderMetricTypePositionY = 106;
         static constexpr auto kHeaderMetricTypeHeight = 19;

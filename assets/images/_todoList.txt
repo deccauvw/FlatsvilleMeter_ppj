@@ -7,3 +7,6 @@
 
 
     z. component = the constructed meter
+
+
+4. address missing stuff
