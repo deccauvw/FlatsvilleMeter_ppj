@@ -64,7 +64,7 @@ public:
     float getLevelValuePeak (int channel) const;
 
 private:
-
+    bool isBufferEmpty(const juce::AudioBuffer<float>& buffer);
     juce::AudioBuffer<float> bufferForMeter;
 
 

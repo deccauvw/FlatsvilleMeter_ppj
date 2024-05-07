@@ -43,9 +43,10 @@ void PluginEditor::resized()
 void PluginEditor::timerCallback()
 {
     //set value here
-    barMeterComponentChannel0.setLevel(m_audioProcessor.getLevelValueRms(0));
-    barMeterComponentChannel1.setLevel(m_audioProcessor.getLevelValueRms(1));
-
+    auto levelValueRmsDb0 = juce::Decibels::gainToDecibels(m_audioProcessor.getLevelValueRms(0));
+    auto levelValueRmsDb1 = juce::Decibels::gainToDecibels(m_audioProcessor.getLevelValueRms(1));
+    barMeterComponentChannel0.setLevel(levelValueRmsDb0);
+    barMeterComponentChannel1.setLevel(levelValueRmsDb1);
     barMeterComponentChannel0.repaint();
     barMeterComponentChannel1.repaint();
 }

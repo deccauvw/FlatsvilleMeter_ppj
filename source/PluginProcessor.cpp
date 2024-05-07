@@ -106,7 +106,8 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     //juce::ignoreUnused (sampleRate, samplesPerBlock);
     this->specs.sampleRate = sampleRate;
     this->specs.maximumBlockSize = samplesPerBlock;
-    this->specs.numChannels = 2; //presume stereo
+    this->specs.numChannels = 2; //assume and FIX as stereo only plugin
+    bufferForMeter.clear();
 }
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
@@ -116,7 +117,6 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    buffer.makeCopyOf(bufferForMeter, false);
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -126,25 +126,35 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
 
     //if the plugin is NOT connected
-    if(bufferForMeter.getNumChannels() == 0) // not connected
+    if(isBufferEmpty(buffer)) // not connected
     {
-        bufferForMeter.setSize(specs.numChannels, specs.maximumBlockSize, false, false, false);
+        //make the buffer "zeropadded"
+//        DBG ("buffer is empty. padding with zeros");
+        bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
-            buffer.clear (ch, 0, bufferForMeter.getNumSamples());
+            bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
     }
+    else
+    {
+//        DBG("buffer is NOT empty. skipping padding");
+        buffer.makeCopyOf(bufferForMeter);
+//        DBG("finished copying buffer to bufferForMeter");
+;    }
 
-    //else:
 
 
-    DBG("#Channels = " + juce::String(bufferForMeter.getNumChannels()));
-    DBG("#Samples  = " + juce::String(bufferForMeter.getNumSamples()));
-    //>>>
-    m_RmsLevelChannel0 = bufferForMeter.getRMSLevel(0, 0, bufferForMeter.getNumSamples());
-    m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, bufferForMeter.getNumSamples());
-    m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, bufferForMeter.getNumSamples());
-    m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, bufferForMeter.getNumSamples());
-    DBG("levelRmsLeft = " + juce::String(levelRmsLeft));
-    DBG("levelRmsRigt = " + juce::String(levelRmsRight));
+
+//    DBG("#Channels = " + juce::String(bufferForMeter.getNumChannels()));
+//    DBG("#Samples  = " + juce::String(bufferForMeter.getNumSamples()));
+    auto numSamples = bufferForMeter.getNumSamples();
+    m_RmsLevelChannel0 = bufferForMeter.getRMSLevel(0, 0, numSamples);
+    m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, numSamples);
+    m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, numSamples);
+    m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, numSamples);
+//    DBG("levelRmsLeft = " + juce::String(m_RmsLevelChannel0));
+//    DBG("levelRmsRigt = " + juce::String(m_RmsLevelChannel1));
+//    DBG("levelPkLeft = " + juce::String(m_peakLevelChannel0));
+//    DBG("levelPkRigt = " + juce::String(m_peakLevelChannel1));
 
 }
 
@@ -185,6 +195,25 @@ void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
     //empty
 }
+//==============================================================================
+bool PluginProcessor::isBufferEmpty (const juce::AudioBuffer<float>& buffer)
+{
+    if(buffer.getNumChannels() == 0)
+    {
+        DBG("buffer num channel is zero");
+        return true;
+    }
+
+    //check if any of the channels contain any data
+    for(int ch = 0; ch < buffer.getNumChannels(); ++ch)
+    {
+        if(buffer.getReadPointer(ch))
+            return true;
+    }
+    DBG("buffer is not empty @ isBufferEmpty");
+    return false;
+}
+
 
 float PluginProcessor::getLevelValueRms (const int channel) const
 {
