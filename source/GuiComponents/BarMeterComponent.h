@@ -9,8 +9,8 @@
 #include "juce_audio_basics/juce_audio_basics.h"
 
 #include "BarMeterHelper.h"
+#include "HorizontalMeterBar.h"
 #include "TinyStripComponent.h"
-
 //this "MeterComponent" will be staying @ plugin Editor.
 
 namespace Gui
@@ -36,7 +36,7 @@ namespace Gui
         void resetPeakHold();
 
         //set inputlevel
-        void setLevel (const float value);
+        void setInputMeterLevelValueDecibels (const int channel, const float value);
         void setChannelFormat(const juce::AudioChannelSet& channelSet, const std::vector<juce::String>& channelNames = {});
         void setChannelNames(const std::vector<juce::String>& channelNames);
         void setRefreshRate(float refreshRate);
@@ -58,7 +58,12 @@ namespace Gui
         void paint (juce::Graphics& g)override;
 
     private:
-        float m_levelValue = Gui::Constants::kLevelMinInDecibels;
+        Gui::HorizontalMeterBar horizontalMeterBar0;
+        Gui::HorizontalMeterBar horizontalMeterBar1;
+
+
+        float m_levelValueChannel0 = Gui::Constants::kLevelMinInDecibels;
+        float m_levelValueChannel1 = Gui::Constants::kLevelMinInDecibels;
         juce::AudioChannelSet m_channelFormat = juce::AudioChannelSet::stereo();
         bool useInternalTimer =true;
         juce::Font m_font;

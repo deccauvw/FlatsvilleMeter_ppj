@@ -23,9 +23,7 @@ private:
 
     using APVTS = juce::AudioProcessorValueTreeState;
 
-    Gui::BarMeterComponent
-        barMeterComponentChannel0,
-        barMeterComponentChannel1;
+    Gui::BarMeterComponent barMeterComponent;
 
     Gui::TinyStripComponent tinyStripComponent;
     Face::FacePlateGui facePlateGui;

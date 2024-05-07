@@ -12,17 +12,21 @@ namespace Gui
 
     void BarMeterComponent::paint(juce::Graphics &g)
     {
-        auto bounds = getLocalBounds().toFloat();
-//        g.setColour(juce::Colours::aquamarine.withBrightness(0.5f));
-//        g.fillRect(bounds);
-        g.setColour(juce::Colours::aliceblue);
-        auto scaledWidth = juce::jmap(m_levelValue, Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMaxInDecibels, 0.0f, static_cast<float>(getWidth()));
-        g.fillRect(bounds.removeFromLeft(scaledWidth));
     }
 
-    void BarMeterComponent::setLevel(const float value)
+    void BarMeterComponent::setInputMeterLevelValueDecibels (const int channel, const float value)
     {
-        m_levelValue = juce::Decibels::gainToDecibels(value);
+        jassert(channel == 0 || channel == 1);
+        switch(channel){
+            case 0:
+                m_levelValueChannel0 = juce::Decibels::gainToDecibels(value);
+                break;
+            case 1:
+                m_levelValueChannel1 = juce::Decibels::gainToDecibels(value);
+                break;
+            default:
+                break;
+        }
     }
     BarMeterComponent::BarMeterComponent (const juce::AudioChannelSet& channelFormat)
     {
