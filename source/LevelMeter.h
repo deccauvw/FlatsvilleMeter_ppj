@@ -13,6 +13,8 @@
 
 //meter "needle point" line
 #include "GuiComponents/BarMeterComponent.h"
+#include "GuiComponents/TinyStripComponent.h"
+
 #include "GuiModules/FacePlateGui.h"
 //#include "Components/HorizontalBarMeterHelpers.h"
 //#include "Components/HorizontalBarMeterChannel.h"

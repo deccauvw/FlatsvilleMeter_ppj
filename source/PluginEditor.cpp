@@ -13,9 +13,11 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(barMeterComponentChannel1);
     //show faceplate
     addAndMakeVisible(facePlateGui);
+    addAndMakeVisible(tinyStripComponent);
 
-    startTimerHz(10);
-    setSize (BarMeter::Constants::kGuiSizeWidth, BarMeter::Constants::kGuiSizeHeight);
+    startTimerHz(Gui::Constants::kInitialRefreshRateHz);
+    tinyStripComponent.setNumericValue(0);
+    setSize (Gui::Constants::kGuiSizeWidth, Gui::Constants::kGuiSizeHeight);
 
 }//constructor
 
@@ -24,16 +26,17 @@ PluginEditor::~PluginEditor() =default;
 //=============================================================
 void PluginEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::green); //opaque filling
+    g.fillAll(juce::Colours::black); //opaque filling
     // render everything here
     facePlateGui.paint(g); //faceplate render
+    tinyStripComponent.paint(g); //tinyStrip render
 
 }
 
 void PluginEditor::resized()
 {
-    auto boundsChannelL = juce::Rectangle<int>(BarMeter::Constants::kMeterPositionAx,BarMeter::Constants::kMeterPositionAy, BarMeter::Constants::kMeterBarWidth, BarMeter::Constants::kMeterBarHeight);
-    auto boundsChannelR = juce::Rectangle<int>(BarMeter::Constants::kMeterPositionBx,BarMeter::Constants::kMeterPositionBy, BarMeter::Constants::kMeterBarWidth, BarMeter::Constants::kMeterBarHeight);
+    auto boundsChannelL = juce::Rectangle<int>(Gui::Constants::kMeterPositionAx, Gui::Constants::kMeterPositionAy, Gui::Constants::kMeterBarWidth, Gui::Constants::kMeterBarHeight);
+    auto boundsChannelR = juce::Rectangle<int>(Gui::Constants::kMeterPositionBx, Gui::Constants::kMeterPositionBy, Gui::Constants::kMeterBarWidth, Gui::Constants::kMeterBarHeight);
     barMeterComponentChannel0.setBounds(boundsChannelL);
     barMeterComponentChannel1.setBounds(boundsChannelR);
 }
@@ -42,11 +45,15 @@ void PluginEditor::resized()
 void PluginEditor::timerCallback()
 {
     //set value here
-    auto levelValueRmsDb0 = m_audioProcessor.getLevelValueRms(0);
-    auto levelValueRmsDb1 = m_audioProcessor.getLevelValueRms(1);
+    auto levelValueRms0 = m_audioProcessor.getLevelValueRms(0);
+    auto levelValueRms1 = m_audioProcessor.getLevelValueRms(1);
+    auto levelValuePeak0 = m_audioProcessor.getLevelValuePeak(0);
+    auto levelValuePeak1 = m_audioProcessor.getLevelValuePeak(1);
 
-    barMeterComponentChannel0.setLevel(levelValueRmsDb0);
+    tinyStripComponent.setNumericValue((float)timerCallbackCount++);
+
+    barMeterComponentChannel0.setLevel(levelValuePeak0);
     barMeterComponentChannel0.repaint();
-    barMeterComponentChannel1.setLevel(levelValueRmsDb1);
+    barMeterComponentChannel1.setLevel(levelValuePeak1);
     barMeterComponentChannel1.repaint();
 }

@@ -26,8 +26,11 @@ private:
     Gui::BarMeterComponent
         barMeterComponentChannel0,
         barMeterComponentChannel1;
+
+    Gui::TinyStripComponent tinyStripComponent;
     Face::FacePlateGui facePlateGui;
 
+    int timerCallbackCount = 0;
     void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

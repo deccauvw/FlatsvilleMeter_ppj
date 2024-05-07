@@ -16,7 +16,7 @@ namespace Gui
 //        g.setColour(juce::Colours::aquamarine.withBrightness(0.5f));
 //        g.fillRect(bounds);
         g.setColour(juce::Colours::aliceblue);
-        auto scaledWidth = juce::jmap(m_levelValue, BarMeter::Constants::kLevelMinInDecibels, BarMeter::Constants::kLevelMaxInDecibels, 0.0f, static_cast<float>(getWidth()));
+        auto scaledWidth = juce::jmap(m_levelValue, Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMaxInDecibels, 0.0f, static_cast<float>(getWidth()));
         g.fillRect(bounds.removeFromLeft(scaledWidth));
     }
 

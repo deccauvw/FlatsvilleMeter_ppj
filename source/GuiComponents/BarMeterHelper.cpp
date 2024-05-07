@@ -5,6 +5,6 @@
 #pragma once
 #include "BarMeterHelper.h"
 
-namespace BarMeter
+namespace Gui
 {
 } // Barmeter

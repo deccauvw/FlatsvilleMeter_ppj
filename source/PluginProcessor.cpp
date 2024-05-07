@@ -123,8 +123,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+        buffer.clear (i, 0, buffer.getNumSamples());
 
-
+    //>>>>>
     //if the plugin is NOT connected
     if(isBufferEmpty(buffer)) // not connected
     {
@@ -133,28 +135,21 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
             bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
+        m_randomValueForDebugging = 1111111.f;
     }
     else
     {
-//        DBG("buffer is NOT empty. skipping padding");
-        buffer.makeCopyOf(bufferForMeter);
-//        DBG("finished copying buffer to bufferForMeter");
-;    }
+        bufferForMeter.makeCopyOf(buffer);
+        m_randomValueForDebugging = 2222222.f;
+    }
 
 
-
-
-//    DBG("#Channels = " + juce::String(bufferForMeter.getNumChannels()));
-//    DBG("#Samples  = " + juce::String(bufferForMeter.getNumSamples()));
     auto numSamples = bufferForMeter.getNumSamples();
     m_RmsLevelChannel0 = bufferForMeter.getRMSLevel(0, 0, numSamples);
     m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, numSamples);
     m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, numSamples);
     m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, numSamples);
-//    DBG("levelRmsLeft = " + juce::String(m_RmsLevelChannel0));
-//    DBG("levelRmsRigt = " + juce::String(m_RmsLevelChannel1));
-//    DBG("levelPkLeft = " + juce::String(m_peakLevelChannel0));
-//    DBG("levelPkRigt = " + juce::String(m_peakLevelChannel1));
+
 
 }
 
@@ -198,19 +193,19 @@ void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
 //==============================================================================
 bool PluginProcessor::isBufferEmpty (const juce::AudioBuffer<float>& buffer)
 {
+    //returns true if Empty
+    //returns false if not Empty
+
     if(buffer.getNumChannels() == 0)
     {
-        DBG("buffer num channel is zero");
         return true;
     }
-
     //check if any of the channels contain any data
     for(int ch = 0; ch < buffer.getNumChannels(); ++ch)
     {
-        if(buffer.getReadPointer(ch))
+        if(buffer.getReadPointer(ch) == nullptr)
             return true;
     }
-    DBG("buffer is not empty @ isBufferEmpty");
     return false;
 }
 
@@ -224,7 +219,7 @@ float PluginProcessor::getLevelValueRms (const int channel) const
     else if(channel == 1)
         return m_RmsLevelChannel1;
     else{
-        return -12.f;
+        return 0;
     }
 }
 float PluginProcessor::getLevelValuePeak (const int channel) const
@@ -235,7 +230,7 @@ float PluginProcessor::getLevelValuePeak (const int channel) const
     else if(channel == 1)
         return m_peakLevelChannel1;
     else{
-        return -12.f;
+        return 0;
     }
 }
 

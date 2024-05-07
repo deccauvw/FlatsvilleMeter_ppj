@@ -6,14 +6,14 @@
 #include <vector>
 
 
-namespace BarMeter
+namespace Gui
 {
     namespace Constants
     {
         static constexpr auto kGuiSizeWidth = 1012;
         static constexpr auto kGuiSizeHeight = 230;
         static constexpr auto kLevelPeakHoldHeight = 2;//height of the peak hold strip (in pixels)
-        static constexpr auto kInitialRefreshRateHz = 24.0f;
+        static constexpr auto kInitialRefreshRateHz = 30.0f;
 
         //header is virtually the "LR MS" thing.
         static constexpr auto kDefaultHeaderHeight = 25;
@@ -23,12 +23,21 @@ namespace BarMeter
         static constexpr auto kHeaderChannelTypeHeight = 12;
         static constexpr auto kHeaderChannelTypeWidth = 12;
         static constexpr auto kHeaderChannelTypeFontHeight = 12.0f;
+
+        static constexpr auto kTinyStripFontHeight = 20.0f;
+        static constexpr auto kTinyStripTextPositionX = 660;
+        static constexpr auto kTinyStripTextPositionY = 175;
+        static constexpr auto kTinyStripTextPositionWidth = 167;
+        static constexpr auto kTinyStripTextPositionHeight = 23;
+
         static constexpr auto kHeaderMetricTypePositionX = 590;
         static constexpr auto kHeaderMetricTypePositionY = 106;
         static constexpr auto kHeaderMetricTypeHeight = 19;
         static constexpr auto kHeaderMetricTypeWidth = 16;
         static constexpr auto kHeaderMetricTypeFontHeight = 19.0f;
 
+        //fonts!
+        static constexpr auto kDefaultTypeFace = "Agency FB";
 
         //bouncy meters reacting to the input signal following the ballistics.
         static constexpr auto kMeterBarWidth = 455;  //horizontal bar meter width(long side)
@@ -123,6 +132,6 @@ namespace BarMeter
     enum class LabelStripPosition{
         topToBottom1, topToBottom2, none
     };
-} // BarMeter
+} // Gui
 
 #endif //FLATSVILLEMETER_BARMETERHELPER_H

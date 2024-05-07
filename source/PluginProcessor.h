@@ -51,7 +51,7 @@ public:
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;
 
-
+    float m_randomValueForDebugging = 0.0f;
     float m_RmsLevelChannel0 = 0.0;
     float m_RmsLevelChannel1= 0.0;
     float m_peakLevelChannel0 = 0.0;
