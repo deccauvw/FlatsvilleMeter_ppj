@@ -24,7 +24,7 @@ namespace Gui
 
 
     private:
-        float m_levelValue = -12.0f;
+        float m_levelValue = BarMeter::Constants::kLevelMinInDecibels;
 
     };
 

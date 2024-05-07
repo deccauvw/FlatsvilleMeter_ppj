@@ -218,6 +218,7 @@ bool PluginProcessor::isBufferEmpty (const juce::AudioBuffer<float>& buffer)
 float PluginProcessor::getLevelValueRms (const int channel) const
 {
     jassert(channel == 0 || channel == 1);
+
     if(channel == 0)
         return m_RmsLevelChannel0;
     else if(channel == 1)
