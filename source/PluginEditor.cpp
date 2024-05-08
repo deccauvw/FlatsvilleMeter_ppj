@@ -4,12 +4,12 @@
 #include "LevelMeter.h"
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), m_audioProcessor(p), facePlateGui()
+    : AudioProcessorEditor (&p), m_audioProcessor(p)
 {
     juce::ignoreUnused (m_audioProcessor);
 
     //show ballistic bar meters
-    addAndMakeVisible(barMeterComponent);
+    //addAndMakeVisible(barMeterComponent);
     //show faceplate
     addAndMakeVisible(facePlateGui);
 

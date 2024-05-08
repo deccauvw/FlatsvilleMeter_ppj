@@ -66,6 +66,7 @@ namespace Gui
         static constexpr auto kTickMarkWidth = 2;
         static constexpr auto kTickMarkAlphaMax = 0.3f;
         static constexpr auto kTickMarkAlphaMin = 0.1f;
+        static constexpr auto kLabelStripTextPadding = 2.0f;
 
         //aesthetics for "0VU" indicator (flashy orb)
         //will be added later if possible
@@ -138,6 +139,18 @@ namespace Gui
 
     enum class LabelStripPosition{
         topToBottom1, topToBottom2, none
+    };
+
+    class Helpers
+    {
+        private:
+        Helpers() = default;
+        ~Helpers() = default;
+        public:
+        [[nodiscard]] static constexpr bool containsUpTo(juce::Range<float> levelRange, float levelDb) noexcept
+        {
+            return levelDb > levelRange.getStart() && levelDb <= levelRange.getEnd();
+        }
     };
 } // Gui
 

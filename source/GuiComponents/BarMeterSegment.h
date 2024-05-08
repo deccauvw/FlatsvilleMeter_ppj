@@ -39,6 +39,7 @@ namespace Gui
 
         [[nodiscard]] Options getMeterOptions() const { return m_meterOptions; }
 
+        void segmentLevel(float levelDb);
     private:
         SegmentOptions m_segmentOptions {};
         Options m_meterOptions {};
