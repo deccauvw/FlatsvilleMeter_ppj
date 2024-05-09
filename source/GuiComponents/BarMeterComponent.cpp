@@ -7,16 +7,29 @@
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent ():
-                                             horizontalMeterBar0(0)
-                                             ,horizontalMeterBar1(1)
+                                             horizontalMeterBar0(0),
+                                             horizontalMeterBar1(1),
+                                             channelInfoTextBox0(),
+                                             channelInfoTextBox1(),
+                                             tinyStripComponent()
     {
     }
     BarMeterComponent::~BarMeterComponent() = default;
 
+    //===================================================================
+
     void BarMeterComponent::paint(juce::Graphics &g)
     {
-        horizontalMeterBar0.drawMeter(g, meterColours);
-        horizontalMeterBar1.drawMeter(g, meterColours);
+        juce::ignoreUnused(g);
+    }
+    void BarMeterComponent::draw(juce::Graphics & g)
+    {
+        //g.fillAll(m_backgroundColour);
+        horizontalMeterBar0.paint(g);
+        horizontalMeterBar1.paint(g);
+        channelInfoTextBox0.paint(g);
+        channelInfoTextBox1.paint(g);
+        tinyStripComponent.paint(g);
     }
 
     void BarMeterComponent::setInputMeterLevelValueDecibels (const int channel, const float value)
@@ -37,12 +50,7 @@ namespace Gui
     {
         m_channelFormat = channelFormat;
     }
-    void BarMeterComponent::refresh (bool forceRefresh)
-    {
-//        meterColours.refresh();
-//        horizontalMeterBar0.refresh();
-//        horizontalMeterBar1.refresh();
-    }
+
     void BarMeterComponent::reset()
     {
         m_channelFormat = juce::AudioChannelSet::stereo();
@@ -50,8 +58,8 @@ namespace Gui
     }
     void BarMeterComponent::resetMeters()
     {
-//        horizontalMeterBar0.refresh();
-//        horizontalMeterBar1.refresh();
+        horizontalMeterBar0.refresh(m_levelValueChannel0);
+        horizontalMeterBar1.refresh(m_levelValueChannel1);
     }
     void BarMeterComponent::clearMeters()
     {
@@ -92,9 +100,27 @@ namespace Gui
     }
     void BarMeterComponent::useInternalTiming (bool useInternalTiming) noexcept
     {
+        useInternalTimer = useInternalTiming;
+        stopTimer();
+        if(useInternalTiming)
+            startTimerHz(static_cast<int>(std::round(meterOptions.refreshRateHz)));
     }
     void BarMeterComponent::setColours()
     {
+        m_backgroundColour = meterColours.colourBackground;
     }
 
+    void BarMeterComponent::timerCallback()
+    {
+        refresh(useInternalTimer);
+    }
+
+    void BarMeterComponent::refresh (bool forceRefresh) //global updating function
+    {
+        //meterColours.refresh();
+        if (!forceRefresh)
+            return;
+        resetMeters();
+        resetPeakHold();
+    }
 } // Gui

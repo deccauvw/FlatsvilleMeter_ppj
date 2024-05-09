@@ -37,12 +37,22 @@ namespace Gui
 
     BarMeterBar::~BarMeterBar() = default;
 
-    void BarMeterBar::paint (juce::Graphics& g)
+    void BarMeterBar::refresh(float meterLevelValueDb)
+    {
+        setMeterLevelValueDecibels(meterLevelValueDb);
+    }
+    void BarMeterBar::drawBar(juce::Graphics &g)
     {
         auto bounds = m_levelBounds.toFloat();
         g.setColour (juce::Colours::aliceblue);
         auto scaledWidth = juce::jmap (m_meterLevelDb, Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMaxInDecibels, m_meterRange.getStart(), m_meterRange.getEnd());
         g.fillRect (bounds.removeFromLeft (scaledWidth));
+    }
+
+    void BarMeterBar::paint (juce::Graphics& g)
+    {
+        drawMeter(g, meterColours);
+        drawPeakValue(g, meterColours);
     }
     void BarMeterBar::setMeterLevelValueDecibels (const float value)
     {
@@ -107,6 +117,7 @@ namespace Gui
         {
             segment.draw (g, meterColours);
         }
+        drawBar(g);
         drawPeakValue (g, meterColours);
     }
     void BarMeterBar::drawPeakValue (juce::Graphics& g, const MeterColours& meterColours)

@@ -57,7 +57,7 @@ namespace Gui
         void useInternalTiming(bool useInternalTiming) noexcept;
         //void showTickMarks(bool showTickMarks);
         void paint (juce::Graphics& g)override;
-
+        void draw(juce::Graphics& g);
     private:
         Gui::BarMeterBar horizontalMeterBar0;
         Gui::BarMeterBar horizontalMeterBar1;
@@ -73,7 +73,7 @@ namespace Gui
         bool useInternalTimer =true;
         juce::Font m_font;
         juce::Colour m_backgroundColour = juce::Colours::black;
-        void timerCallback()override{refresh();}
+        void timerCallback()override;
         void setColours ();
         //[[nodiscard]] MeterChannel getMeterChannel (int meterIndex) noexcept;
 

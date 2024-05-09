@@ -9,7 +9,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     juce::ignoreUnused (m_audioProcessor);
 
     //show ballistic bar meters
-    //addAndMakeVisible(barMeterComponent);
+    addAndMakeVisible(barMeterComponent);
     //show faceplate
     addAndMakeVisible(facePlateGui);
 
@@ -32,10 +32,7 @@ void PluginEditor::paint (juce::Graphics& g)
 }
 
 void PluginEditor::resized()
-{
-    //empty
-}
-
+{}
 
 void PluginEditor::timerCallback()
 {

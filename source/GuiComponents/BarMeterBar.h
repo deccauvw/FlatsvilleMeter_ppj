@@ -19,8 +19,11 @@ namespace Gui
         BarMeterBar();
         explicit BarMeterBar (int channel);
         ~BarMeterBar() override;
-
+        void drawBar(juce::Graphics& g);
         void paint (juce::Graphics& g) override;
+        void drawMeter (juce::Graphics& g, const MeterColours& meterColours);
+        void drawPeakValue (juce::Graphics& g, const MeterColours& meterColours);
+
         void setMeterLevelValueDecibels (const float value);
         [[nodiscard]] float getMeterLevelValueDecibels();
         void refreshMeterLevel();
@@ -32,10 +35,10 @@ namespace Gui
         void setMeterSegments (const std::vector<SegmentOptions>& segmentOptions);
         [[nodiscard]] juce::Rectangle<int> getMeterBounds() const noexcept;
         [[nodiscard]] juce::Rectangle<int> getLevelBounds() const noexcept;
-        void drawMeter (juce::Graphics& g, const MeterColours& meterColours);
-        void drawPeakValue (juce::Graphics& g, const MeterColours& meterColours);
+
         float getPeakHoldLevel();
         void resetPeakHold();
+        void refresh(float meterLevelValueDb);
 
     private:
         std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
@@ -48,6 +51,7 @@ namespace Gui
         float m_meterLevelDb = Constants::kLevelMinInDecibels;
         float m_peakLevelDb = Constants::kLevelMinInDecibels;
         Options m_meterOptions;
+        MeterColours meterColours;
         float m_peakHoldDirty = false;
         float m_decayCoeff = 0.0f;
         float m_refreshRateHz = Constants::kInitialRefreshRateHz;
