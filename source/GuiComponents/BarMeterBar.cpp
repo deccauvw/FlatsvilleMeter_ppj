@@ -181,5 +181,10 @@ namespace Gui
 
         return m_segments[0].getPeakHold();
     }
+    void BarMeterBar::resetPeakHold()
+    {
+        m_peakLevelDb = Constants::kLevelMinInDecibels;
+        m_peakHoldDirty = true;
+    }
 
 } // Gui

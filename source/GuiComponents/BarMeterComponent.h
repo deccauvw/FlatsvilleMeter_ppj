@@ -8,6 +8,7 @@
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 
+#include "BarMeterChannelInfoTextBox.h"
 #include "BarMeterBar.h"
 #include "BarMeterHelper.h"
 #include "TinyStripComponent.h"
@@ -64,6 +65,7 @@ namespace Gui
         Gui::BarMeterChannelInfoTextBox channelInfoTextBox1;
         Gui::TinyStripComponent tinyStripComponent;
         Gui::MeterColours meterColours;
+        Options meterOptions;
         //  =====
         float m_levelValueChannel0 = Gui::Constants::kLevelMinInDecibels;
         float m_levelValueChannel1 = Gui::Constants::kLevelMinInDecibels;

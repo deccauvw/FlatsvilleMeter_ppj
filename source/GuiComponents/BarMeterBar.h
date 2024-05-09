@@ -35,6 +35,7 @@ namespace Gui
         void drawMeter (juce::Graphics& g, const MeterColours& meterColours);
         void drawPeakValue (juce::Graphics& g, const MeterColours& meterColours);
         float getPeakHoldLevel();
+        void resetPeakHold();
 
     private:
         std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
@@ -45,6 +46,7 @@ namespace Gui
         //meterLevels
         std::atomic<float> m_inputLevel { 0.0f };
         float m_meterLevelDb = Constants::kLevelMinInDecibels;
+        float m_peakLevelDb = Constants::kLevelMinInDecibels;
         Options m_meterOptions;
         float m_peakHoldDirty = false;
         float m_decayCoeff = 0.0f;

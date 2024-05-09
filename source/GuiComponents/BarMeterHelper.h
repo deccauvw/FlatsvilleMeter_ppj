@@ -39,8 +39,12 @@ namespace Gui
         static constexpr auto kPeakHoldLevelTextPositionWidth = 56;
         static constexpr auto kPeakHoldLevelTextPositionHeight = 22;
 
-        static constexpr auto kHeaderMetricTypePositionX = 590;
-        static constexpr auto kHeaderMetricTypePositionY = 106;
+        static constexpr auto kChannelInfoTextBoxChannelTypePositionX = 595;
+        static constexpr auto kChannelInfoTextBoxChannelTypePositionYup = 86;
+        static constexpr auto kChannelInfoTextBoxChannelTypePositionYdn = 132;
+        static constexpr auto kChannelInfoTextBoxChannelTypePositionWidth = 6;
+        static constexpr auto kChannelInfoTextBoxChannelTypePositionHeight = 13;
+
         static constexpr auto kHeaderMetricTypeHeight = 19;
         static constexpr auto kHeaderMetricTypeWidth = 16;
         static constexpr auto kHeaderMetricTypeFontHeight = 19.0f;

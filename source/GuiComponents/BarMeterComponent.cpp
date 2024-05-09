@@ -39,9 +39,9 @@ namespace Gui
     }
     void BarMeterComponent::refresh (bool forceRefresh)
     {
-        meterColours.refresh();
-        horizontalMeterBar0.refresh();
-        horizontalMeterBar1.refresh();
+//        meterColours.refresh();
+//        horizontalMeterBar0.refresh();
+//        horizontalMeterBar1.refresh();
     }
     void BarMeterComponent::reset()
     {
@@ -50,8 +50,8 @@ namespace Gui
     }
     void BarMeterComponent::resetMeters()
     {
-        horizontalMeterBar0.refresh();
-        horizontalMeterBar1.refresh();
+//        horizontalMeterBar0.refresh();
+//        horizontalMeterBar1.refresh();
     }
     void BarMeterComponent::clearMeters()
     {
@@ -61,8 +61,8 @@ namespace Gui
     }
     void BarMeterComponent::resetPeakHold()
     {
-        horizontalMeterBar0->resetPeakHold();
-        horizontalMeterBar1->resetPeakHold();
+        horizontalMeterBar0.resetPeakHold();
+        horizontalMeterBar1.resetPeakHold();
     }
     void BarMeterComponent::setChannelFormat (const juce::AudioChannelSet& channelSet, const std::vector<juce::String>& channelNames)
     {
@@ -82,12 +82,13 @@ namespace Gui
         const auto numMeters = static_cast<int> (Gui::Constants::kChannelSize);
         auto defaultMeterWidth = static_cast<float> (Constants::kMeterBarWidth);
 
-        horizontalMeterBar0.setChannelName(channelNames[static_cast<size_t>(0)]);
-        horizontalMeterBar1.setChannelName(channelNames[static_cast<size_t>(1)]);
-
+        channelInfoTextBox0.setChannelName(channelNames[static_cast<size_t>(0)]);
+        channelInfoTextBox1.setChannelName(channelNames[static_cast<size_t>(1)]);
     }
     void BarMeterComponent::setRefreshRate (float refreshRate)
     {
+        meterOptions.refreshRateHz = refreshRate;
+
     }
     void BarMeterComponent::useInternalTiming (bool useInternalTiming) noexcept
     {
