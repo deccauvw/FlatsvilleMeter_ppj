@@ -60,8 +60,11 @@ namespace Gui
     private:
         Gui::BarMeterBar horizontalMeterBar0;
         Gui::BarMeterBar horizontalMeterBar1;
-
-
+        Gui::BarMeterChannelInfoTextBox channelInfoTextBox0;
+        Gui::BarMeterChannelInfoTextBox channelInfoTextBox1;
+        Gui::TinyStripComponent tinyStripComponent;
+        Gui::MeterColours meterColours;
+        //  =====
         float m_levelValueChannel0 = Gui::Constants::kLevelMinInDecibels;
         float m_levelValueChannel1 = Gui::Constants::kLevelMinInDecibels;
         juce::AudioChannelSet m_channelFormat = juce::AudioChannelSet::stereo();

@@ -10,6 +10,8 @@ namespace Gui
 {
     namespace Constants
     {
+        static constexpr auto kChannelSize = 2;
+
         static constexpr auto kGuiSizeWidth = 1012;
         static constexpr auto kGuiSizeHeight = 230;
         static constexpr auto kLevelPeakHoldHeight = 2;//height of the peak hold strip (in pixels)

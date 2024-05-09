@@ -13,7 +13,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     //show faceplate
     addAndMakeVisible(facePlateGui);
 
-    startTimerHz(Gui::Constants::kInitialRefreshRateHz);
+    startTimerHz((int)Gui::Constants::kInitialRefreshRateHz);
     tinyStripComponent.setNumericValue(0);
     setSize (Gui::Constants::kGuiSizeWidth, Gui::Constants::kGuiSizeHeight);
 
@@ -27,6 +27,7 @@ void PluginEditor::paint (juce::Graphics& g)
     g.fillAll(juce::Colours::black); //opaque filling
     // render everything here
     facePlateGui.paint(g); //faceplate render
+    barmeterComponent
     tinyStripComponent.paint(g); //tinyStrip render
 
 }

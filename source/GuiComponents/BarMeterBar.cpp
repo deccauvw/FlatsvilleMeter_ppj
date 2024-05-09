@@ -170,7 +170,7 @@ namespace Gui
     {
         for (auto& segment : m_segments)
         {
-            segment.setMeterOpotions (m_meterOptions);
+            segment.setMeterOptions (m_meterOptions);
         }
         m_peakHoldDirty = true;
     }

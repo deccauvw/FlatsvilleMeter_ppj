@@ -13,7 +13,7 @@
 namespace Gui
 {
 
-    class BarMeterBar : public juce::Component, private juce::Timer
+    class BarMeterBar : public juce::Component//, private juce::Timer
     {
     public:
         BarMeterBar();
