@@ -7,67 +7,61 @@
 namespace Gui
 {
 
-    TinyStripComponent::TinyStripComponent() : m_numericValue(0.0f), m_isDirty(true)
+    TinyStripComponent::TinyStripComponent(std::function<juce::String()>valueStringSupplier) :
+                                                                                                 valueStringSupplierFn(valueStringSupplier),
+                                                                                                 m_isDirty(true)
     {
         m_fontDefault = juce::Font(Gui::Constants::kDefaultTypeFace, Gui::Constants::kTinyStripFontHeight, 0);
-        startTimerHz(Gui::Constants::kInitialRefreshRateHz);
+        //startTimerHz(Gui::Constants::kInitialRefreshRateHz);
     }
     TinyStripComponent::~TinyStripComponent() = default;
 
     void TinyStripComponent::paint (juce::Graphics& g)
     {
-        draw(g, m_meterColours);
+        setStringContent(valueStringSupplierFn());
+        draw(g);
+        DBG("TinyStripComponent::paint called");
     }
     //===================================================================
     //===================================================================
     //===================================================================
     //===================================================================
 
-    void TinyStripComponent::draw (juce::Graphics& g , MeterColours &m_meterColours)
+    void TinyStripComponent::draw (juce::Graphics& g)
     {
         //draw numeric value in the TinyStrip.
         //const auto tinyStripText = getNumericValue();
         g.setFont (m_fontDefault);
         g.setColour (m_meterColours.colourText);
 
-        juce::String s;
+        if(!m_isDirty)
+            return;
 
-        if(m_isDirty)
-        {
-            s = juce::String(getNumericValue());
-        }
-        else //is not dirty
-        {
-            s = juce::String("Not Dirty");
-        }
-
-        g.drawFittedText (s,
+        g.drawFittedText (stringContent,
             Gui::Constants::kTinyStripTextPositionX,
             Gui::Constants::kTinyStripTextPositionY,
             Gui::Constants::kTinyStripTextPositionWidth - Gui::Constants::kTinyStripTextMargin,
             Gui::Constants::kTinyStripTextPositionHeight,
             juce::Justification::left,
             true);
-
-
     }
 
-    float TinyStripComponent::getNumericValue()
+    juce::String TinyStripComponent::getStringContent()
     {
-        return m_numericValue;
+        return stringContent;
     }
 
-    void TinyStripComponent::setNumericValue (const float value)
+    void TinyStripComponent::setStringContent (const juce::String& newStringContent)
     {
-        auto valueDb = juce::jmax(juce::Decibels::gainToDecibels(value), Gui::Constants::kLevelMinInDecibels);
-        if(m_numericValue == valueDb)
+        if(stringContent == newStringContent)
         {
             m_isDirty = false;
+            return;
         }
         else
         {
             m_isDirty = true;
-            m_numericValue = truncateValue(valueDb, 4);
+            stringContent = newStringContent;
 
         }
 
@@ -84,6 +78,6 @@ namespace Gui
     }
     void TinyStripComponent::timerCallback()
     {
-        //empty
+        repaint();
     }
 } // gui

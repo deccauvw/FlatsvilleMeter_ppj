@@ -16,6 +16,7 @@
 #include "GuiComponents/TinyStripComponent.h"
 
 #include "GuiModules/FacePlateGui.h"
+#include <stdio.h>
 //#include "Components/HorizontalBarMeterHelpers.h"
 //#include "Components/HorizontalBarMeterChannel.h"
 //#include "Components/HorizontalBarMeterLevel.h"

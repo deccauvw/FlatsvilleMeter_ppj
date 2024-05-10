@@ -17,13 +17,13 @@ namespace Gui
     {
     public:
         BarMeterBar();
-        explicit BarMeterBar (int channel);
+        explicit BarMeterBar (int channel, std::function<float()>&& valueFunction);
         ~BarMeterBar() override;
         void initialize();
         void drawBar (juce::Graphics& g);
         void paint (juce::Graphics& g) override;
-        void drawMeter (juce::Graphics& g, const MeterColours& meterColours);
-        void drawPeakValue (juce::Graphics& g, const MeterColours& meterColours);
+        void drawMeter (juce::Graphics& g);
+        void drawPeakValue (juce::Graphics& g);
 
         void setMeterLevelValueDecibels (const float value);
         [[nodiscard]] float getMeterLevelValueDecibels();
@@ -33,26 +33,28 @@ namespace Gui
         [[nodiscard]] float getRefreshRate();
         void setDecay (float decayMs);
         [[nodiscard]] float getDecay() const noexcept;
-        void setMeterSegments (const std::vector<SegmentOptions>& segmentOptions);
+        //void setMeterSegments (const std::vector<SegmentOptions>& segmentOptions);
         [[nodiscard]] juce::Rectangle<int> getMeterBounds() const noexcept;
         [[nodiscard]] juce::Rectangle<int> getLevelBounds() const noexcept;
         void timerCallback() override;
-        float getPeakHoldLevel();
+        //float getPeakHoldLevel();
+        //void resized() override;
         void resetPeakHold();
         void updateBarFigure (float meterLevelValueDb);
 
     private:
-        std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
-        std::vector<BarMeterSegment> m_segments {};
+        std::function<float()> valueSupplierFn;
+        //std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
+        //std::vector<BarMeterSegment> m_segments {};
         juce::Rectangle<int> m_meterBounds {}; //numeric peak meter
         juce::Rectangle<int> m_levelBounds {}; //graphic level meter
         juce::Range<float> m_meterRange { Constants::kLevelMaxInDecibels, Constants::kLevelMinInDecibels };
         //meterLevels
-        std::atomic<float> m_inputLevel { 0.0f };
+        std::atomic<float> m_inputLevelDb { 0.0f };
         float m_meterLevelDb = Constants::kLevelMinInDecibels;
         float m_peakLevelDb = Constants::kLevelMinInDecibels;
         Options m_meterOptions;
-        MeterColours meterColours;
+        [[maybe_unused]] MeterColours meterColours;
         float m_peakHoldDirty = false;
         float m_decayCoeff = 0.0f;
         float m_refreshRateHz = Constants::kInitialRefreshRateHz;
@@ -62,7 +64,7 @@ namespace Gui
         [[nodiscard]] float getDecayedLevel (float newLevelDb);
         [[nodiscard]] float getLinearDecayedLevel (float newLevelDb);
         void calculateDecayCoeff (const Options& meterOptions);
-        void syncMeterOptions();
+        //void syncMeterOptions();
 
         JUCE_LEAK_DETECTOR (BarMeterBar)
     };

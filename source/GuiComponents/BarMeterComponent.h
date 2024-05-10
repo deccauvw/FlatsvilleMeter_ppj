@@ -4,9 +4,12 @@
 
 #ifndef FLATSVILLEMETER_BARMETERCOMPONENT_H
 #define FLATSVILLEMETER_BARMETERCOMPONENT_H
+#pragma once
+
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
+#include "C:\JetBrains\AudioDevelopment\_007_FlatsvilleMeter_ppj\FlatsvilleMeter_ppj\source\PluginProcessor.h"
 #include <vector>
 
 #include "BarMeterChannelInfoTextBox.h"
@@ -23,17 +26,15 @@ namespace Gui
         private juce::Timer
     {
     public:
-        BarMeterComponent();
-        explicit BarMeterComponent(const juce::AudioChannelSet& channelFormat);
+        explicit BarMeterComponent(PluginProcessor&);
+        //BarMeterComponent(PluginProcessor& p, const juce::AudioChannelSet& channelFormat);
         ~BarMeterComponent() override;
 
         //can be called manually or internally.
         //see setRefreshRate, useInternalTiming
-        void refresh(bool forceRefresh = false);
 
         //reset peak hold, resetMeters
         void reset();
-        void updateMeters();
         void resetPeakHold();
 
         //set inputlevel
@@ -57,15 +58,20 @@ namespace Gui
         void useInternalTiming(bool useInternalTiming) noexcept;
         //void showTickMarks(bool showTickMarks);
         void paint (juce::Graphics& g)override;
-        //void drawEverything(juce::Graphics& g);
-
+        void updateEverything();
+        void addAndMakeVisibleEverything();
+        void repaintEverything();
+        std::vector<juce::Component*> addAndMakeVisibleEverythingThrower();
+        void drawEverything(juce::Graphics& g);
+        void setLevelValues(std::vector<float>& levelValues);
 
         float M_RANDOMVALUEFORDEBUGGING = 0.0f;
     private:
+        PluginProcessor& audioProcessor;
 
         bool useInternalTimer = true;
 
-        std::vector<float> inputLevelsInDecibels {0.0f, 0.0f};
+        //std::vector<float> m_LevelValuesInDecibels {0.0f, 0.0f};
 
         Gui::BarMeterBar horizontalMeterBar0;
         Gui::BarMeterBar horizontalMeterBar1;
@@ -76,8 +82,6 @@ namespace Gui
         Options meterOptions;
         //  =====
         std::vector<float> m_levelValues = {Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMinInDecibels};
-        float m_levelValueChannel0 = Gui::Constants::kLevelMinInDecibels;
-        float m_levelValueChannel1 = Gui::Constants::kLevelMinInDecibels;
         juce::AudioChannelSet m_channelFormat = juce::AudioChannelSet::stereo();
 
         juce::Font m_font;

@@ -18,24 +18,26 @@ namespace Gui
     class TinyStripComponent : public juce::Component, private juce::Timer
     {
     public:
-        TinyStripComponent();
+        explicit TinyStripComponent(std::function<juce::String()>valueStringSupplier);
         ~TinyStripComponent() override;
 
         void paint(juce::Graphics& g) override;
 
         //===================================================================
 
-        void draw(juce::Graphics& g, MeterColours &meterColours);
-        float getNumericValue();
-        void setNumericValue(const float value);
-        void timerCallback();
+        void draw(juce::Graphics& g);
+        juce::String getStringContent();
+        void setStringContent(const juce::String& newStringContent);
+        void timerCallback() override;
     private:
-        float m_numericValue;
+        std::function<juce::String()>valueStringSupplierFn;
+        juce::String stringContent;
+
         bool m_isDirty;
         MeterColours m_meterColours;
         juce::Font m_fontDefault;
 
-        static float truncateValue(float f, int upto);
+        [[maybe_unused]]static float truncateValue(float f, int upto);
     };
 
 } // gui

@@ -51,8 +51,6 @@ public:
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;
 
-    float M_RANDOMVALUEFORDEBUGGING = 0.5f;
-
     std::vector<float> m_nChannelRmsLevels {};
     std::vector<float> m_nChannelPeakLevels {};
     float m_RmsLevelChannel0 = 0.0;

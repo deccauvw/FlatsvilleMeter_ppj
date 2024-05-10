@@ -14,19 +14,21 @@
 namespace Gui
 {
 
-    class BarMeterChannelInfoTextBox final : private juce::Component
+    class BarMeterChannelInfoTextBox final : public juce::Component
     {
     public:
-        BarMeterChannelInfoTextBox();
+        BarMeterChannelInfoTextBox(int channel, std::function<float()> valueSupplierFn);
         ~BarMeterChannelInfoTextBox() override;
 
         void setChannelName(juce::String channelName);
         juce::String getChannelName();
         void paint(juce::Graphics &g) override;
-        void draw(juce::Graphics &g,  MeterColours &meterColours);
+        void draw(juce::Graphics &g);
         void setBounds(juce::String &channelName);
     private:
-        //MeterColours meterColours;
+        std::function<float()> valueSupplierFn;
+        int channelNumber;
+        MeterColours meterColours;
         juce::String m_channelName;
         juce::Rectangle<int> m_SquareBounds;
         juce::Rectangle<int> m_SquarePosition;

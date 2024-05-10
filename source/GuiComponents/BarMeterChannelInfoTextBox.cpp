@@ -6,7 +6,10 @@
 
 namespace Gui
 {
-    BarMeterChannelInfoTextBox::BarMeterChannelInfoTextBox() = default;
+    BarMeterChannelInfoTextBox::BarMeterChannelInfoTextBox(int channel, std::function<float()>valueSupplier)
+        :valueSupplierFn(valueSupplier),
+          channelNumber(channel)
+    {}
     BarMeterChannelInfoTextBox::~BarMeterChannelInfoTextBox() = default;
 
     void BarMeterChannelInfoTextBox::setChannelName (juce::String channelName)
@@ -19,7 +22,7 @@ namespace Gui
     }
     void BarMeterChannelInfoTextBox::paint (juce::Graphics& g)
     {
-        juce::ignoreUnused(g);
+        draw(g);
     }
     void BarMeterChannelInfoTextBox::setBounds(juce::String &channelName)
     {
@@ -37,7 +40,7 @@ namespace Gui
         height = Constants::kChannelInfoTextBoxChannelTypePositionHeight;
         m_SquareBounds = juce::Rectangle<int>(xpos, ypos, width, height);
     }
-    void BarMeterChannelInfoTextBox::draw(juce::Graphics& g, MeterColours& meterColours)
+    void BarMeterChannelInfoTextBox::draw(juce::Graphics& g)
     {
         g.setColour( meterColours.colourText);
         auto font = juce::Font(Constants::kDefaultTypeFace, Constants::kTinyStripFontHeight, 0);

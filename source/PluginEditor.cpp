@@ -4,21 +4,30 @@
 #include "LevelMeter.h"
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), m_audioProcessor(p)
+    : AudioProcessorEditor (&p), m_audioProcessor(p), barMeterComponent(p)
 {
     juce::ignoreUnused (m_audioProcessor);
 
-    //show ballistic bar meters
-    addAndMakeVisible(barMeterComponent);
-    //show faceplate
-    addAndMakeVisible(facePlateGui);
+    //show everything from barMeterComponent
+    for(auto* c : barMeterComponent.addAndMakeVisibleEverythingThrower())
+    {
+        addAndMakeVisible(c);
+    }
 
-    startTimerHz((int)Gui::Constants::kInitialRefreshRateHz);
-    //barMeterComponent.reset();
+    //show faceplate
+    addAndMakeVisible(facePlateGui, 1);
+
     setSize (Gui::Constants::kGuiSizeWidth, Gui::Constants::kGuiSizeHeight);
+    setResizable(false, false);
+    startTimerHz(24);
+    //barMeterComponent.reset();
+
 }//constructor
 
-PluginEditor::~PluginEditor() =default;
+PluginEditor::~PluginEditor()
+{
+    stopTimer();
+}
 
 //=============================================================
 void PluginEditor::paint (juce::Graphics& g)
@@ -35,14 +44,7 @@ void PluginEditor::resized()
 
 void PluginEditor::timerCallback()
 {
-    //set value here
-//    auto levelValueRms0 = m_audioProcessor.getLevelValueRms(0);
-//    auto levelValueRms1 = m_audioProcessor.getLevelValueRms(1);
-    auto RNDVALUEFORDEBUG = m_audioProcessor.M_RANDOMVALUEFORDEBUGGING;
-    auto levelValuePeak0 = m_audioProcessor.getLevelValuePeak(0);
-    auto levelValuePeak1 = m_audioProcessor.getLevelValuePeak(1);
-    std::vector<float> levelValuesPeak = {levelValuePeak0, levelValuePeak1};
-    barMeterComponent.setInputMeterLevelValueDecibels(levelValuesPeak);
-    barMeterComponent.M_RANDOMVALUEFORDEBUGGING = RNDVALUEFORDEBUG;
-    //repaint();
+    barMeterComponent.setLevelValues(m_audioProcessor.m_nChannelPeakLevels);
+    barMeterComponent.updateEverything();
+    barMeterComponent.repaintEverything();
 }
