@@ -7,6 +7,7 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
+#include <vector>
 
 #include "BarMeterChannelInfoTextBox.h"
 #include "BarMeterBar.h"
@@ -30,14 +31,13 @@ namespace Gui
         //see setRefreshRate, useInternalTiming
         void refresh(bool forceRefresh = false);
 
-        //reset peakhold, resetMeters
+        //reset peak hold, resetMeters
         void reset();
-        void resetMeters();
-        void clearMeters();
+        void updateMeters();
         void resetPeakHold();
 
         //set inputlevel
-        void setInputMeterLevelValueDecibels (const int channel, const float value);
+        void setInputMeterLevelValueDecibels (const std::vector<float>& values);
         void setChannelFormat(const juce::AudioChannelSet& channelSet, const std::vector<juce::String>& channelNames = {});
         void setChannelNames(const std::vector<juce::String>& channelNames);
         void setRefreshRate(float refreshRate);
@@ -46,19 +46,24 @@ namespace Gui
         /**
      * @brief Set the timing option to use (internal/external).
      *
-     * When using internal timing, the panel will redraw (refresh) the meters automatically
-     * using the refresh rate specified in setPanelRefreshRate.
-     * When using external timing, the user has to do this manually with the 'refresh' method.
+     * When using internal timing, the panel will redraw (updateBarFigure) the meters automatically
+     * using the updateBarFigure rate specified in setPanelRefreshRate.
+     * When using external timing, the user has to do this manually with the 'updateBarFigure' method.
      *
      * @param useInternalTiming When set to true, the meter panel will update itself.
      *
-     * @see refresh, setPanelRefreshRate
+     * @see updateBarFigure, setPanelRefreshRate
     */
         void useInternalTiming(bool useInternalTiming) noexcept;
         //void showTickMarks(bool showTickMarks);
         void paint (juce::Graphics& g)override;
-        void draw(juce::Graphics& g);
+        //void drawEverything(juce::Graphics& g);
     private:
+        bool useInternalTimer = true;
+        int _RANDOMVALUEFORDEBUGGING = 55555;
+
+        std::vector<float> inputLevelsInDecibels {0.0f, 0.0f};
+
         Gui::BarMeterBar horizontalMeterBar0;
         Gui::BarMeterBar horizontalMeterBar1;
         Gui::BarMeterChannelInfoTextBox channelInfoTextBox0;
@@ -67,10 +72,11 @@ namespace Gui
         Gui::MeterColours meterColours;
         Options meterOptions;
         //  =====
+        std::vector<float> m_levelValues = {Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMinInDecibels};
         float m_levelValueChannel0 = Gui::Constants::kLevelMinInDecibels;
         float m_levelValueChannel1 = Gui::Constants::kLevelMinInDecibels;
         juce::AudioChannelSet m_channelFormat = juce::AudioChannelSet::stereo();
-        bool useInternalTimer =true;
+
         juce::Font m_font;
         juce::Colour m_backgroundColour = juce::Colours::black;
         void timerCallback()override;

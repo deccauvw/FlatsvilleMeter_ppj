@@ -28,7 +28,6 @@ void PluginEditor::paint (juce::Graphics& g)
     // render everything here
     facePlateGui.paint(g); //faceplate render
     barMeterComponent.paint(g); //everything else render
-
 }
 
 void PluginEditor::resized()
@@ -37,12 +36,10 @@ void PluginEditor::resized()
 void PluginEditor::timerCallback()
 {
     //set value here
-    auto levelValueRms0 = m_audioProcessor.getLevelValueRms(0);
-    auto levelValueRms1 = m_audioProcessor.getLevelValueRms(1);
+//    auto levelValueRms0 = m_audioProcessor.getLevelValueRms(0);
+//    auto levelValueRms1 = m_audioProcessor.getLevelValueRms(1);
     auto levelValuePeak0 = m_audioProcessor.getLevelValuePeak(0);
     auto levelValuePeak1 = m_audioProcessor.getLevelValuePeak(1);
-
-    barMeterComponent.setInputMeterLevelValueDecibels(0, levelValuePeak0);
-    barMeterComponent.setInputMeterLevelValueDecibels(1, levelValuePeak1);
-    barMeterComponent.repaint();
+    std::vector<float> levelValuesPeak = {levelValuePeak0, levelValuePeak1};
+    barMeterComponent.setInputMeterLevelValueDecibels(levelValuesPeak);
 }

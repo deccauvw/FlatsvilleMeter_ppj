@@ -23,12 +23,11 @@ private:
 
     using APVTS = juce::AudioProcessorValueTreeState;
 
-    Gui::BarMeterComponent barMeterComponent;
-
-//    Gui::TinyStripComponent tinyStripComponent;
-    Face::FacePlateGui facePlateGui;
+    Gui::BarMeterComponent barMeterComponent; //everything that "moves"
+    Face::FacePlateGui facePlateGui; //replacing the opaque background : default skin
 
     int timerCallbackCount = 0;
+    bool forceRefresh = true;
     void timerCallback() override;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginEditor)

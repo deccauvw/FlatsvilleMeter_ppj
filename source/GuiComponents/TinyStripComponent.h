@@ -22,6 +22,9 @@ namespace Gui
         ~TinyStripComponent() override;
 
         void paint(juce::Graphics& g) override;
+
+        //===================================================================
+
         void draw(juce::Graphics& g, MeterColours &meterColours);
         float getNumericValue();
         void setNumericValue(const float value);
@@ -32,7 +35,7 @@ namespace Gui
         MeterColours m_meterColours;
         juce::Font m_fontDefault;
 
-        float truncateValue(float f, int upto);
+        static float truncateValue(float f, int upto);
     };
 
 } // gui

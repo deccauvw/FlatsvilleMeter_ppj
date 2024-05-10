@@ -15,10 +15,14 @@ namespace Gui
 
     void TinyStripComponent::paint (juce::Graphics& g)
     {
-        juce::ignoreUnused(g);
+        draw(g, m_meterColours);
     }
+    //===================================================================
+    //===================================================================
+    //===================================================================
+    //===================================================================
 
-    void TinyStripComponent::draw (juce::Graphics& g , MeterColours &meterColours)
+    void TinyStripComponent::draw (juce::Graphics& g , MeterColours &m_meterColours)
     {
         //draw numeric value in the TinyStrip.
         //const auto tinyStripText = getNumericValue();

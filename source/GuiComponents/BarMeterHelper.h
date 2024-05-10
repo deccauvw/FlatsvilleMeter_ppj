@@ -115,7 +115,7 @@ namespace Gui
         //bool useGradient = true; //use gradients for meter segments. if False use Solid Colours.
         //bool showPeakHoldIndicator = true; //enable peakHold indicator.
         float decayTimeMs = Constants::kLevelDefaultDecayMs;
-        float refreshRateHz = 30.0f; //meter refresh rate when using internal timing;
+        float refreshRateHz = 30.0f; //meter updateBarFigure rate when using internal timing;
         std::vector<float> tickMarksInDecibels = {3.0f, 2.0f, 1.0f, 0.0f, -1.0f, -2.0f, -3.0f, -5.0f, -7.0f, -10.0f, -20.0f}; //VU LU RMS Scale all in dB
     };
 

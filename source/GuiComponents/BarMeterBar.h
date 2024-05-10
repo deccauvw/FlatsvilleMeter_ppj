@@ -8,18 +8,18 @@
 #include "juce_core/juce_core.h"
 #include "juce_gui_basics/juce_gui_basics.h"
 
-#include "BarMeterSegment.h"
 #include "BarMeterHelper.h"
+#include "BarMeterSegment.h"
 namespace Gui
 {
 
-    class BarMeterBar : public juce::Component//, private juce::Timer
+    class BarMeterBar : public juce::Component //, private juce::Timer
     {
     public:
         BarMeterBar();
         explicit BarMeterBar (int channel);
         ~BarMeterBar() override;
-        void drawBar(juce::Graphics& g);
+        void drawBar (juce::Graphics& g);
         void paint (juce::Graphics& g) override;
         void drawMeter (juce::Graphics& g, const MeterColours& meterColours);
         void drawPeakValue (juce::Graphics& g, const MeterColours& meterColours);
@@ -38,7 +38,7 @@ namespace Gui
 
         float getPeakHoldLevel();
         void resetPeakHold();
-        void refresh(float meterLevelValueDb);
+        void updateBarFigure (float meterLevelValueDb);
 
     private:
         std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();

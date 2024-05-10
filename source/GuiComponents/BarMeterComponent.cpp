@@ -13,6 +13,7 @@ namespace Gui
                                              channelInfoTextBox1(),
                                              tinyStripComponent()
     {
+        useInternalTiming(useInternalTimer);
     }
     BarMeterComponent::~BarMeterComponent() = default;
 
@@ -20,58 +21,51 @@ namespace Gui
 
     void BarMeterComponent::paint(juce::Graphics &g)
     {
-        juce::ignoreUnused(g);
-    }
-    void BarMeterComponent::draw(juce::Graphics & g)
-    {
-        //g.fillAll(m_backgroundColour);
-        horizontalMeterBar0.paint(g);
-        horizontalMeterBar1.paint(g);
+        tinyStripComponent.paint(g);
+        horizontalMeterBar0.drawMeter(g, meterColours);
+        horizontalMeterBar1.drawMeter(g, meterColours);
         channelInfoTextBox0.paint(g);
         channelInfoTextBox1.paint(g);
-        tinyStripComponent.paint(g);
     }
+    //===================================================================
+    //===================================================================
+    //===================================================================
+    //===================================================================
 
-    void BarMeterComponent::setInputMeterLevelValueDecibels (const int channel, const float value)
+    void BarMeterComponent::setInputMeterLevelValueDecibels (const std::vector<float>& values)
     {
-        jassert(channel == 0 || channel == 1);
-        switch(channel){
-            case 0:
-                m_levelValueChannel0 = juce::Decibels::gainToDecibels(value);
-                break;
-            case 1:
-                m_levelValueChannel1 = juce::Decibels::gainToDecibels(value);
-                break;
-            default:
-                break;
-        }
+        m_levelValues = values;
+        updateMeters(); //update bars' length
+
+        //repaint everything
+        repaint();
+
     }
+    //===================================================================
     BarMeterComponent::BarMeterComponent (const juce::AudioChannelSet& channelFormat)
     {
         m_channelFormat = channelFormat;
     }
-
+    //===================================================================
     void BarMeterComponent::reset()
     {
         m_channelFormat = juce::AudioChannelSet::stereo();
         refresh(true);
     }
-    void BarMeterComponent::resetMeters()
+    //===================================================================
+    void BarMeterComponent::updateMeters()
     {
-        horizontalMeterBar0.refresh(m_levelValueChannel0);
-        horizontalMeterBar1.refresh(m_levelValueChannel1);
+        //update meter value-tracking width
+        horizontalMeterBar0.updateBarFigure (m_levelValues.at(0));
+        horizontalMeterBar1.updateBarFigure (m_levelValues.at(1));
     }
-    void BarMeterComponent::clearMeters()
-    {
-        horizontalMeterBar0.setMeterLevelValueDecibels(0.0f);
-        horizontalMeterBar1.setMeterLevelValueDecibels(0.0f);
-        refresh(true);
-    }
+    //===================================================================
     void BarMeterComponent::resetPeakHold()
     {
         horizontalMeterBar0.resetPeakHold();
         horizontalMeterBar1.resetPeakHold();
     }
+    //===================================================================
     void BarMeterComponent::setChannelFormat (const juce::AudioChannelSet& channelSet, const std::vector<juce::String>& channelNames)
     {
         if(channelSet.size() <= 0)
@@ -84,6 +78,7 @@ namespace Gui
         }
         setChannelNames(channelNames);
     }
+    //===================================================================
     void BarMeterComponent::setChannelNames (const std::vector<juce::String>& channelNames)
     {
         const auto numChannelNames = static_cast<int> (channelNames.size());
@@ -93,11 +88,12 @@ namespace Gui
         channelInfoTextBox0.setChannelName(channelNames[static_cast<size_t>(0)]);
         channelInfoTextBox1.setChannelName(channelNames[static_cast<size_t>(1)]);
     }
+    //===================================================================
     void BarMeterComponent::setRefreshRate (float refreshRate)
     {
         meterOptions.refreshRateHz = refreshRate;
-
     }
+    //===================================================================
     void BarMeterComponent::useInternalTiming (bool useInternalTiming) noexcept
     {
         useInternalTimer = useInternalTiming;
@@ -105,22 +101,36 @@ namespace Gui
         if(useInternalTiming)
             startTimerHz(static_cast<int>(std::round(meterOptions.refreshRateHz)));
     }
+    //===================================================================
     void BarMeterComponent::setColours()
     {
         m_backgroundColour = meterColours.colourBackground;
     }
-
+    //===================================================================
     void BarMeterComponent::timerCallback()
     {
-        refresh(useInternalTimer);
+    //    updateBarFigure(useInternalTimer);
+    /*
+     * In the timerCallback function,
+     * you're resetting the meters and then setting the level values again.
+     * This approach is inefficient and can cause flickering on the UI.
+     * Instead, you should directly update the meter values
+     * based on the incoming audio levels in this callback.
+     */
+        //resetMeters();
+        horizontalMeterBar0.setMeterLevelValueDecibels(m_levelValues.at(0));
+        horizontalMeterBar1.setMeterLevelValueDecibels( m_levelValues.at(1));
+        ++_RANDOMVALUEFORDEBUGGING;
+        tinyStripComponent.setNumericValue(_RANDOMVALUEFORDEBUGGING );
+        repaint();
     }
-
+    //===================================================================
     void BarMeterComponent::refresh (bool forceRefresh) //global updating function
     {
-        //meterColours.refresh();
-        if (!forceRefresh)
-            return;
-        resetMeters();
+        //meterColours.updateBarFigure();
+//        if (!forceRefresh)
+//            return;
+        updateMeters();
         resetPeakHold();
     }
 } // Gui

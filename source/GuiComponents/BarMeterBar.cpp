@@ -36,27 +36,36 @@ namespace Gui
     }
 
     BarMeterBar::~BarMeterBar() = default;
+//================================================================
+//================================================================
+//================================================================
 
-    void BarMeterBar::refresh(float meterLevelValueDb)
+    void BarMeterBar::updateBarFigure (float meterLevelValueDb)
     {
         setMeterLevelValueDecibels(meterLevelValueDb);
     }
+//===================================================================
+
+//===================================================================
+    void BarMeterBar::paint (juce::Graphics& g)
+    {
+        drawMeter(g, meterColours); //bar
+    }
+
+//=========================================================
+//=========================================================
+//=========================================================
     void BarMeterBar::drawBar(juce::Graphics &g)
     {
         auto bounds = m_levelBounds.toFloat();
         g.setColour (juce::Colours::aliceblue);
-        auto scaledWidth = juce::jmap (m_meterLevelDb, Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMaxInDecibels, m_meterRange.getStart(), m_meterRange.getEnd());
+        auto scaledWidth = juce::jmap (m_inputLevel.load(), Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMaxInDecibels, m_meterRange.getStart(), m_meterRange.getEnd());
         g.fillRect (bounds.removeFromLeft (scaledWidth));
     }
 
-    void BarMeterBar::paint (juce::Graphics& g)
-    {
-        drawMeter(g, meterColours);
-        drawPeakValue(g, meterColours);
-    }
     void BarMeterBar::setMeterLevelValueDecibels (const float value)
     {
-        m_meterLevelDb = value;
+        m_inputLevel = value;
     }
     float BarMeterBar::getMeterLevelValueDecibels()
     {
@@ -113,12 +122,12 @@ namespace Gui
     }
     void BarMeterBar::drawMeter (juce::Graphics& g, const MeterColours& meterColours)
     {
-        for (auto& segment : m_segments)
-        {
-            segment.draw (g, meterColours);
-        }
+//        for (auto& segment : m_segments)
+//        {
+//            segment.draw (g, meterColours);
+//        }
         drawBar(g);
-        drawPeakValue (g, meterColours);
+        //drawPeakValue (g, meterColours);
     }
     void BarMeterBar::drawPeakValue (juce::Graphics& g, const MeterColours& meterColours)
     {

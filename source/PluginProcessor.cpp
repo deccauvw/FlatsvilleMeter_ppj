@@ -4,19 +4,19 @@
 
 //==============================================================================
 PluginProcessor::PluginProcessor()
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-    ,maximumEstimatedSamplesPerBlock(1024),
-      m_RmsLevelChannel0(-INFINITY),
-      m_RmsLevelChannel1(-INFINITY),
-      m_peakLevelChannel0(-INFINITY),
-      m_peakLevelChannel1(-INFINITY)
+    : AudioProcessor (BusesProperties()
+#if !JucePlugin_IsMidiEffect
+    #if !JucePlugin_IsSynth
+                          .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+    #endif
+                          .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+              ),
+      maximumEstimatedSamplesPerBlock (1024),
+      m_RmsLevelChannel0 (-INFINITY),
+      m_RmsLevelChannel1 (-INFINITY),
+      m_peakLevelChannel0 (-INFINITY),
+      m_peakLevelChannel1 (-INFINITY)
 {
 }
 
@@ -30,39 +30,39 @@ const juce::String PluginProcessor::getName() const
 
 bool PluginProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool PluginProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool PluginProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 //==============================================================================
 
-double PluginProcessor::getTailLengthSeconds() const {return 0.0;}
+double PluginProcessor::getTailLengthSeconds() const { return 0.0; }
 
-int PluginProcessor::getNumPrograms(){return 1;}
+int PluginProcessor::getNumPrograms() { return 1; }
 
-int PluginProcessor::getCurrentProgram(){return 0;}
+int PluginProcessor::getCurrentProgram() { return 0; }
 
-void PluginProcessor::setCurrentProgram (int index){    juce::ignoreUnused (index);}
+void PluginProcessor::setCurrentProgram (int index) { juce::ignoreUnused (index); }
 
 const juce::String PluginProcessor::getProgramName (int index)
 {
@@ -75,29 +75,28 @@ void PluginProcessor::changeProgramName (int index, const juce::String& newName)
     juce::ignoreUnused (index, newName);
 }
 
-
-void PluginProcessor::releaseResources(){}
+void PluginProcessor::releaseResources() {}
 
 bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+        // This checks if the input layout matches the output layout
+    #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+    #endif
 
     return true;
-  #endif
+#endif
 }
 
 //==============================================================================================================================================================
@@ -107,15 +106,17 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     this->specs.sampleRate = sampleRate;
     this->specs.maximumBlockSize = samplesPerBlock;
     this->specs.numChannels = 2; //assume and FIX as stereo only plugin
+    m_nChannelPeakLevels.resize(specs.numChannels);
+    m_nChannelRmsLevels.resize(specs.numChannels);
     bufferForMeter.clear();
 }
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                              juce::MidiBuffer& midiMessages)
+    juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused (midiMessages);
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -128,10 +129,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     //>>>>>
     //if the plugin is NOT connected
-    if(isBufferEmpty(buffer)) // not connected
+    if (isBufferEmpty (buffer)) // not connected
     {
         //make the buffer "zeropadded"
-//        DBG ("buffer is empty. padding with zeros");
+        //        DBG ("buffer is empty. padding with zeros");
         bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
             bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
@@ -139,19 +140,24 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     }
     else
     {
-        bufferForMeter.makeCopyOf(buffer);
+        bufferForMeter.makeCopyOf (buffer);
         //m_randomValueForDebugging = 2222222.f;
     }
 
-
     auto numSamples = bufferForMeter.getNumSamples();
-    m_RmsLevelChannel0 = bufferForMeter.getRMSLevel(0, 0, numSamples);
-    m_RmsLevelChannel1 = bufferForMeter.getRMSLevel(1, 0, numSamples);
-    m_peakLevelChannel0 = bufferForMeter.getMagnitude(0, 0, numSamples);
-    m_peakLevelChannel1 = bufferForMeter.getMagnitude(1, 0, numSamples);
+    auto numChannels = bufferForMeter.getNumChannels();
+    for (auto ch = 0; ch < numChannels; ++ch)
+    {
+        auto m_iRmsLevel = bufferForMeter.getRMSLevel(ch, 0, numSamples);
+        auto m_iPeakLevel = bufferForMeter.getMagnitude(ch, 0, numSamples);
+        m_nChannelPeakLevels.at(ch) = m_iRmsLevel;
+        m_nChannelRmsLevels.at(ch) = m_iPeakLevel;
+    }
+//    m_RmsLevelChannel0 = bufferForMeter.getRMSLevel (0, 0, numSamples);
+//    m_RmsLevelChannel1 = bufferForMeter.getRMSLevel (1, 0, numSamples);
+//    m_peakLevelChannel0 = bufferForMeter.getMagnitude (0, 0, numSamples);
+//    m_peakLevelChannel1 = bufferForMeter.getMagnitude (1, 0, numSamples);
     m_randomValueForDebugging++;
-
-
 }
 
 //==============================================================================
@@ -162,7 +168,7 @@ bool PluginProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* PluginProcessor::createEditor()
 {
-    return new PluginEditor(*this);
+    return new PluginEditor (*this);
 }
 
 //==============================================================================
@@ -183,13 +189,12 @@ void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 void PluginProcessor::parameterGestureChanged (int parameterIndex, bool starting)
 {
-    juce::ignoreUnused(parameterIndex, starting);
+    juce::ignoreUnused (parameterIndex, starting);
 }
-
 
 void PluginProcessor::parameterValueChanged (int parameterIndex, float newValue)
 {
-    //empty
+    juce::ignoreUnused(parameterIndex, newValue);
 }
 //==============================================================================
 bool PluginProcessor::isBufferEmpty (const juce::AudioBuffer<float>& buffer)
@@ -197,42 +202,30 @@ bool PluginProcessor::isBufferEmpty (const juce::AudioBuffer<float>& buffer)
     //returns true if Empty
     //returns false if not Empty
 
-    if(buffer.getNumChannels() == 0)
+    if (buffer.getNumChannels() == 0)
     {
         return true;
     }
     //check if any of the channels contain any data
-    for(int ch = 0; ch < buffer.getNumChannels(); ++ch)
+    for (int ch = 0; ch < buffer.getNumChannels(); ++ch)
     {
-        if(buffer.getReadPointer(ch) == nullptr)
+        if (buffer.getReadPointer (ch) == nullptr)
             return true;
     }
     return false;
 }
 
-
 float PluginProcessor::getLevelValueRms (const int channel) const
 {
-    jassert(channel == 0 || channel == 1);
+    jassert (channel == 0 || channel == 1);
 
-    if(channel == 0)
-        return m_RmsLevelChannel0;
-    else if(channel == 1)
-        return m_RmsLevelChannel1;
-    else{
-        return 0;
-    }
+    return m_nChannelRmsLevels.at(channel);
 }
+
 float PluginProcessor::getLevelValuePeak (const int channel) const
 {
-    jassert(channel == 0 || channel == 1);
-    if(channel == 0)
-        return m_peakLevelChannel0;
-    else if(channel == 1)
-        return m_peakLevelChannel1;
-    else{
-        return 0;
-    }
+    jassert (channel == 0 || channel == 1);
+    return m_nChannelPeakLevels.at(channel);
 }
 
 //==============================================================================
