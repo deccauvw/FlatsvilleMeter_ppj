@@ -14,7 +14,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     addAndMakeVisible(facePlateGui);
 
     startTimerHz((int)Gui::Constants::kInitialRefreshRateHz);
-    barMeterComponent.reset();
+    //barMeterComponent.reset();
     setSize (Gui::Constants::kGuiSizeWidth, Gui::Constants::kGuiSizeHeight);
 }//constructor
 
@@ -44,4 +44,5 @@ void PluginEditor::timerCallback()
     std::vector<float> levelValuesPeak = {levelValuePeak0, levelValuePeak1};
     barMeterComponent.setInputMeterLevelValueDecibels(levelValuesPeak);
     barMeterComponent.M_RANDOMVALUEFORDEBUGGING = RNDVALUEFORDEBUG;
+    //repaint();
 }

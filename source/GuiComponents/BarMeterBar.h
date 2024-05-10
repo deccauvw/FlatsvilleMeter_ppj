@@ -13,12 +13,13 @@
 namespace Gui
 {
 
-    class BarMeterBar : public juce::Component //, private juce::Timer
+    class BarMeterBar : public juce::Component, private juce::Timer
     {
     public:
         BarMeterBar();
         explicit BarMeterBar (int channel);
         ~BarMeterBar() override;
+        void initialize();
         void drawBar (juce::Graphics& g);
         void paint (juce::Graphics& g) override;
         void drawMeter (juce::Graphics& g, const MeterColours& meterColours);
@@ -35,7 +36,7 @@ namespace Gui
         void setMeterSegments (const std::vector<SegmentOptions>& segmentOptions);
         [[nodiscard]] juce::Rectangle<int> getMeterBounds() const noexcept;
         [[nodiscard]] juce::Rectangle<int> getLevelBounds() const noexcept;
-
+        void timerCallback() override;
         float getPeakHoldLevel();
         void resetPeakHold();
         void updateBarFigure (float meterLevelValueDb);

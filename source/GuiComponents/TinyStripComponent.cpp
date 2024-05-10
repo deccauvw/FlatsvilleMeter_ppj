@@ -10,6 +10,7 @@ namespace Gui
     TinyStripComponent::TinyStripComponent() : m_numericValue(0.0f), m_isDirty(true)
     {
         m_fontDefault = juce::Font(Gui::Constants::kDefaultTypeFace, Gui::Constants::kTinyStripFontHeight, 0);
+        startTimerHz(Gui::Constants::kInitialRefreshRateHz);
     }
     TinyStripComponent::~TinyStripComponent() = default;
 
@@ -35,9 +36,9 @@ namespace Gui
         {
             s = juce::String(getNumericValue());
         }
-        else
+        else //is not dirty
         {
-            s = juce::String("initialize");
+            s = juce::String("Not Dirty");
         }
 
         g.drawFittedText (s,
@@ -80,5 +81,9 @@ namespace Gui
         f = ceil(f);
         f /= p;
         return f;
+    }
+    void TinyStripComponent::timerCallback()
+    {
+        //empty
     }
 } // gui

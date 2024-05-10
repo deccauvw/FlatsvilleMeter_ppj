@@ -120,8 +120,9 @@ namespace Gui
      * based on the incoming audio levels in this callback.
      */
         //resetMeters();
-        horizontalMeterBar0.setMeterLevelValueDecibels(10.f * M_RANDOMVALUEFORDEBUGGING);
-        horizontalMeterBar1.setMeterLevelValueDecibels( 12.f *M_RANDOMVALUEFORDEBUGGING);
+        horizontalMeterBar0.updateBarFigure(10.f * M_RANDOMVALUEFORDEBUGGING);
+        horizontalMeterBar1.updateBarFigure( 12.f *M_RANDOMVALUEFORDEBUGGING);
+
         tinyStripComponent.setNumericValue(M_RANDOMVALUEFORDEBUGGING );
         repaint();
     }

@@ -40,16 +40,25 @@ namespace Gui
 //================================================================
 //================================================================
 
+    void BarMeterBar::initialize()
+    {
+        setDecay(Constants::kLevelDefaultDecayMs);
+        //setMeterSegments(Gui::BarMeterSegment::getSegmentOptions());
+        setRefreshRateHz(Constants::kInitialRefreshRateHz);
+        startTimerHz(m_refreshRateHz);
+    }
+
     void BarMeterBar::updateBarFigure (float meterLevelValueDb)
     {
         setMeterLevelValueDecibels(meterLevelValueDb);
+        refreshMeterLevel();
     }
 //===================================================================
 
 //===================================================================
     void BarMeterBar::paint (juce::Graphics& g)
     {
-        drawMeter(g, meterColours); //bar
+        drawBar(g); //bar
     }
 
 //=========================================================
@@ -62,15 +71,17 @@ namespace Gui
         auto scaledWidth = juce::jmap (m_inputLevel.load(), Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMaxInDecibels, m_meterRange.getStart(), m_meterRange.getEnd());
         g.fillRect (bounds.removeFromLeft (scaledWidth));
     }
-
+    //=========================================================
     void BarMeterBar::setMeterLevelValueDecibels (const float value)
     {
         m_inputLevel = value;
     }
+    //=========================================================
     float BarMeterBar::getMeterLevelValueDecibels()
     {
         return m_meterLevelDb;
     }
+    //=========================================================
     void BarMeterBar::refreshMeterLevel()
     {
         m_meterLevelDb = getDecayedLevel (getMeterLevelValueDecibels()); //refershed
@@ -78,28 +89,34 @@ namespace Gui
             m_peakHoldDirty = true;
         // omitted segments
     }
+    //=========================================================
     float BarMeterBar::getMeterLevel() const noexcept
     {
         return m_meterLevelDb;
     }
+    //=========================================================
     void BarMeterBar::setRefreshRateHz (float refreshRateHz)
     {
         m_refreshRateHz = refreshRateHz;
     }
+    //=========================================================
     float BarMeterBar::getRefreshRate()
     {
         return m_refreshRateHz;
     }
+    //=========================================================
     void BarMeterBar::setDecay (float decayMs)
     {
         m_meterOptions.decayTimeMs = decayMs;
         calculateDecayCoeff (m_meterOptions);
         syncMeterOptions();
     }
+    //=========================================================
     float BarMeterBar::getDecay() const noexcept
     {
         return m_meterOptions.decayTimeMs;
     }
+    //=========================================================
     void BarMeterBar::setMeterSegments (const std::vector<SegmentOptions>& segmentsOptions)
     {
         m_segments.clear();
@@ -112,14 +129,17 @@ namespace Gui
         syncMeterOptions();
         calculateDecayCoeff (m_meterOptions);
     }
+    //=========================================================
     juce::Rectangle<int> BarMeterBar::getMeterBounds() const noexcept
     {
         return m_meterBounds;
     }
+    //=========================================================
     juce::Rectangle<int> BarMeterBar::getLevelBounds() const noexcept
     {
         return m_levelBounds;
     }
+    //=========================================================
     void BarMeterBar::drawMeter (juce::Graphics& g, const MeterColours& meterColours)
     {
 //        for (auto& segment : m_segments)
@@ -129,6 +149,7 @@ namespace Gui
         drawBar(g);
         //drawPeakValue (g, meterColours);
     }
+    //=========================================================
     void BarMeterBar::drawPeakValue (juce::Graphics& g, const MeterColours& meterColours)
     {
         const auto peakDb = getPeakHoldLevel();
@@ -139,6 +160,7 @@ namespace Gui
             g.drawFittedText (juce::String (peakDb, precision), m_meterBounds, juce::Justification::centred, 1);
         }
     }
+    //=========================================================
     float BarMeterBar::getDecayedLevel (float newLevelDb)
     {
         const auto currentTime = static_cast<int> (juce::Time::getMillisecondCounter());
@@ -164,6 +186,7 @@ namespace Gui
             levelDb = newLevelDb;
         return levelDb;
     }
+    //=========================================================
     float BarMeterBar::getLinearDecayedLevel (float newLevelDb)
     {
         const auto currentTime = static_cast<int> (juce::Time::getMillisecondCounter());
@@ -175,6 +198,7 @@ namespace Gui
             return newLevelDb;
         return juce::jmax (newLevelDb, m_meterLevelDb - (timePassed * m_decayRate));
     }
+    //=========================================================
     void BarMeterBar::calculateDecayCoeff (const Options& meterOptions)
     {
         m_meterOptions.decayTimeMs = juce::jlimit (Constants::kLevelMinDecayMs,
@@ -186,6 +210,7 @@ namespace Gui
 
         m_decayCoeff = std::pow (0.01f, (1000.f / (m_meterOptions.decayTimeMs * m_meterOptions.refreshRateHz)));
     }
+    //=========================================================
     void BarMeterBar::syncMeterOptions()
     {
         for (auto& segment : m_segments)
@@ -194,6 +219,7 @@ namespace Gui
         }
         m_peakHoldDirty = true;
     }
+    //=========================================================
     float BarMeterBar::getPeakHoldLevel()
     {
         if (m_segments.empty())
@@ -201,10 +227,16 @@ namespace Gui
 
         return m_segments[0].getPeakHold();
     }
+    //=========================================================
     void BarMeterBar::resetPeakHold()
     {
         m_peakLevelDb = Constants::kLevelMinInDecibels;
         m_peakHoldDirty = true;
+    }
+    //=========================================================
+    void BarMeterBar::timerCallback()
+    {
+        repaint();
     }
 
 } // Gui

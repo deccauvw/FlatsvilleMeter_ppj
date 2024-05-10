@@ -59,6 +59,7 @@ void FacePlateGui::paintOverChildren(juce::Graphics& g)
 
 void FacePlateGui::resized()
 {
+    //empty
 }
 
 juce::Image FacePlateGui::getFaceplateFrameBody() const

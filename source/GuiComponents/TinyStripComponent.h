@@ -15,7 +15,7 @@
 namespace Gui
 {
 
-    class TinyStripComponent : public juce::Component
+    class TinyStripComponent : public juce::Component, private juce::Timer
     {
     public:
         TinyStripComponent();
@@ -28,7 +28,7 @@ namespace Gui
         void draw(juce::Graphics& g, MeterColours &meterColours);
         float getNumericValue();
         void setNumericValue(const float value);
-
+        void timerCallback();
     private:
         float m_numericValue;
         bool m_isDirty;
