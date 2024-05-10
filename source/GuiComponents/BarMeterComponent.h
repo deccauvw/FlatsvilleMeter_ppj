@@ -58,9 +58,12 @@ namespace Gui
         //void showTickMarks(bool showTickMarks);
         void paint (juce::Graphics& g)override;
         //void drawEverything(juce::Graphics& g);
+
+
+        float M_RANDOMVALUEFORDEBUGGING = 0.0f;
     private:
+
         bool useInternalTimer = true;
-        int _RANDOMVALUEFORDEBUGGING = 55555;
 
         std::vector<float> inputLevelsInDecibels {0.0f, 0.0f};
 

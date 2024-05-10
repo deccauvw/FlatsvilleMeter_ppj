@@ -51,7 +51,8 @@ public:
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;
 
-    float m_randomValueForDebugging = 0.0f;
+    float M_RANDOMVALUEFORDEBUGGING = 0.5f;
+
     std::vector<float> m_nChannelRmsLevels {};
     std::vector<float> m_nChannelPeakLevels {};
     float m_RmsLevelChannel0 = 0.0;
@@ -75,6 +76,8 @@ private:
     juce::dsp::ProcessSpec specs;
     int maximumEstimatedSamplesPerBlock;
     juce::AudioChannelSet m_outputFormat;
+
+
 
 //    AnalogVuMeterProcessor vuMeterProcessor;
     //==============================================================================

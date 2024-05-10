@@ -38,8 +38,10 @@ void PluginEditor::timerCallback()
     //set value here
 //    auto levelValueRms0 = m_audioProcessor.getLevelValueRms(0);
 //    auto levelValueRms1 = m_audioProcessor.getLevelValueRms(1);
+    auto RNDVALUEFORDEBUG = m_audioProcessor.M_RANDOMVALUEFORDEBUGGING;
     auto levelValuePeak0 = m_audioProcessor.getLevelValuePeak(0);
     auto levelValuePeak1 = m_audioProcessor.getLevelValuePeak(1);
     std::vector<float> levelValuesPeak = {levelValuePeak0, levelValuePeak1};
     barMeterComponent.setInputMeterLevelValueDecibels(levelValuesPeak);
+    barMeterComponent.M_RANDOMVALUEFORDEBUGGING = RNDVALUEFORDEBUG;
 }

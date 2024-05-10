@@ -157,7 +157,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 //    m_RmsLevelChannel1 = bufferForMeter.getRMSLevel (1, 0, numSamples);
 //    m_peakLevelChannel0 = bufferForMeter.getMagnitude (0, 0, numSamples);
 //    m_peakLevelChannel1 = bufferForMeter.getMagnitude (1, 0, numSamples);
-    m_randomValueForDebugging++;
+    M_RANDOMVALUEFORDEBUGGING += 1.00f;
 }
 
 //==============================================================================

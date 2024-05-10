@@ -15,6 +15,7 @@ namespace Gui
     {
         useInternalTiming(useInternalTimer);
     }
+
     BarMeterComponent::~BarMeterComponent() = default;
 
     //===================================================================
@@ -38,7 +39,7 @@ namespace Gui
         updateMeters(); //update bars' length
 
         //repaint everything
-        repaint();
+        //repaint();
 
     }
     //===================================================================
@@ -58,6 +59,7 @@ namespace Gui
         //update meter value-tracking width
         horizontalMeterBar0.updateBarFigure (m_levelValues.at(0));
         horizontalMeterBar1.updateBarFigure (m_levelValues.at(1));
+        //needs repaint globally
     }
     //===================================================================
     void BarMeterComponent::resetPeakHold()
@@ -118,10 +120,9 @@ namespace Gui
      * based on the incoming audio levels in this callback.
      */
         //resetMeters();
-        horizontalMeterBar0.setMeterLevelValueDecibels(m_levelValues.at(0));
-        horizontalMeterBar1.setMeterLevelValueDecibels( m_levelValues.at(1));
-        ++_RANDOMVALUEFORDEBUGGING;
-        tinyStripComponent.setNumericValue(_RANDOMVALUEFORDEBUGGING );
+        horizontalMeterBar0.setMeterLevelValueDecibels(10.f * M_RANDOMVALUEFORDEBUGGING);
+        horizontalMeterBar1.setMeterLevelValueDecibels( 12.f *M_RANDOMVALUEFORDEBUGGING);
+        tinyStripComponent.setNumericValue(M_RANDOMVALUEFORDEBUGGING );
         repaint();
     }
     //===================================================================
