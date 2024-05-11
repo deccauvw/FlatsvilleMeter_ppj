@@ -11,7 +11,12 @@ namespace Gui
                                              horizontalMeterBar1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
                                              channelInfoTextBox0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
                                              channelInfoTextBox1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
-                                             tinyStripComponent([&](){return audioProcessor.getLevelValueRms(0);}),
+                                             tinyStripComponent([&](){
+                                                                    auto valueCh0 = audioProcessor.getLevelValuePeak(0);
+                                                                    auto valueCh1 = audioProcessor.getLevelValuePeak(1);
+                                                                    std::vector<float> values = {valueCh0, valueCh1};
+                                                                    return values;
+                                                                }),
                                                                 useInternalTimer(false)
     {
         useInternalTiming(useInternalTimer); //startTimerHz

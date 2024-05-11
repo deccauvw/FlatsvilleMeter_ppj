@@ -66,7 +66,7 @@ namespace Gui
 //===================================================================
     void BarMeterBar::paint (juce::Graphics& g)
     {
-        printf("Bar::paint called\n");
+        //printf("Bar::paint called\n");
         drawBar(g); //bar
         //printf("::%3f\t%3f\n", m_levelValues.at(0), m_levelValues.at(1));
     }
@@ -105,7 +105,7 @@ namespace Gui
         auto level = juce::Decibels::gainToDecibels(valueSupplierFn());
         level = getDecayedLevel(level);
         this->m_meterLevelDb = juce::jmax(Constants::kLevelMinInDecibels, level);
-        printf("\t\t\tIn : %3f\t\tClamped : %3f\n", level, m_meterLevelDb);
+        //printf("\t\t\tIn : %3f\t\tClamped : %3f\n", level, m_meterLevelDb);
 
         //printf("[ch %d]  valueSupplied <- %4f\n",channelNumber, m_meterLevelDb);
         //repaint(); //repaint is here <<<<============================================================
@@ -199,7 +199,7 @@ namespace Gui
         if (m_meterLevelDb == newLevelDb)
             return newLevelDb;
 
-        auto numberOfFramePassed = static_cast<int> (std::round ((timePassed * m_meterOptions.refreshRateHz / 1000.f)));
+        auto numberOfFramePassed = static_cast<int> (std::round (timePassed * m_meterOptions.refreshRateHz / 1000.f));
 
         auto levelDb = m_meterLevelDb;
         for (int frame = 0; frame < numberOfFramePassed; ++frame)
@@ -258,7 +258,7 @@ namespace Gui
     //=========================================================
     void BarMeterBar::timerCallback()
     {
-        printf("timerCallback @ meter bar called\n");
+        //printf("timerCallback @ meter bar called\n");
         refreshMeterLevel();
         repaint();
     }

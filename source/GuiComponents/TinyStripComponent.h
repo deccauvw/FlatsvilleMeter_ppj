@@ -11,6 +11,8 @@
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include <cmath>
+#include <vector>
+#include <format>
 
 namespace Gui
 {
@@ -18,7 +20,7 @@ namespace Gui
     class TinyStripComponent : public juce::Component, private juce::Timer
     {
     public:
-        explicit TinyStripComponent(std::function<float()>&& valueStringSupplier);
+        explicit TinyStripComponent(std::function<std::vector<float>()>&& valueStringSupplier);
         ~TinyStripComponent() override;
 
         void paint(juce::Graphics& g) override;
@@ -27,15 +29,23 @@ namespace Gui
 
         void draw(juce::Graphics& g);
         juce::String getStringContent();
-        void setStringContent(float s);
+        std::vector<float> setPeakHoldValuesForStringContent(std::vector<float>values);
+        void setStringContent(std::vector<float> values);
         void timerCallback() override;
+        float computePeakValueWhileHoldInDb(int channel, float newValuePeak, float valuePeakBeingHeld);
     private:
-        std::function<float()>valueStringSupplierFn;
+        std::function<std::vector<float>()>valueStringSupplierFn;
         juce::String stringContent;
         juce::String stringContentPrevious;
+        std::vector<int> m_previousRefreshTimes;
+        std::vector<float> m_peakValues;
+        //std::vector<float> m_inputPeakValues;
+
+        float m_decayRate = 1.0f; //decay rate in dB/ms.
 
         bool m_isDirty;
         MeterColours m_meterColours;
+        Options m_meterOptions;
         juce::Font m_fontDefault;
 
     };

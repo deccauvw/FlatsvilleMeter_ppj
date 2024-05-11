@@ -43,7 +43,7 @@ namespace Gui
     }
     void BarMeterChannelInfoTextBox::paint (juce::Graphics& g)
     {
-        printf("ChannelInfoTextBox::paint called\n");
+        //printf("ChannelInfoTextBox::paint called\n");
         draw(g);
     }
     void BarMeterChannelInfoTextBox::setBounds(juce::String &channelName)

@@ -33,6 +33,7 @@ namespace Gui
         static constexpr auto kTinyStripTextPositionHeight = 23;
         static constexpr auto kTinyStripTextMargin = 25;
 
+
         static constexpr auto kPeakHoldLevelTextPositionX = 520;
         static constexpr auto kPeakHoldLevelTextPositionYup = 45;
         static constexpr auto kPeakHoldLevelTextPositionYdn = 163;
@@ -116,6 +117,7 @@ namespace Gui
         //bool showPeakHoldIndicator = true; //enable peakHold indicator.
         float decayTimeMs = Constants::kLevelDefaultDecayMs;
         float refreshRateHz = 30.0f; //meter updateBarFigure rate when using internal timing;
+        float kTinyStripPeakValueHoldingTime = 2000.0f;
         std::vector<float> tickMarksInDecibels = {3.0f, 2.0f, 1.0f, 0.0f, -1.0f, -2.0f, -3.0f, -5.0f, -7.0f, -10.0f, -20.0f}; //VU LU RMS Scale all in dB
     };
 
