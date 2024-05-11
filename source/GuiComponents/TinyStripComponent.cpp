@@ -7,20 +7,23 @@
 namespace Gui
 {
 
-    TinyStripComponent::TinyStripComponent(std::function<juce::String()>valueStringSupplier) :
+    TinyStripComponent::TinyStripComponent(std::function<float()>valueStringSupplier) :
                                                                                                  valueStringSupplierFn(valueStringSupplier),
                                                                                                  m_isDirty(true)
     {
         m_fontDefault = juce::Font(Gui::Constants::kDefaultTypeFace, Gui::Constants::kTinyStripFontHeight, 0);
-        //startTimerHz(Gui::Constants::kInitialRefreshRateHz);
+        startTimerHz(Gui::Constants::kInitialRefreshRateHz);
     }
-    TinyStripComponent::~TinyStripComponent() = default;
+    TinyStripComponent::~TinyStripComponent()
+    {
+        stopTimer();
+    }
 
     void TinyStripComponent::paint (juce::Graphics& g)
     {
-        setStringContent(valueStringSupplierFn());
+        printf("TinyStripComponent::paint called\n");
+        //setStringContent(valueStringSupplierFn); //update string content
         draw(g);
-        DBG("TinyStripComponent::paint called");
     }
     //===================================================================
     //===================================================================
@@ -34,15 +37,15 @@ namespace Gui
         g.setFont (m_fontDefault);
         g.setColour (m_meterColours.colourText);
 
-        if(!m_isDirty)
-            return;
+//        if(!m_isDirty)
+//            return;
 
         g.drawFittedText (stringContent,
             Gui::Constants::kTinyStripTextPositionX,
             Gui::Constants::kTinyStripTextPositionY,
             Gui::Constants::kTinyStripTextPositionWidth - Gui::Constants::kTinyStripTextMargin,
             Gui::Constants::kTinyStripTextPositionHeight,
-            juce::Justification::left,
+            juce::Justification::centred,
             true);
     }
 
@@ -51,33 +54,15 @@ namespace Gui
         return stringContent;
     }
 
-    void TinyStripComponent::setStringContent (const juce::String& newStringContent)
+    void TinyStripComponent::setStringContent (const float s)
     {
-        if(stringContent == newStringContent)
-        {
-            m_isDirty = false;
-            return;
-        }
-        else
-        {
-            m_isDirty = true;
-            stringContent = newStringContent;
-
-        }
-
+        stringContent = juce::String(s);
     }
 
-
-    float TinyStripComponent::truncateValue (float f, int upto)
-    {
-        auto p = static_cast<float>(std::pow(10, upto));
-        f *= p;
-        f = ceil(f);
-        f /= p;
-        return f;
-    }
     void TinyStripComponent::timerCallback()
     {
+        setStringContent(valueStringSupplierFn());
         repaint();
     }
+
 } // gui

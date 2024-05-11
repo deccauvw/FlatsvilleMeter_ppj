@@ -25,7 +25,7 @@ namespace Gui
         void drawMeter (juce::Graphics& g);
         void drawPeakValue (juce::Graphics& g);
 
-        void setMeterLevelValueDecibels (const float value);
+        void setMeterLevelValueDecibels (float value);
         [[nodiscard]] float getMeterLevelValueDecibels();
         void refreshMeterLevel();
         [[nodiscard]] float getMeterLevel() const noexcept;
@@ -36,13 +36,13 @@ namespace Gui
         //void setMeterSegments (const std::vector<SegmentOptions>& segmentOptions);
         [[nodiscard]] juce::Rectangle<int> getMeterBounds() const noexcept;
         [[nodiscard]] juce::Rectangle<int> getLevelBounds() const noexcept;
-        void timerCallback() override;
         //float getPeakHoldLevel();
-        //void resized() override;
         void resetPeakHold();
         void updateBarFigure (float meterLevelValueDb);
+        void timerCallback() override;
 
     private:
+        int channelNumber;
         std::function<float()> valueSupplierFn;
         //std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
         //std::vector<BarMeterSegment> m_segments {};

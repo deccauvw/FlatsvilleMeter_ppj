@@ -9,7 +9,28 @@ namespace Gui
     BarMeterChannelInfoTextBox::BarMeterChannelInfoTextBox(int channel, std::function<float()>valueSupplier)
         :valueSupplierFn(valueSupplier),
           channelNumber(channel)
-    {}
+    {
+        int ypos;
+        switch(channelNumber)
+        {
+            case 0:
+                ypos = Constants::kChannelInfoTextBoxChannelTypePositionYup;
+                break;
+            case 1:
+                ypos = Constants::kChannelInfoTextBoxChannelTypePositionYdn;
+                break;
+            default:
+                jassert("invalid channel number");
+                ypos = 0;
+                break;
+        }
+
+        m_SquareBounds = juce::Rectangle<int>(Constants::kChannelInfoTextBoxChannelTypePositionX, ypos,
+            Constants::kChannelInfoTextBoxChannelTypePositionWidth, Constants::kChannelInfoTextBoxChannelTypePositionHeight);
+        m_SquarePosition = m_SquareBounds;
+
+//        setChannelName();
+    }
     BarMeterChannelInfoTextBox::~BarMeterChannelInfoTextBox() = default;
 
     void BarMeterChannelInfoTextBox::setChannelName (juce::String channelName)
@@ -22,6 +43,7 @@ namespace Gui
     }
     void BarMeterChannelInfoTextBox::paint (juce::Graphics& g)
     {
+        printf("ChannelInfoTextBox::paint called\n");
         draw(g);
     }
     void BarMeterChannelInfoTextBox::setBounds(juce::String &channelName)

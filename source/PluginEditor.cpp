@@ -6,7 +6,7 @@
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p), m_audioProcessor(p), barMeterComponent(p)
 {
-    juce::ignoreUnused (m_audioProcessor);
+    //juce::ignoreUnused (m_audioProcessor);
 
     //show everything from barMeterComponent
     for(auto* c : barMeterComponent.addAndMakeVisibleEverythingThrower())
@@ -44,7 +44,9 @@ void PluginEditor::resized()
 
 void PluginEditor::timerCallback()
 {
-    barMeterComponent.setLevelValues(m_audioProcessor.m_nChannelPeakLevels);
-    barMeterComponent.updateEverything();
-    barMeterComponent.repaintEverything();
+    repaint();
+    //printf("mainEditor callback called....................\n");
+    //barMeterComponent.setLevelValues(m_audioProcessor.m_nChannelPeakLevels);
+//    barMeterComponent.updateEverything();
+//    barMeterComponent.repaintEverything();
 }

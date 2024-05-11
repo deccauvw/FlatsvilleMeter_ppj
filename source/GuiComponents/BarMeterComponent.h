@@ -58,14 +58,15 @@ namespace Gui
         void useInternalTiming(bool useInternalTiming) noexcept;
         //void showTickMarks(bool showTickMarks);
         void paint (juce::Graphics& g)override;
+        //void resized();
         void updateEverything();
-        void addAndMakeVisibleEverything();
+        //void addAndMakeVisibleEverything();
         void repaintEverything();
         std::vector<juce::Component*> addAndMakeVisibleEverythingThrower();
         void drawEverything(juce::Graphics& g);
         void setLevelValues(std::vector<float>& levelValues);
 
-        float M_RANDOMVALUEFORDEBUGGING = 0.0f;
+        int M_RANDOMVALUEFORDEBUGGING = 0;
     private:
         PluginProcessor& audioProcessor;
 
