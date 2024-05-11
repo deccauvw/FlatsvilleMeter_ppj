@@ -10,8 +10,8 @@ namespace Gui
     BarMeterBar::BarMeterBar (int channel, std::function<float()>&& valueFunction) : valueSupplierFn(std::move(valueFunction)),
                                                                                      channelNumber(channel)
     {
-        startTimerHz(Constants::kInitialRefreshRateHz);
-
+        initialize(); //startTimerHz(m_refreshRateHz);
+        startTimerHz((int)m_refreshRateHz);
         jassert (channel == 0 || channel == 1);
         int yPos, yBarPos;
         if (channel == 0)
@@ -31,7 +31,7 @@ namespace Gui
             Gui::Constants::kPeakHoldLevelTextPositionWidth,
             Gui::Constants::kPeakHoldLevelTextPositionHeight);
 
-        m_levelBounds = juce::Rectangle<int> (
+        m_BarBounds = juce::Rectangle<int> (
             Gui::Constants::kMeterPositionAx,
             yBarPos,
             Gui::Constants::kMeterBarWidth,
@@ -50,9 +50,11 @@ namespace Gui
     {
         setDecay(Constants::kLevelDefaultDecayMs);
         //setMeterSegments(Gui::BarMeterSegment::getSegmentOptions());
-        //setRefreshRateHz(Constants::kInitialRefreshRateHz);
-        //startTimerHz(m_refreshRateHz);
+        setRefreshRateHz(Constants::kInitialRefreshRateHz);
+        calculateDecayCoeff(m_meterOptions);
+
     }
+
 
     void BarMeterBar::updateBarFigure (float meterLevelValueDb)
     {
@@ -74,18 +76,18 @@ namespace Gui
 //=========================================================
     void BarMeterBar::drawBar(juce::Graphics &g)
     {
-        printf("drawBar called\n");
-        auto bounds = m_levelBounds.toFloat();
+        //printf("drawBar called\n");
+        auto bounds = m_BarBounds.toFloat();
         g.setColour (juce::Colours::aliceblue);
         const auto scaledWidth = juce::jmap (
             this->m_meterLevelDb,
             Constants::kLevelMinInDecibels,
             Constants::kLevelMaxInDecibels,
              0.0f,
-            static_cast<float>(getWidth())
+            static_cast<float>(m_BarBounds.getWidth())
             );
 
-        g.fillRect (bounds.removeFromRight (scaledWidth));
+        g.fillRect (bounds.removeFromLeft (scaledWidth));
     }
     //=========================================================
     void BarMeterBar::setMeterLevelValueDecibels (const float value)
@@ -100,9 +102,11 @@ namespace Gui
     //=========================================================
     void BarMeterBar::refreshMeterLevel()
     {
-        auto level = valueSupplierFn();
+        auto level = juce::Decibels::gainToDecibels(valueSupplierFn());
+        level = getDecayedLevel(level);
+        this->m_meterLevelDb = juce::jmax(Constants::kLevelMinInDecibels, level);
+        printf("\t\t\tIn : %3f\t\tClamped : %3f\n", level, m_meterLevelDb);
 
-        this->m_meterLevelDb = juce::Decibels::gainToDecibels(level) + 10; //10 is here for debugging purpose
         //printf("[ch %d]  valueSupplied <- %4f\n",channelNumber, m_meterLevelDb);
         //repaint(); //repaint is here <<<<============================================================
 
@@ -155,7 +159,7 @@ namespace Gui
     //=========================================================
     juce::Rectangle<int> BarMeterBar::getLevelBounds() const noexcept
     {
-        return m_levelBounds;
+        return m_BarBounds;
     }
     //=========================================================
     void BarMeterBar::drawMeter (juce::Graphics& g)
@@ -254,6 +258,8 @@ namespace Gui
     //=========================================================
     void BarMeterBar::timerCallback()
     {
+        printf("timerCallback @ meter bar called\n");
+        refreshMeterLevel();
         repaint();
     }
     //==

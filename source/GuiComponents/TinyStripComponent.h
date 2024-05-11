@@ -18,7 +18,7 @@ namespace Gui
     class TinyStripComponent : public juce::Component, private juce::Timer
     {
     public:
-        explicit TinyStripComponent(std::function<float()>valueStringSupplier);
+        explicit TinyStripComponent(std::function<float()>&& valueStringSupplier);
         ~TinyStripComponent() override;
 
         void paint(juce::Graphics& g) override;

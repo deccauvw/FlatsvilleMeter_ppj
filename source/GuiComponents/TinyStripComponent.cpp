@@ -7,8 +7,8 @@
 namespace Gui
 {
 
-    TinyStripComponent::TinyStripComponent(std::function<float()>valueStringSupplier) :
-                                                                                                 valueStringSupplierFn(valueStringSupplier),
+    TinyStripComponent::TinyStripComponent(std::function<float()>&& valueStringSupplier) :
+                                                                                                 valueStringSupplierFn(std::move(valueStringSupplier)),
                                                                                                  m_isDirty(true)
     {
         m_fontDefault = juce::Font(Gui::Constants::kDefaultTypeFace, Gui::Constants::kTinyStripFontHeight, 0);
@@ -21,7 +21,7 @@ namespace Gui
 
     void TinyStripComponent::paint (juce::Graphics& g)
     {
-        printf("TinyStripComponent::paint called\n");
+        //printf("TinyStripComponent::paint called\n");
         //setStringContent(valueStringSupplierFn); //update string content
         draw(g);
     }

@@ -62,7 +62,7 @@ namespace Gui
 
         //level meter level range
         static constexpr auto kLevelMaxInDecibels = +3.0f;
-        static constexpr auto kLevelMinInDecibels = -60.0f;
+        static constexpr auto kLevelMinInDecibels = -20.0f;
         static constexpr auto kLevelMinDecayMs = 100.0f;
         static constexpr auto kLevelMaxDecayMs = 4000.0f;
         static constexpr auto kLevelDefaultDecayMs = 1000.0f;

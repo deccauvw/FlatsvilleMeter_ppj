@@ -47,7 +47,7 @@ namespace Gui
         //std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
         //std::vector<BarMeterSegment> m_segments {};
         juce::Rectangle<int> m_meterBounds {}; //numeric peak meter
-        juce::Rectangle<int> m_levelBounds {}; //graphic level meter
+        juce::Rectangle<int> m_BarBounds {}; //graphic level meter
         juce::Range<float> m_meterRange { Constants::kLevelMaxInDecibels, Constants::kLevelMinInDecibels };
         //meterLevels
         std::atomic<float> m_inputLevelDb { 0.0f };
@@ -57,7 +57,7 @@ namespace Gui
         [[maybe_unused]] MeterColours meterColours;
         float m_peakHoldDirty = false;
         float m_decayCoeff = 0.0f;
-        float m_refreshRateHz = Constants::kInitialRefreshRateHz;
+        float m_refreshRateHz = 0.0f;
         float m_previousRefreshTime = 0.0f;
         float m_decayRate = 0.0f; //decay rate in dB/ms.
 
