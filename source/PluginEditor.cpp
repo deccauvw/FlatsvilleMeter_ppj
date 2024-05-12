@@ -8,10 +8,17 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 {
     //juce::ignoreUnused (m_audioProcessor);
 
-    //show everything from barMeterComponent
+    //show displays from barMeterComponent
     for(auto* c : barMeterComponent.addAndMakeVisibleEverythingThrower())
     {
         addAndMakeVisible(c);
+    }
+
+    //show controllable elements from barMeterComponent unique_ptr<juce::Sliders>
+    for(auto* c : barMeterComponent.addAndMakeVisibleEveryUniquePtrThrower<juce::Slider>())
+    {
+        addAndMakeVisible(c);
+        c->setRange(-96.0, 10.0, 0.01);
     }
 
     //show faceplate

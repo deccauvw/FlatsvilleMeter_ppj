@@ -10,7 +10,15 @@ namespace Gui
 {
     namespace Constants
     {
-        static constexpr auto kChannelSize = 2;
+        //math constants
+        static constexpr auto M_PI_1 = 3.14159265358979323846f;  //pi
+        static constexpr auto M_PI_2 = 1.57079632679489661923f;  //pi/2
+        static constexpr auto M_PI_4 = 0.785398163397448309616f; //pi/4
+        static constexpr auto M_1_PI = 0.318309886183790671538f; //1 * pi^-1
+        static constexpr auto M_2_PI = 0.636619772367581343076f; //2 * pi^-1
+
+
+            static constexpr auto kChannelSize = 2;
 
         static constexpr auto kGuiSizeWidth = 1012;
         static constexpr auto kGuiSizeHeight = 230;
@@ -74,6 +82,13 @@ namespace Gui
         static constexpr auto kTickMarkAlphaMax = 0.3f;
         static constexpr auto kTickMarkAlphaMin = 0.1f;
         static constexpr auto kLabelStripTextPadding = 2.0f;
+
+        //gain knob constants
+        static constexpr auto kGainKnobPositionX = 700;
+        static constexpr auto kGainKnobPositionY = 54;
+        static constexpr auto kGainKnobWidth = 83;
+        static constexpr auto kGainKnobHeight = 83;
+
 
         //aesthetics for "0VU" indicator (flashy orb)
         //will be added later if possible

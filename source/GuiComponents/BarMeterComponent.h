@@ -16,6 +16,10 @@
 #include "BarMeterBar.h"
 #include "BarMeterHelper.h"
 #include "TinyStripComponent.h"
+#include "GainKnob.h"
+#include "FlatsLookAndFeel.h"
+
+
 //this "MeterComponent" will be staying @ plugin Editor.
 
 namespace Gui
@@ -30,8 +34,6 @@ namespace Gui
         //BarMeterComponent(PluginProcessor& p, const juce::AudioChannelSet& channelFormat);
         ~BarMeterComponent() override;
 
-        //can be called manually or internally.
-        //see setRefreshRate, useInternalTiming
 
         //reset peak hold, resetMeters
         void reset();
@@ -63,10 +65,14 @@ namespace Gui
         //void addAndMakeVisibleEverything();
         void repaintEverything();
         std::vector<juce::Component*> addAndMakeVisibleEverythingThrower();
+
+        template<typename T>
+        std::vector<T*> addAndMakeVisibleEveryUniquePtrThrower();
         void drawEverything(juce::Graphics& g);
         void setLevelValues(std::vector<float>& levelValues);
 
         int M_RANDOMVALUEFORDEBUGGING = 0;
+    // ================================================================================================================================
     private:
         PluginProcessor& audioProcessor;
 
@@ -79,9 +85,12 @@ namespace Gui
         Gui::BarMeterChannelInfoTextBox channelInfoTextBox0;
         Gui::BarMeterChannelInfoTextBox channelInfoTextBox1;
         Gui::TinyStripComponent tinyStripComponent;
+        std::unique_ptr<juce::Slider> gainDbSlider;
+        std::unique_ptr<juce::Slider> gainDbLabel;
+        //  =============================================
         Gui::MeterColours meterColours;
         Options meterOptions;
-        //  =====
+        //  =============================================
         std::vector<float> m_levelValues = {Gui::Constants::kLevelMinInDecibels, Gui::Constants::kLevelMinInDecibels};
         juce::AudioChannelSet m_channelFormat = juce::AudioChannelSet::stereo();
 

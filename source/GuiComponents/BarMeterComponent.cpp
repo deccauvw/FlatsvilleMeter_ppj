@@ -20,6 +20,8 @@ namespace Gui
                                                                 useInternalTimer(false)
     {
         useInternalTiming(useInternalTimer); //startTimerHz
+        //gainDbSlider = new juce::Slider ("SliderGain");
+
         //setChannelFormat()
 //        addAndMakeVisible(tinyStripComponent);
 //        addAndMakeVisible(horizontalMeterBar0);
@@ -43,8 +45,26 @@ namespace Gui
 
     std::vector<juce::Component*> BarMeterComponent::addAndMakeVisibleEverythingThrower()
     {
-        std::vector<juce::Component*> listOfComponent = {&horizontalMeterBar0, &horizontalMeterBar1, &channelInfoTextBox0, &channelInfoTextBox1, &tinyStripComponent};
+        std::vector<juce::Component*> listOfComponent = {
+            &horizontalMeterBar0,
+            &horizontalMeterBar1,
+            &channelInfoTextBox0,
+            &channelInfoTextBox1,
+            &tinyStripComponent
+        };
         return listOfComponent;
+    }
+
+    template<typename T>
+    std::vector<T*> BarMeterComponent::addAndMakeVisibleEveryUniquePtrThrower()
+    {
+        std::vector<T*> listOfSliderControllers =
+        {
+            &gainDbSlider,
+            &gainDbLabel
+        };
+
+        return listOfSliderControllers;
     }
 
     void BarMeterComponent::drawEverything(juce::Graphics &g)
