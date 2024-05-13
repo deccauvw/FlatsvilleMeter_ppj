@@ -90,8 +90,13 @@ namespace Gui
         static constexpr auto kGainKnobHeight = 83;
 
 
-        //aesthetics for "0VU" indicator (flashy orb)
-        //will be added later if possible
+        //aesthetics for "0VU" indicator (flashy orb) the Overload warning led
+        static constexpr auto kOverloadLedDiameterR = 11.0f;
+        static constexpr auto kOverloadLedPositionX = 567;
+        static constexpr auto kOverloadLedPositionYup = 63;
+        static constexpr auto kOverloadLedPositionYdn = 154;
+        static constexpr auto kOverLoadLedLineThickness = 2.0f;
+
 
 
         //ID(name) for all components
@@ -132,8 +137,9 @@ namespace Gui
         //bool showPeakHoldIndicator = true; //enable peakHold indicator.
         float decayTimeMs = Constants::kLevelDefaultDecayMs;
         float refreshRateHz = 30.0f; //meter updateBarFigure rate when using internal timing;
-        float kTinyStripPeakValueHoldingTime = 2000.0f;
+        float kTinyStripPeakValueHoldingTime = 1000.0f;
         std::vector<float> tickMarksInDecibels = {3.0f, 2.0f, 1.0f, 0.0f, -1.0f, -2.0f, -3.0f, -5.0f, -7.0f, -10.0f, -20.0f}; //VU LU RMS Scale all in dB
+        std::vector<float> meterLedStageCriteria = {0.0f, 3.0f};
     };
 
     //@brief ALL meter colours for the aesthetics
@@ -144,6 +150,9 @@ namespace Gui
         juce::Colour colourText = juce::Colours::aliceblue; //indigo screen with aqua color
         juce::Colour colourTickMark = juce::Colours::white; //colour of tickMarks
         juce::Colour colourPeakHold = juce::Colours::orange; //colour of the peakHold indicator.
+        juce::Colour colourLedOptimal = juce::Colours::aliceblue.withBrightness(0.2f);
+        juce::Colour colourLedOverload = juce::Colours::goldenrod;
+        juce::Colour colourLedTooHot = juce::Colours::orangered;
     };
     //  ========
     class MeterScales {

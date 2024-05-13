@@ -9,8 +9,8 @@ namespace Gui
     BarMeterComponent::BarMeterComponent (PluginProcessor& p): audioProcessor(p),
                                              horizontalMeterBar0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
                                              horizontalMeterBar1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
-                                             channelInfoTextBox0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
-                                             channelInfoTextBox1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
+                                            channelOverloadLed0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
+                                            channelOverloadLed1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
                                              tinyStripComponent([&](){
                                                                     auto value = audioProcessor.parameters.param_gain;
                                                                     std::vector<float> values = {value};
@@ -47,8 +47,8 @@ namespace Gui
         std::vector<juce::Component*> listOfComponent = {
             &horizontalMeterBar0,
             &horizontalMeterBar1,
-            &channelInfoTextBox0,
-            &channelInfoTextBox1,
+            &channelOverloadLed0,
+            &channelOverloadLed1,
             &tinyStripComponent
         };
         return listOfComponent;
@@ -70,8 +70,8 @@ namespace Gui
     {
         horizontalMeterBar0.paint(g);
         horizontalMeterBar1.paint(g);
-        channelInfoTextBox0.paint(g);
-        channelInfoTextBox1.paint(g);
+        channelOverloadLed0.paint(g);
+        channelOverloadLed1.paint(g);
         tinyStripComponent.paint(g);
     }
     void BarMeterComponent::updateEverything()
@@ -88,8 +88,9 @@ namespace Gui
             return 0;
         };
 
-        this->channelInfoTextBox0.setChannelName(juce::String(isOverloaded(0)));
-        this->channelInfoTextBox1.setChannelName(juce::String(isOverloaded(1)));
+        this->channelOverloadLed0.setChannelInfo(0);
+        this->channelOverloadLed1.setChannelInfo(1);
+
         //this->tinyStripComponent.repaint();
     }
     void BarMeterComponent::repaintEverything() //flags every component as "dirty"
@@ -98,8 +99,8 @@ namespace Gui
         //flag everything with repaint
         this->horizontalMeterBar0.repaint();
         this->horizontalMeterBar1.repaint();
-        this->channelInfoTextBox0.repaint();
-        this->channelInfoTextBox1.repaint();
+        this->channelOverloadLed0.repaint();
+        this->channelOverloadLed1.repaint();
         this->tinyStripComponent.repaint();
         //repaint();
     }

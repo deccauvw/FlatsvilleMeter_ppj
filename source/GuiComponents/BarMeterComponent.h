@@ -12,7 +12,7 @@
 #include "C:\JetBrains\AudioDevelopment\_007_FlatsvilleMeter_ppj\FlatsvilleMeter_ppj\source\PluginProcessor.h"
 #include <vector>
 
-#include "BarMeterChannelInfoTextBox.h"
+#include "BarMeterOverloadLed.h"
 #include "BarMeterBar.h"
 #include "BarMeterHelper.h"
 #include "TinyStripComponent.h"
@@ -82,8 +82,8 @@ namespace Gui
 
         Gui::BarMeterBar horizontalMeterBar0;
         Gui::BarMeterBar horizontalMeterBar1;
-        Gui::BarMeterChannelInfoTextBox channelInfoTextBox0;
-        Gui::BarMeterChannelInfoTextBox channelInfoTextBox1;
+        Gui::BarMeterOverloadLed channelOverloadLed0;
+        Gui::BarMeterOverloadLed channelOverloadLed1;
         Gui::TinyStripComponent tinyStripComponent;
 //        std::unique_ptr<juce::Slider> gainDbSlider;
 //        std::unique_ptr<juce::Slider> gainDbLabel;
