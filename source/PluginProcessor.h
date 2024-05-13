@@ -15,12 +15,22 @@
 #endif
 
 //==============================================================================
+struct Parameters
+{
+    float param_gain;
+    Parameters(): param_gain(0.0f){}
+};
+
+using APVTS = juce::AudioProcessorValueTreeState;
+//==============================================================================
 
 
 class PluginProcessor : public juce::AudioProcessor,
-                        public juce::AudioProcessorParameter::Listener
+                        public juce::AudioProcessorParameter::Listener,
+                        public Parameters
 {
-public:
+    public:
+
     PluginProcessor();
     ~PluginProcessor() override;
     //==============================================================================
@@ -64,7 +74,13 @@ public:
     float getLevelValueRms (int channel) const;
     float getLevelValuePeak (int channel) const;
 
+
+    APVTS apvts;
+    Parameters parameters;
+
 private:
+    APVTS::ParameterLayout createParameters();
+
     bool isBufferEmpty(const juce::AudioBuffer<float>& buffer);
     juce::AudioBuffer<float> bufferForMeter;
 
@@ -81,3 +97,4 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
+

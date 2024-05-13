@@ -29,10 +29,10 @@ namespace Gui
 
         void draw(juce::Graphics& g);
         juce::String getStringContent();
-        std::vector<float> setPeakHoldValuesForStringContent(std::vector<float>values);
+        //std::vector<float> setPeakHoldValuesForStringContent(std::vector<float>values);
         void setStringContent(std::vector<float> values);
         void timerCallback() override;
-        float computePeakValueWhileHoldInDb(int channel, float newValuePeak, float valuePeakBeingHeld);
+//        float computePeakValueWhileHoldInDb(int channel, float newValuePeak, float valuePeakBeingHeld);
     private:
         std::function<std::vector<float>()>valueStringSupplierFn;
         juce::String stringContent;

@@ -16,7 +16,7 @@
 #include "BarMeterBar.h"
 #include "BarMeterHelper.h"
 #include "TinyStripComponent.h"
-#include "GainKnob.h"
+//#include "GainKnob.h"
 #include "FlatsLookAndFeel.h"
 
 
@@ -66,8 +66,8 @@ namespace Gui
         void repaintEverything();
         std::vector<juce::Component*> addAndMakeVisibleEverythingThrower();
 
-        template<typename T>
-        std::vector<T*> addAndMakeVisibleEveryUniquePtrThrower();
+//        template<typename T>
+//        std::vector<T*> addAndMakeVisibleEveryUniquePtrThrower();
         void drawEverything(juce::Graphics& g);
         void setLevelValues(std::vector<float>& levelValues);
 
@@ -85,8 +85,8 @@ namespace Gui
         Gui::BarMeterChannelInfoTextBox channelInfoTextBox0;
         Gui::BarMeterChannelInfoTextBox channelInfoTextBox1;
         Gui::TinyStripComponent tinyStripComponent;
-        std::unique_ptr<juce::Slider> gainDbSlider;
-        std::unique_ptr<juce::Slider> gainDbLabel;
+//        std::unique_ptr<juce::Slider> gainDbSlider;
+//        std::unique_ptr<juce::Slider> gainDbLabel;
         //  =============================================
         Gui::MeterColours meterColours;
         Options meterOptions;

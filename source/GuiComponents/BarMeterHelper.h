@@ -39,7 +39,7 @@ namespace Gui
         static constexpr auto kTinyStripTextPositionY = 175;
         static constexpr auto kTinyStripTextPositionWidth = 167;
         static constexpr auto kTinyStripTextPositionHeight = 23;
-        static constexpr auto kTinyStripTextMargin = 25;
+        static constexpr auto kTinyStripTextMargin = 45;
 
 
         static constexpr auto kPeakHoldLevelTextPositionX = 520;

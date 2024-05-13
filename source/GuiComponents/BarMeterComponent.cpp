@@ -12,12 +12,11 @@ namespace Gui
                                              channelInfoTextBox0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
                                              channelInfoTextBox1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
                                              tinyStripComponent([&](){
-                                                                    auto valueCh0 = audioProcessor.getLevelValuePeak(0);
-                                                                    auto valueCh1 = audioProcessor.getLevelValuePeak(1);
-                                                                    std::vector<float> values = {valueCh0, valueCh1};
+                                                                    auto value = audioProcessor.parameters.param_gain;
+                                                                    std::vector<float> values = {value};
                                                                     return values;
                                                                 }),
-                                                                useInternalTimer(false)
+                                            useInternalTimer(false)
     {
         useInternalTiming(useInternalTimer); //startTimerHz
         //gainDbSlider = new juce::Slider ("SliderGain");
@@ -55,17 +54,17 @@ namespace Gui
         return listOfComponent;
     }
 
-    template<typename T>
-    std::vector<T*> BarMeterComponent::addAndMakeVisibleEveryUniquePtrThrower()
-    {
-        std::vector<T*> listOfSliderControllers =
-        {
-            &gainDbSlider,
-            &gainDbLabel
-        };
-
-        return listOfSliderControllers;
-    }
+//    template<typename T>
+//    std::vector<T*> BarMeterComponent::addAndMakeVisibleEveryUniquePtrThrower()
+//    {
+//        std::vector<T*> listOfSliderControllers =
+//        {
+//            &gainDbSlider,
+//            &gainDbLabel
+//        };
+//
+//        return listOfSliderControllers;
+//    }
 
     void BarMeterComponent::drawEverything(juce::Graphics &g)
     {
@@ -82,8 +81,15 @@ namespace Gui
         //printf("~~update Everything\n"); pass
         this->horizontalMeterBar0.refreshMeterLevel();
         this->horizontalMeterBar1.refreshMeterLevel();
-        this->channelInfoTextBox0.setChannelName(juce::String(randomValue));
-        this->channelInfoTextBox1.setChannelName(juce::String(randomValue));
+
+        auto isOverloaded = [&](int ch){
+            if(audioProcessor.m_nChannelPeakLevels.at(ch) > -0.0f)
+                return 1;
+            return 0;
+        };
+
+        this->channelInfoTextBox0.setChannelName(juce::String(isOverloaded(0)));
+        this->channelInfoTextBox1.setChannelName(juce::String(isOverloaded(1)));
         //this->tinyStripComponent.repaint();
     }
     void BarMeterComponent::repaintEverything() //flags every component as "dirty"
@@ -153,12 +159,12 @@ namespace Gui
         {
             stopTimer();
             startTimerHz (Constants::kInitialRefreshRateHz);
-            printf("using internal timing for BMC...\n");
+            //printf("using internal timing for BMC...\n");
         }
         else
         {
             stopTimer();
-            printf("using global timing for BMC...\n");
+            //printf("using global timing for BMC...\n");
             return;
         }
     }
