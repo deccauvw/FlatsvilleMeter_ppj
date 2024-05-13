@@ -6,7 +6,7 @@
 
 namespace Gui
 {
-    BarMeterOverloadLed::BarMeterOverloadLed (int channel, std::function<float()>&& valueSupplier)
+    BarMeterOverloadLed::BarMeterOverloadLed (int channel, std::function<BundleOfLevelValues()>&& valueSupplier)
         :valueSupplierFn(std::move(valueSupplier)),
           m_channelNumber(channel),
           m_previousRefreshTime(0.0f),
@@ -17,6 +17,7 @@ namespace Gui
     {
         setLedBounds (channel);
         startTimerHz(m_meterOptions.refreshRateHz);
+        m_meterBallisticsType = Gui::kMeterBallisticsTypeDefault;
     }
     // ============
     BarMeterOverloadLed::~BarMeterOverloadLed() = default;
@@ -50,7 +51,7 @@ namespace Gui
         m_LedBounds = juce::Rectangle<int>(xpos, ypos, width, height);
         m_LedPosition = juce::Rectangle<int>(m_LedBounds.getX(), m_LedBounds.getY());
     }
-    BarMeterOverloadLed::BarMeterOverloadLed() = default;
+    //BarMeterOverloadLed::BarMeterOverloadLed() = default;
 
     void BarMeterOverloadLed::initialize()
     {
@@ -63,6 +64,27 @@ namespace Gui
     }
     void BarMeterOverloadLed::setIsChannelOverloaded()
     {
+        //auto suppliedValueBundle = valueSupplierFn;
+        auto valuePeak = valueSupplierFn().valuePEAK;
+        auto valueRms = valueSupplierFn().valueRMS;
+        auto valueVu = valueSupplierFn().valueVU;
+
+        float desiredValue;
+        switch(m_meterBallisticsType)
+        {
+            case MeterBallisticsType::PEAK:
+                desiredValue = valuePeak;
+                break;
+            case MeterBallisticsType::RMS:
+                desiredValue = valueRms;
+                break;
+            case MeterBallisticsType::VU:
+                desiredValue = valueVu;
+                break;
+            default:
+                desiredValue = 0.0f;
+                break;
+        }
         auto level = juce::Decibels::gainToDecibels(valueSupplierFn());
         auto criteria = m_meterOptions.meterLedStageCriteria;
         jassert(criteria.size() == 2);
@@ -152,5 +174,31 @@ namespace Gui
     {
         setIsChannelOverloaded();
         repaint();
+    }
+    void BarMeterOverloadLed::getBundleOfValues (MeterBallisticsType& mbt)
+    {
+        //auto suppliedValueBundle = valueSupplierFn;
+        auto valuePeak = valueSupplierFn().valuePEAK;
+        auto valueRms = valueSupplierFn().valueRMS;
+        auto valueVu = valueSupplierFn().valueVU;
+
+        float desiredValue;
+        switch(mbt)
+        {
+            case MeterBallisticsType::PEAK:
+                desiredValue = valuePeak;
+                break;
+            case MeterBallisticsType::RMS:
+                desiredValue = valueRms;
+                break;
+            case MeterBallisticsType::VU:
+                desiredValue = valueVu;
+                break;
+            default:
+                desiredValue = 0.0f;
+                break;
+        }
+
+        return desiredValue;
     }
 } // Gui

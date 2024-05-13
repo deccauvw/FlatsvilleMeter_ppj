@@ -15,18 +15,20 @@
 using mat = juce::dsp::Matrix<float>;
 
 //default constructors destructors========================================================
-AnalogVuMeterProcessor::AnalogVuMeterProcessor()
+AnalogVuMeterProcessor::AnalogVuMeterProcessor(PluginProcessor& p, juce::dsp::ProcessSpec processSpec) :
+                                                                      audioProcessor(p),
+                                                                      m_spec(processSpec)
 {
     // If this class is used without caution and processBlock
     // is called before prepareToPlay, divisions by zero
     // might occur. E.g. if numberOfSamplesInAllBins = 0.
     // To prevent this, prepareToPlay is called here with
     // some arbitrary arguments.
+    //    spec.numChannels = (juce::uint32)2;
+    //    spec.maximumBlockSize = (juce::uint32)1024;
+    //    spec.sampleRate = (juce::uint32)48000;
     systemMatrices.setMatrices();
-    spec.numChannels = (juce::uint32)2;
-    spec.maximumBlockSize = (juce::uint32)1024;
-    spec.sampleRate = (juce::uint32)48000;
-    prepareToPlay(48000, 2,1024); //arbitrary input
+    prepareToPlay(m_spec); //arbitrary input
 }
 
 AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
@@ -42,12 +44,12 @@ AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
 }
 
 //JUCE related functions ========================================================
-void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock)
+void AnalogVuMeterProcessor::prepareToPlay(juce::dsp::ProcessSpec spec)
 {
     //init. spec
-    spec.sampleRate =sampleRate;
-    spec.numChannels = numberOfInputChannels;
-    spec.maximumBlockSize = estimatedSamplesPerBlock;
+    auto sampleRate = spec.sampleRate;
+    auto numberOfInputChannels = spec.numChannels;
+    auto estimatedSamplesPerBlock = spec.maximumBlockSize;
 
     //create empty buffer following specs
     bufferForMeasurement.setSize(numberOfInputChannels, estimatedSamplesPerBlock);
@@ -112,7 +114,7 @@ void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& 
 }
 
 
-void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& buffer) //  virtually A processBlock
+void AnalogVuMeterProcessor::processBlock(juce::AudioBuffer<float>& buffer) //  feed to steady state model
 {
     /*buffer := audio buffer input
      * systemSize (=4) := order of the steady state model
@@ -140,7 +142,7 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
 
     outputBufferSystemI = ssms_v2i.getSimulatedOutputBuffer();
     recordPreviousStateForNextSystem(z1, z2, z3, z4, outputBufferSystemI);
-    DBG("System 1 ends here");
+    //DBG("System 1 ends here");
     //  System II Current to Angular Displacement
     ssms_i2a.set_x(outputBufferSystemI);
     for (int ch = 0; ch < numberOfChannels; ++ch)
@@ -152,7 +154,7 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
     outputBufferSystemII = ssms_v2i.getSimulatedOutputBuffer();
     recordPreviousStateForNextSystem(w1, w2, w3, w4, outputBufferSystemII);
 
-    DBG("System 2 ends here");
+    //DBG("System 2 ends here");
     //acquire channel-wise VU levels
 
     //outputBufferSystemII should hold the VU level
@@ -183,7 +185,7 @@ std::vector<float> AnalogVuMeterProcessor::getNeedlePointsValuesVector()
 
 void AnalogVuMeterProcessor::reset()
 {
-    int numChannels = spec.numChannels;
+    auto numChannels = static_cast<int>(m_spec.numChannels);
 
     for (int ch = 0; ch < numChannels; ++ch)
     {
@@ -203,4 +205,21 @@ void AnalogVuMeterProcessor::reset()
 juce::AudioBuffer<float> AnalogVuMeterProcessor::getOutputBuffer()
 {
     return bufferForMeasurement;
+}
+
+float AnalogVuMeterProcessor::getVuLevel (int channel, int startSample, int numSamples)
+{
+    jassert(channel > 0);
+    jassert(startSample >= 0 && numSamples >= 0 && startSample + numSamples <= bufferForMeasurement.getNumSamples());
+
+    const auto* in = bufferForMeasurement.getReadPointer(channel);
+    auto* data = (in + startSample);
+    double sum = 0.0;
+
+    for(int i = 0;i<numSamples; ++i)
+    {
+        auto sample = data[i];
+        sum += sample * sample;
+    }
+    return static_cast<float> (std::sqrt(sum / numSamples)); //L2 norm
 }

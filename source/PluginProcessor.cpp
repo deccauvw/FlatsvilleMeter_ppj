@@ -17,9 +17,11 @@ PluginProcessor::PluginProcessor()
       m_RmsLevelChannel1 (-INFINITY),
       m_peakLevelChannel0 (-INFINITY),
       m_peakLevelChannel1 (-INFINITY),
+      m_vuLevelChannel0(-INFINITY),
+      m_vuLevelChannel1(-INFINITY),
       apvts(*this, nullptr, "Parameters", createParameters())
 {
-//    addParameter(param_gain = new juce::AudioParameterFloat())
+    analogVuMeterProcessor = new AnalogVuMeterProcessor{*this, juce::dsp::ProcessSpec{48000.0, 1024, 2}};
 }
 
 PluginProcessor::~PluginProcessor() = default;
@@ -108,8 +110,13 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     this->specs.sampleRate = sampleRate;
     this->specs.maximumBlockSize = samplesPerBlock;
     this->specs.numChannels = 2; //assume and FIX as stereo only plugin
+
+    analogVuMeterProcessor = new AnalogVuMeterProcessor(*this, this->specs);
+    //analogVuMeterProcessor->prepareToPlay(this->specs);
+
     m_nChannelPeakLevels.resize(specs.numChannels);
     m_nChannelRmsLevels.resize(specs.numChannels);
+    m_nChannelVuLevels.resize(specs.numChannels);
     bufferForMeter.clear();
 }
 
@@ -144,7 +151,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     //if the plugin is NOT connected
     if (isBufferEmpty (buffer)) // not connected
     {
-        bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
+        bufferForMeter = juce::AudioBuffer<float> ((int)specs.numChannels, (int)specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
             bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
     }
@@ -160,13 +167,22 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto numChannels = bufferForMeter.getNumChannels();
 
 
+    //vu meter ballistics as a buffer output
+    analogVuMeterProcessor->processBlock(bufferForMeter);
+
+
+    //value for peak and RMS
     for (auto ch = 0; ch < numChannels; ch++)
     {
         auto m_iRmsLevel = bufferForMeter.getRMSLevel(ch, 0, numSamples);
         auto m_iPeakLevel = bufferForMeter.getMagnitude(ch, 0, numSamples);
+        auto m_iVuLevel = analogVuMeterProcessor->getVuLevel(ch, 0, numSamples);
         m_nChannelPeakLevels.at(ch) = m_iPeakLevel;
         m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
+        m_nChannelVuLevels.at(ch) = m_iVuLevel;
     }
+
+
 
 }
 
@@ -238,10 +254,16 @@ float PluginProcessor::getLevelValuePeak (const int channel) const
     return m_nChannelPeakLevels.at(channel);
 }
 
+float PluginProcessor::getLevelValueVu(const int channel) const
+{
+    jassert(channel == 0 || channel == 1);
+    return m_nChannelVuLevels.at(channel);
+}
+
 APVTS::ParameterLayout PluginProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -18.0f, +18.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -24.0f, +24.0f, 0.0f));
     return{params.begin(), params.end()};
 }
 

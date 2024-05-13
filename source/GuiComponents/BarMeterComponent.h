@@ -9,7 +9,8 @@
 #include "juce_gui_basics/juce_gui_basics.h"
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
-#include "C:\JetBrains\AudioDevelopment\_007_FlatsvilleMeter_ppj\FlatsvilleMeter_ppj\source\PluginProcessor.h"
+//#include "C:\JetBrains\AudioDevelopment\_007_FlatsvilleMeter_ppj\FlatsvilleMeter_ppj\source\PluginProcessor.h"
+#include "/PluginProcessor.h"
 #include <vector>
 
 #include "BarMeterOverloadLed.h"
@@ -25,6 +26,19 @@
 namespace Gui
 {
 
+    //struct BundleOfLevelValues is defined in BarMeterHelper
+    std::function<BundleOfLevelValues()> bundlePackaging(PluginProcessor& audioProcessor, int channel)
+    {
+        return [&audioProcessor, &channel]()
+        {
+            auto valuePeak = audioProcessor.getLevelValuePeak (channel);
+            auto valueRms = audioProcessor.getLevelValueRms (channel);
+            auto valueVu = audioProcessor.getLevelValueVu (channel);
+            BundleOfLevelValues valueBundle (valueRms, valueVu, valuePeak);
+            return valueBundle;
+        };
+    }
+
     class BarMeterComponent final:
         public juce::Component,
         private juce::Timer
@@ -34,29 +48,19 @@ namespace Gui
         //BarMeterComponent(PluginProcessor& p, const juce::AudioChannelSet& channelFormat);
         ~BarMeterComponent() override;
 
-
         //reset peak hold, resetMeters
         void reset();
+
         void resetPeakHold();
 
-        //set inputlevel
         void setInputMeterLevelValueDecibels (const std::vector<float>& values);
+
         void setChannelFormat(const juce::AudioChannelSet& channelSet, const std::vector<juce::String>& channelNames = {});
+
         void setChannelNames(const std::vector<juce::String>& channelNames);
+
         void setRefreshRate(float refreshRate);
 
-
-        /**
-     * @brief Set the timing option to use (internal/external).
-     *
-     * When using internal timing, the panel will redraw (updateBarFigure) the meters automatically
-     * using the updateBarFigure rate specified in setPanelRefreshRate.
-     * When using external timing, the user has to do this manually with the 'updateBarFigure' method.
-     *
-     * @param useInternalTiming When set to true, the meter panel will update itself.
-     *
-     * @see updateBarFigure, setPanelRefreshRate
-    */
         void useInternalTiming(bool useInternalTiming) noexcept;
         //void showTickMarks(bool showTickMarks);
         void paint (juce::Graphics& g)override;
@@ -74,6 +78,10 @@ namespace Gui
         int M_RANDOMVALUEFORDEBUGGING = 0;
     // ================================================================================================================================
     private:
+        MeterBallisticsType m_ballistics = MeterBallisticsType::VU;
+
+        std::function<float()> valueSupplierFn;
+
         PluginProcessor& audioProcessor;
 
         bool useInternalTimer = true;

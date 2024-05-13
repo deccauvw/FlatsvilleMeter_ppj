@@ -21,8 +21,8 @@ namespace Gui
     class BarMeterOverloadLed final : public juce::Component, private juce::Timer
     {
     public:
-        BarMeterOverloadLed();
-        explicit BarMeterOverloadLed (int channel, std::function<float()>&& valueSupplierFn);
+        //BarMeterOverloadLed();
+        explicit BarMeterOverloadLed (int channel, std::function<BundleOfLevelValues()>&& valueSupplierFn);
         ~BarMeterOverloadLed() override;
         void initialize();
         void paint(juce::Graphics &g) override;
@@ -40,11 +40,15 @@ namespace Gui
         // ============
         void setMeterOptions(Options meterOptions);
         Options getMeterOptions();
+
+        void getBundleOfValues(MeterBallisticsType& mbt);
         // ============
         void timerCallback() override;
         // ==================================
     private:
-        std::function<float()> valueSupplierFn; //value input gateway
+        MeterBallisticsType m_meterBallisticsType;
+        BundleOfLevelValues bundleOfValues;
+        std::function<BundleOfLevelValues()> valueSupplierFn; //value input gateway
         std::atomic<float> m_inputLevelDb{0.0f};
         int m_channelNumber;
         MeterColours m_meterColours;

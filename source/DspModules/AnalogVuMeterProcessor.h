@@ -2,6 +2,7 @@
 
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
+#include "/PluginProcessor.h"
 #include <vector>
 #include "StateSpaceModelSimulation.h"
 #include "DspModulesHelper.h"
@@ -9,16 +10,16 @@
 class AnalogVuMeterProcessor  : public juce::Component, private DspLine::SystemMatrices
 {
 public:
-    AnalogVuMeterProcessor();
+    AnalogVuMeterProcessor(PluginProcessor& p, juce::dsp::ProcessSpec processSpec);
     ~AnalogVuMeterProcessor() override;
     //JUCE functions=========================
-    void prepareToPlay(double  SampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock);
+    void prepareToPlay(juce::dsp::ProcessSpec processSpec);
     //void processBlock(juce::AudioBuffer<float> &buffer);
 
     //member functions=========================
     using mat = juce::dsp::Matrix<float>;
     void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float>& p1, juce::HeapBlock<float>& p2, juce::HeapBlock<float>& p3, juce::HeapBlock<float>& p4);
-    void feedToSteadyStateModel(juce::AudioBuffer<float>& buffer);
+    void processBlock(juce::AudioBuffer<float>& buffer);
  
     static void recordPreviousStateForNextSystem(juce::HeapBlock<float> &p1, juce::HeapBlock<float> &p2, juce::HeapBlock<float> &p3, juce::HeapBlock<float> &p4, juce::AudioBuffer<float>& outputBuffer);
 
@@ -27,9 +28,11 @@ public:
     void reset();
 
     juce::AudioBuffer<float> getOutputBuffer();
+    float getVuLevel(int channel, int startSample, int numSamples);
 
 
 private:
+    PluginProcessor& audioProcessor;
     //system dimension = 4
     const int sysDim = static_cast<int>(SystemMatrices::systemDim);
     //systemMatricesInit
@@ -60,7 +63,7 @@ private:
 
     juce::AudioBuffer<float> initialStateBufferForSystemI; //previous 4 samples
     juce::AudioBuffer<float> initialStateBufferForSystemII; //previous 4 samples
-    juce::dsp::ProcessSpec spec; //sample rate etc.
+    juce::dsp::ProcessSpec m_spec; //sample rate etc.
     std::vector<float> needlePointsValuesVector; //channel-wise values vector
 
     static constexpr float minimalReturnLevelDecibels = DspLine::Constants::kMinimalReturnValue; // virtual -INF

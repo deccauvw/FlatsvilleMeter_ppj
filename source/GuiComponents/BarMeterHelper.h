@@ -86,8 +86,8 @@ namespace Gui
         //gain knob constants
         static constexpr auto kGainKnobPositionX = 700;
         static constexpr auto kGainKnobPositionY = 54;
-        static constexpr auto kGainKnobWidth = 83;
-        static constexpr auto kGainKnobHeight = 83;
+        static constexpr auto kGainKnobWidth = 145;
+        static constexpr auto kGainKnobHeight = 145;
 
 
         //aesthetics for "0VU" indicator (flashy orb) the Overload warning led
@@ -97,6 +97,12 @@ namespace Gui
         static constexpr auto kOverloadLedPositionYdn = 154;
         static constexpr auto kOverLoadLedLineThickness = 2.0f;
 
+        //combo box constants
+        static constexpr auto kComboBoxPositionX = 890;
+        static constexpr auto kComboBoxPositionY = 175;
+        static constexpr auto kComboBoxWidth = 61;
+        static constexpr auto kComboBoxHeight = 23;
+
 
 
         //ID(name) for all components
@@ -104,6 +110,20 @@ namespace Gui
         static constexpr auto kLabelstripId = "label_strip";
 
     }
+
+    enum MeterBallisticsType
+    {
+        PEAK, RMS, VU
+    };
+    static constexpr auto kMeterBallisticsTypeDefault = MeterBallisticsType::PEAK;
+
+    struct BundleOfLevelValues
+    {
+        float valueRMS, valueVU, valuePEAK;
+        BundleOfLevelValues():valueRMS(0.0f), valueVU(0.0f), valuePEAK(0.0f){};
+        BundleOfLevelValues(float rms, float vu, float peak):valueRMS(rms), valueVU(vu), valuePEAK(peak){};
+    };
+
 
     struct SegmentOptions{
         //the range of the segment in dB

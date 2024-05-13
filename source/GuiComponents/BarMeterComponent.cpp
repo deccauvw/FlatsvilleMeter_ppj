@@ -7,10 +7,10 @@
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent (PluginProcessor& p): audioProcessor(p),
-                                             horizontalMeterBar0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
-                                             horizontalMeterBar1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
-                                            channelOverloadLed0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
-                                            channelOverloadLed1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
+                                             horizontalMeterBar0(0, bundlePackaging(p, 0)),
+                                             horizontalMeterBar1(1, bundlePackaging(p, 1)),
+                                            channelOverloadLed0(0, bundlePackaging(p, 0)),
+                                            channelOverloadLed1(1, bundlePackaging(p, 1)),
                                              tinyStripComponent([&](){
                                                                     auto value = audioProcessor.parameters.param_gain;
                                                                     std::vector<float> values = {value};
@@ -19,20 +19,13 @@ namespace Gui
                                             useInternalTimer(false)
     {
         useInternalTiming(useInternalTimer); //startTimerHz
-        //gainDbSlider = new juce::Slider ("SliderGain");
-
-        //setChannelFormat()
-//        addAndMakeVisible(tinyStripComponent);
-//        addAndMakeVisible(horizontalMeterBar0);
-//        addAndMakeVisible(horizontalMeterBar1);
-//        addAndMakeVisible(channelInfoTextBox0);
-//        addAndMakeVisible(channelInfoTextBox1);
     }
 
     BarMeterComponent::~BarMeterComponent()
     {
         stopTimer();
     }
+
 
     //===================================================================
 

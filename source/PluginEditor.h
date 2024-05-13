@@ -17,7 +17,8 @@ struct ControlParameters
 class PluginEditor :
     public juce::AudioProcessorEditor, //has component class included
     private juce::Timer,
-    public juce::Slider::Listener
+    public juce::Slider::Listener,
+    public juce::ComboBox::Listener
 {
 public:
     explicit PluginEditor (PluginProcessor&);
@@ -27,7 +28,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     void sliderValueChanged(juce::Slider* sliderLastChanged) override;
-
+    void comboBoxChanged(juce::ComboBox* comboBoxThatHasChanged) override;
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
@@ -40,6 +41,7 @@ private:
     //controllable parameters
     juce::Slider sliderGain;
     std::unique_ptr<APVTS::SliderAttachment>sliderGainAttachment;
+    juce::ComboBox comboBoxMeterType;
 
     //Gui components
     Gui::BarMeterComponent barMeterComponent; //everything that "moves"

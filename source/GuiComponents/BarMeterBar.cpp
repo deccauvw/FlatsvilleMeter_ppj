@@ -7,8 +7,9 @@
 namespace Gui
 {
     BarMeterBar::BarMeterBar() = default;
-    BarMeterBar::BarMeterBar (int channel, std::function<float()>&& valueFunction) : valueSupplierFn(std::move(valueFunction)),
-                                                                                     channelNumber(channel)
+    BarMeterBar::BarMeterBar (int channel, std::function<BundleOfLevelValues()>&& valueFunction) :
+                                                                                   valueSupplierFn(std::move(valueFunction)),
+                                                                                    channelNumber(channel)
     {
         initialize(); //startTimerHz(m_refreshRateHz);
         startTimerHz((int)m_refreshRateHz);
@@ -52,7 +53,7 @@ namespace Gui
         //setMeterSegments(Gui::BarMeterSegment::getSegmentOptions());
         setRefreshRateHz(Constants::kInitialRefreshRateHz);
         calculateDecayCoeff(m_meterOptions);
-
+        m_meterBallisticsType = kMeterBallisticsTypeDefault;
     }
 
 
@@ -102,14 +103,32 @@ namespace Gui
     //=========================================================
     void BarMeterBar::refreshMeterLevel()
     {
-        auto level = juce::Decibels::gainToDecibels(valueSupplierFn());
+        //auto suppliedValueBundle = valueSupplierFn;
+        auto valuePeak = valueSupplierFn().valuePEAK;
+        auto valueRms = valueSupplierFn().valueRMS;
+        auto valueVu = valueSupplierFn().valueVU;
+
+        float desiredValue;
+        switch(m_meterBallisticsType)
+        {
+            case MeterBallisticsType::PEAK:
+                desiredValue = valuePeak;
+                break;
+            case MeterBallisticsType::RMS:
+                desiredValue = valueRms;
+                break;
+            case MeterBallisticsType::VU:
+                desiredValue = valueVu;
+                break;
+            default:
+                desiredValue = 0.0f;
+                break;
+        }
+
+
+        auto level = juce::Decibels::gainToDecibels(desiredValue);
         level = getDecayedLevel(level);
         this->m_meterLevelDb = juce::jmax(Constants::kLevelMinInDecibels, level);
-        //printf("\t\t\tIn : %3f\t\tClamped : %3f\n", level, m_meterLevelDb);
-
-        //printf("[ch %d]  valueSupplied <- %4f\n",channelNumber, m_meterLevelDb);
-        //repaint(); //repaint is here <<<<============================================================
-
     }
     //=========================================================
     float BarMeterBar::getMeterLevel() const noexcept

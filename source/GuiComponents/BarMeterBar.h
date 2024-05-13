@@ -17,7 +17,7 @@ namespace Gui
     {
     public:
         BarMeterBar();
-        explicit BarMeterBar (int channel, std::function<float()>&& valueFunction);
+        explicit BarMeterBar (int channel, std::function<BundleOfLevelValues()>&& valueFunction);
         ~BarMeterBar() override;
         void initialize();
         void drawBar (juce::Graphics& g);
@@ -43,7 +43,8 @@ namespace Gui
 
     private:
         int channelNumber;
-        std::function<float()> valueSupplierFn;
+        MeterBallisticsType m_meterBallisticsType;
+        std::function<BundleOfLevelValues()> valueSupplierFn;
         //std::vector<SegmentOptions> m_segmentOptions = Gui::MeterScales::getMeterScaleDefault();
         //std::vector<BarMeterSegment> m_segments {};
         juce::Rectangle<int> m_meterBounds {}; //numeric peak meter
