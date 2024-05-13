@@ -164,12 +164,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     {
         auto m_iRmsLevel = bufferForMeter.getRMSLevel(ch, 0, numSamples);
         auto m_iPeakLevel = bufferForMeter.getMagnitude(ch, 0, numSamples);
-        m_nChannelPeakLevels.at(ch) = m_iRmsLevel;
-        m_nChannelRmsLevels.at(ch) = m_iPeakLevel;
+        m_nChannelPeakLevels.at(ch) = m_iPeakLevel;
+        m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
     }
 
-    //DEBUGGING LINE
-    //printf("#%[5%d]::%3f\t%3f\n", M_BLOCKPASSEDFORDEBUG++, m_nChannelPeakLevels[0], m_nChannelPeakLevels[1]);
 }
 
 //==============================================================================
