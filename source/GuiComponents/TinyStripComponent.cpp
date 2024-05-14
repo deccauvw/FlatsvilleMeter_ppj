@@ -8,8 +8,8 @@ namespace Gui
 {
 
     TinyStripComponent::TinyStripComponent(std::function<float()>&& valueStringSupplier) :
-                                                                                                 valueStringSupplierFn(std::move(valueStringSupplier)),
-                                                                                                 m_isDirty(true)
+                                                                                     valueStringSupplierFn(std::move(valueStringSupplier)),
+                                                                                     m_isDirty(true)
     {
         m_fontDefault = juce::Font(Gui::Constants::kDefaultTypeFace, Gui::Constants::kTinyStripFontHeight, 0);
         startTimerHz((int)Gui::Constants::kInitialRefreshRateHz);
@@ -69,9 +69,9 @@ namespace Gui
 //    }
 //
 
-    void TinyStripComponent::setStringContent(const std::vector<float> values)
+    void TinyStripComponent::setStringContent(float values)
     {
-        std::string valueFormattedCh0 = std::format("{:.0f}", values.at(0));
+        std::string valueFormattedCh0 = std::format("{:.0f}", values);
         std::string valueUnit = " dB";
         auto s = juce::String(valueFormattedCh0) + juce::String("\t\t") + juce::String(valueUnit);
         stringContent = juce::String(s);
@@ -103,10 +103,6 @@ namespace Gui
     void TinyStripComponent::timerCallback()
     {
         auto inputValues = valueStringSupplierFn(); //vector
-        for(int ch = 0;ch<inputValues.size(); ch++)
-        {
-            inputValues.at(ch) = inputValues.at(ch);
-        }
         setStringContent(inputValues);
         repaint();
     }

@@ -15,7 +15,7 @@
 using mat = juce::dsp::Matrix<float>;
 
 //default constructors destructors========================================================
-AnalogVuMeterProcessor::AnalogVuMeterProcessor (PluginProcessor& p, juce::dsp::ProcessSpec processSpec) : m_spec (processSpec)
+AnalogVuMeterProcessor::AnalogVuMeterProcessor (juce::dsp::ProcessSpec processSpec) : m_spec (processSpec)
 {
     // If this class is used without caution and processBlock
     // is called before prepareToPlay, divisions by zero

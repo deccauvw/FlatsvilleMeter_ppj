@@ -34,7 +34,8 @@ namespace Gui
         private juce::Timer
     {
     public:
-        explicit BarMeterComponent();
+        BarMeterComponent();
+        explicit BarMeterComponent(const std::vector<std::function<float()>>& vsfv, juce::AudioProcessorValueTreeState& apvts);
         ~BarMeterComponent() override;
 
         //reset peak hold, resetMeters
@@ -67,11 +68,13 @@ namespace Gui
     // ================================================================================================================================
 
         static std::function<float()> packagedValueSuppliers(const std::vector<std::function<float()>>& funcVector, MeterBallisticsType mbt);
-        std::vector<std::function<float()>> valueSupplierFnVector;
+        std::vector<std::function<float()>> valueSupplierFnVector; //VSFV
+        // ================================================================================================================================
+
     private:
 
         MeterBallisticsType m_ballistics = MeterBallisticsType::VU;
-        bool useInternalTimer = true;
+        bool m_useInternalTimer;
 
         //std::vector<float> m_LevelValuesInDecibels {0.0f, 0.0f};
 

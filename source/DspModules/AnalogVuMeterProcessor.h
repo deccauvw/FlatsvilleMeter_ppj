@@ -15,7 +15,7 @@ class PluginProcessor;
 class AnalogVuMeterProcessor : public juce::Component, private FlatsDsp::SystemMatrices
 {
 public:
-    explicit AnalogVuMeterProcessor (PluginProcessor& p, juce::dsp::ProcessSpec processSpec);
+    explicit AnalogVuMeterProcessor (juce::dsp::ProcessSpec processSpec);
     ~AnalogVuMeterProcessor() override;
     //JUCE functions=========================
     void prepareToPlay (juce::dsp::ProcessSpec processSpec);

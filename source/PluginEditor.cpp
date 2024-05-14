@@ -5,7 +5,7 @@
 //using APVTS = juce::AudioProcessorValueTreeState;
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), m_audioProcessor(p), barMeterComponent(p)
+    : AudioProcessorEditor (&p), m_audioProcessor(p)
 {
     //initialize parameters := dials
     sliderGain.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);

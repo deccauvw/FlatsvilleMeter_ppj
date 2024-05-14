@@ -6,15 +6,25 @@
 
 namespace Gui
 {
-    BarMeterComponent::BarMeterComponent (const std::vector<std::function<float()>>& vsfv, juce::AudioProcessorValueTreeState& apvts): valueSupplierFnVector(vsfv),
-                                             horizontalMeterBar0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
-                                             horizontalMeterBar1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
-                                            channelOverloadLed0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
-                                            channelOverloadLed1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
-                                             tinyStripComponent([&apvts]()->float{return apvts.getRawParameterValue("GAIN")->load();}),
-                                            useInternalTimer(false)
+    BarMeterComponent::BarMeterComponent()
     {
-        useInternalTiming(useInternalTimer); //startTimerHz
+        //add dummy vsfv here
+        auto dummySupplierFn = []()->float {return 0.0f;};
+
+        horizontalMeterBar0(0, dummySupplierFn);
+
+    }
+
+    BarMeterComponent::BarMeterComponent (const std::vector<std::function<float()>>& vsfv, juce::AudioProcessorValueTreeState& apvts):
+                                            valueSupplierFnVector(vsfv),
+                                             horizontalMeterBar0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
+                                             horizontalMeterBar1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
+                                            channelOverloadLed0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
+                                            channelOverloadLed1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
+                                            tinyStripComponent([&apvts]()->float{return apvts.getRawParameterValue("GAIN")->load();}),
+                                            m_useInternalTimer(false)
+    {
+        useInternalTiming(m_useInternalTimer); //startTimerHz
     }
 
     BarMeterComponent::~BarMeterComponent()
@@ -136,7 +146,7 @@ namespace Gui
     //===================================================================
     void BarMeterComponent::useInternalTiming (bool isTimerInternal) noexcept
     {
-        useInternalTimer = isTimerInternal;
+        m_useInternalTimer = isTimerInternal;
         if (isTimerInternal)
         {
             stopTimer();

@@ -20,7 +20,7 @@ namespace Gui
     class TinyStripComponent : public juce::Component, private juce::Timer
     {
     public:
-        TinyStripComponent(std::function<float()>&& valueStringSupplier);
+        explicit TinyStripComponent(std::function<float()>&& valueStringSupplier);
         ~TinyStripComponent() override;
 
         void paint(juce::Graphics& g) override;
@@ -30,7 +30,7 @@ namespace Gui
         void draw(juce::Graphics& g);
         juce::String getStringContent();
         //std::vector<float> setPeakHoldValuesForStringContent(std::vector<float>values);
-        void setStringContent(std::vector<float> values);
+        void setStringContent(float values);
         void timerCallback() override;
 //        float computePeakValueWhileHoldInDb(int channel, float newValuePeak, float valuePeakBeingHeld);
     private:
