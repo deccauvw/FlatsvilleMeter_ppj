@@ -8,7 +8,7 @@
 #include <vector>
 
 
-namespace DspLine
+namespace FlatsDsp
 {
     //@brief constant Matrix contents.
     namespace Constants
@@ -130,4 +130,4 @@ namespace DspLine
         mat ssm_i2a_D;
     private:
     };
-} // DspLine
+} // FlatsDsp

@@ -10,34 +10,24 @@
 #include "juce_core/juce_core.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 //#include "C:\JetBrains\AudioDevelopment\_007_FlatsvilleMeter_ppj\FlatsvilleMeter_ppj\source\PluginProcessor.h"
-#include "/PluginProcessor.h"
+#include "juce_audio_processors/juce_audio_processors.h"
+
 #include <vector>
 
-#include "BarMeterOverloadLed.h"
+#include "../PluginProcessor.h"
 #include "BarMeterBar.h"
 #include "BarMeterHelper.h"
+#include "BarMeterOverloadLed.h"
 #include "TinyStripComponent.h"
+//#include "FlatsLookAndFeel.h"
 //#include "GainKnob.h"
-#include "FlatsLookAndFeel.h"
-
 
 //this "MeterComponent" will be staying @ plugin Editor.
 
 namespace Gui
 {
+    //3 pairs of value Suppliers functor
 
-    //struct BundleOfLevelValues is defined in BarMeterHelper
-    std::function<BundleOfLevelValues()> bundlePackaging(PluginProcessor& audioProcessor, int channel)
-    {
-        return [&audioProcessor, &channel]()
-        {
-            auto valuePeak = audioProcessor.getLevelValuePeak (channel);
-            auto valueRms = audioProcessor.getLevelValueRms (channel);
-            auto valueVu = audioProcessor.getLevelValueVu (channel);
-            BundleOfLevelValues valueBundle (valueRms, valueVu, valuePeak);
-            return valueBundle;
-        };
-    }
 
     class BarMeterComponent final:
         public juce::Component,
@@ -78,6 +68,9 @@ namespace Gui
         int M_RANDOMVALUEFORDEBUGGING = 0;
     // ================================================================================================================================
     private:
+        std::function<float()> packagedValueSuppliers(PluginProcessor& p, MeterBallisticsType mbt, int channel);
+
+
         MeterBallisticsType m_ballistics = MeterBallisticsType::VU;
 
         std::function<float()> valueSupplierFn;

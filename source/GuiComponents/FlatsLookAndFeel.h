@@ -17,15 +17,15 @@ namespace Gui
     public:
         FlatsLookAndFeel();
         virtual ~FlatsLookAndFeel() override;
-        virtual void drawRotaryDial(
-            juce::Graphics& g,
-            int coordX, int coordY,
-            int width, int height,
-            float sliderPosProportional,
-            float rotaryAngleMin,
-            float rotaryAngleMax,
-            juce::Slider::SliderStyle style,
-            juce::Slider& slider);
+//        virtual void drawRotaryDial(
+//            juce::Graphics& g,
+//            int coordX, int coordY,
+//            int width, int height,
+//            float sliderPosProportional,
+//            float rotaryAngleMin,
+//            float rotaryAngleMax,
+//            juce::Slider::SliderStyle style,
+//            juce::Slider& slider);
     private:
         juce::Path rotaryPath;
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FlatsLookAndFeel)

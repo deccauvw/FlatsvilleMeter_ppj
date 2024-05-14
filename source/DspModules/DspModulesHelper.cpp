@@ -4,7 +4,7 @@
 
 #include "DspModulesHelper.h"
 
-namespace DspLine
+namespace FlatsDsp
 {
     SystemMatrices::SystemMatrices() : systemDim (Constants::kSystemOrder),
                                        ssm_v2i_x (0, 0),
@@ -54,4 +54,4 @@ namespace DspLine
         ssm_i2a_D = mat(1, 1, Constants::i2a_D);
     }
 
-} // DspLine
+} // FlatsDsp

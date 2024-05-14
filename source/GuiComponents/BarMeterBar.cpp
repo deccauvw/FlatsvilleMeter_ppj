@@ -6,10 +6,10 @@
 
 namespace Gui
 {
-    BarMeterBar::BarMeterBar() = default;
-    BarMeterBar::BarMeterBar (int channel, std::function<BundleOfLevelValues()>&& valueFunction) :
-                                                                                   valueSupplierFn(std::move(valueFunction)),
-                                                                                    channelNumber(channel)
+    BarMeterBar::BarMeterBar (int channel, std::function<float()>&& valueFunction) :
+                                                                                     valueSupplier(std::move(valueFunction)),
+                                                                                   channelNumber(channel),
+                                                                                   m_meterBallisticsType(MeterBallisticsType::PEAK)
     {
         initialize(); //startTimerHz(m_refreshRateHz);
         startTimerHz((int)m_refreshRateHz);
@@ -101,30 +101,16 @@ namespace Gui
         return m_meterLevelDb;
     }
     //=========================================================
+    void BarMeterBar::setValuesSupplier (std::function<float()>&& valueSupplierFn)
+    {
+        this->valueSupplier = std::move(valueSupplierFn);
+    }
+    //=========================================================
+
     void BarMeterBar::refreshMeterLevel()
     {
         //auto suppliedValueBundle = valueSupplierFn;
-        auto valuePeak = valueSupplierFn().valuePEAK;
-        auto valueRms = valueSupplierFn().valueRMS;
-        auto valueVu = valueSupplierFn().valueVU;
-
-        float desiredValue;
-        switch(m_meterBallisticsType)
-        {
-            case MeterBallisticsType::PEAK:
-                desiredValue = valuePeak;
-                break;
-            case MeterBallisticsType::RMS:
-                desiredValue = valueRms;
-                break;
-            case MeterBallisticsType::VU:
-                desiredValue = valueVu;
-                break;
-            default:
-                desiredValue = 0.0f;
-                break;
-        }
-
+        auto desiredValue = valueSupplier();
 
         auto level = juce::Decibels::gainToDecibels(desiredValue);
         level = getDecayedLevel(level);
@@ -281,6 +267,7 @@ namespace Gui
         refreshMeterLevel();
         repaint();
     }
+
     //==
 //    void resized()
 //    {

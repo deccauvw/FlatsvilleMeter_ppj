@@ -6,10 +6,12 @@
 //#ifndef LEVELMETER_H
 //#define LEVELMETER_H
 //#endif
+
 #pragma once
 #include<juce_audio_processors/juce_audio_processors.h>
 #include<juce_dsp/juce_dsp.h>
-#include "DspModules/AnalogVuMeterProcessor.h"
+#include "LevelMeter.h"
+
 #if (MSVC)
 #include "ipps.h"
 #endif
@@ -60,7 +62,8 @@ class PluginProcessor : public juce::AudioProcessor,
     //==============================================================================
     //added member fns>>>
 
-    AnalogVuMeterProcessor* analogVuMeterProcessor;
+    FlatsDsp::AnalogVuMeterProcessor analogVuMeterProcessor{*this,
+        juce::dsp::ProcessSpec{1024, 1024, 2}};
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;

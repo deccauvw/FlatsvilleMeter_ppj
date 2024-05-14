@@ -91,7 +91,7 @@ namespace Gui
 
 
         //aesthetics for "0VU" indicator (flashy orb) the Overload warning led
-        static constexpr auto kOverloadLedDiameterR = 11.0f;
+        static constexpr auto kOverloadLedDiameterR = 11;
         static constexpr auto kOverloadLedPositionX = 567;
         static constexpr auto kOverloadLedPositionYup = 63;
         static constexpr auto kOverloadLedPositionYdn = 154;

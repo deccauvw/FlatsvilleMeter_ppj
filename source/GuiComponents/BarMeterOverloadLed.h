@@ -22,7 +22,7 @@ namespace Gui
     {
     public:
         //BarMeterOverloadLed();
-        explicit BarMeterOverloadLed (int channel, std::function<BundleOfLevelValues()>&& valueSupplierFn);
+        explicit BarMeterOverloadLed (int channel, std::function<float()>&& valueSupplierFn);
         ~BarMeterOverloadLed() override;
         void initialize();
         void paint(juce::Graphics &g) override;
@@ -41,14 +41,14 @@ namespace Gui
         void setMeterOptions(Options meterOptions);
         Options getMeterOptions();
 
-        void getBundleOfValues(MeterBallisticsType& mbt);
+        //void setBundleSupplier();
         // ============
         void timerCallback() override;
         // ==================================
     private:
         MeterBallisticsType m_meterBallisticsType;
         BundleOfLevelValues bundleOfValues;
-        std::function<BundleOfLevelValues()> valueSupplierFn; //value input gateway
+        std::function<float()> valueSupplierFn; //value input gateway
         std::atomic<float> m_inputLevelDb{0.0f};
         int m_channelNumber;
         MeterColours m_meterColours;

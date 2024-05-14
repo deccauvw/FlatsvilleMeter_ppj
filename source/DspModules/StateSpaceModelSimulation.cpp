@@ -13,7 +13,7 @@
 using mat = juce::dsp::Matrix<float>;
 
 StateSpaceModelSimulation::StateSpaceModelSimulation() : stateSpaceModelChannels (0),
-                                                         sysDim(DspLine::Constants::kSystemOrder),
+                                                         sysDim(FlatsDsp::Constants::kSystemOrder),
                                                          m (0),
                                                          n (0),
                                                          r (0),

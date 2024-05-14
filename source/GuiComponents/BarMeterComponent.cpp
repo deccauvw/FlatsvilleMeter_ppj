@@ -7,10 +7,10 @@
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent (PluginProcessor& p): audioProcessor(p),
-                                             horizontalMeterBar0(0, bundlePackaging(p, 0)),
-                                             horizontalMeterBar1(1, bundlePackaging(p, 1)),
-                                            channelOverloadLed0(0, bundlePackaging(p, 0)),
-                                            channelOverloadLed1(1, bundlePackaging(p, 1)),
+                                             horizontalMeterBar0(0, packagedValueSuppliers(p, kMeterBallisticsTypeDefault, 0)),
+                                             horizontalMeterBar1(1, packagedValueSuppliers(p,kMeterBallisticsTypeDefault, 1)),
+                                            channelOverloadLed0(0, packagedValueSuppliers(p,kMeterBallisticsTypeDefault, 0)),
+                                            channelOverloadLed1(1, packagedValueSuppliers(p,kMeterBallisticsTypeDefault, 1)),
                                              tinyStripComponent([&](){
                                                                     auto value = audioProcessor.parameters.param_gain;
                                                                     std::vector<float> values = {value};
@@ -152,7 +152,7 @@ namespace Gui
         if (isTimerInternal)
         {
             stopTimer();
-            startTimerHz (Constants::kInitialRefreshRateHz);
+            startTimerHz ((int)Constants::kInitialRefreshRateHz);
             //printf("using internal timing for BMC...\n");
         }
         else
@@ -180,5 +180,25 @@ namespace Gui
     {
         jassert(m_levelValues.size() == levelValues.size());
         m_levelValues = levelValues;
+    }
+
+   std::function<float()> BarMeterComponent::packagedValueSuppliers(PluginProcessor& p, MeterBallisticsType mbt, int channel)
+    {
+        auto returningSupplier =
+            [&p, &mbt, &channel]()-> std::function<float()>
+        {
+
+
+            if(mbt == MeterBallisticsType::PEAK)
+                return [&p, &channel]()->float {return p.getLevelValuePeak(channel);};
+            else if(mbt == MeterBallisticsType::RMS)
+                return [&p, &channel]()->float {return p.getLevelValueRms(channel);};
+            else if(mbt == MeterBallisticsType::VU)
+                return [&p, &channel]()->float {return p.getLevelValueVu(channel);};
+            else
+                throw std::runtime_error("incorrect meter type");
+
+        }; //lambda end
+        return returningSupplier();
     }
 } // Gui

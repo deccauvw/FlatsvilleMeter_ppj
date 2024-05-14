@@ -12,7 +12,7 @@ namespace Gui
                                                                                                  m_isDirty(true)
     {
         m_fontDefault = juce::Font(Gui::Constants::kDefaultTypeFace, Gui::Constants::kTinyStripFontHeight, 0);
-        startTimerHz(Gui::Constants::kInitialRefreshRateHz);
+        startTimerHz((int)Gui::Constants::kInitialRefreshRateHz);
         m_peakValues = {0.0f, 0.0f};
         m_previousRefreshTimes = {0, 0};
     }
