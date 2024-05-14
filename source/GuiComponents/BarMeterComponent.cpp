@@ -6,16 +6,12 @@
 
 namespace Gui
 {
-    BarMeterComponent::BarMeterComponent (PluginProcessor& p): audioProcessor(p),
-                                             horizontalMeterBar0(0, packagedValueSuppliers(p, kMeterBallisticsTypeDefault, 0)),
-                                             horizontalMeterBar1(1, packagedValueSuppliers(p,kMeterBallisticsTypeDefault, 1)),
-                                            channelOverloadLed0(0, packagedValueSuppliers(p,kMeterBallisticsTypeDefault, 0)),
-                                            channelOverloadLed1(1, packagedValueSuppliers(p,kMeterBallisticsTypeDefault, 1)),
-                                             tinyStripComponent([&](){
-                                                                    auto value = audioProcessor.parameters.param_gain;
-                                                                    std::vector<float> values = {value};
-                                                                    return values;
-                                                                }),
+    BarMeterComponent::BarMeterComponent (const std::vector<std::function<float()>>& vsfv, juce::AudioProcessorValueTreeState& apvts): valueSupplierFnVector(vsfv),
+                                             horizontalMeterBar0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
+                                             horizontalMeterBar1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
+                                            channelOverloadLed0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
+                                            channelOverloadLed1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault),
+                                             tinyStripComponent([&apvts]()->float{return apvts.getRawParameterValue("GAIN")->load();}),
                                             useInternalTimer(false)
     {
         useInternalTiming(useInternalTimer); //startTimerHz
@@ -173,24 +169,27 @@ namespace Gui
         jassert(m_levelValues.size() == levelValues.size());
         m_levelValues = levelValues;
     }
+//    std::function<float()> BarMeterComponent::packagedValueSuppliers (std::vector<std::function<float()>>& funcVector, MeterBallisticsType mbt, int channel)
+//    {
+//        return std::function<float()>();
+//    }
 
-   std::function<float()> BarMeterComponent::packagedValueSuppliers(PluginProcessor& p, MeterBallisticsType mbt, int channel)
+    std::function<float()> BarMeterComponent::packagedValueSuppliers(
+        const std::vector<std::function<float()>>& funcVector,
+        MeterBallisticsType mbt)
     {
-        auto returningSupplier =
-            [&p, &mbt, &channel]()-> std::function<float()>
+        /*
+         * funcVector will have N-types of value Suppliers as element.
+         * .at(0) : peak
+         * .at(1) : rms
+         * .at(2) : vu
+         */
+        auto mbtKey = MeterBallisticsTypeKey.at(mbt);
+        auto returningFunction =  [mbtKey, &funcVector]() -> float
         {
+            return funcVector[mbtKey]();
+        };
 
-
-            if(mbt == MeterBallisticsType::PEAK)
-                return [&p, &channel]()->float {return p.getLevelValuePeak(channel);};
-            else if(mbt == MeterBallisticsType::RMS)
-                return [&p, &channel]()->float {return p.getLevelValueRms(channel);};
-            else if(mbt == MeterBallisticsType::VU)
-                return [&p, &channel]()->float {return p.getLevelValueVu(channel);};
-            else
-                throw std::runtime_error("incorrect meter type");
-
-        }; //lambda end
-        return returningSupplier();
+        return returningFunction;
     }
 } // Gui

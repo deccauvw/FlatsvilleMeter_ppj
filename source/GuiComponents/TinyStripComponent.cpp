@@ -7,7 +7,7 @@
 namespace Gui
 {
 
-    TinyStripComponent::TinyStripComponent(std::function<std::vector<float>()>&& valueStringSupplier) :
+    TinyStripComponent::TinyStripComponent(std::function<float()>&& valueStringSupplier) :
                                                                                                  valueStringSupplierFn(std::move(valueStringSupplier)),
                                                                                                  m_isDirty(true)
     {

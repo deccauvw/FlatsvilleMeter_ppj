@@ -115,6 +115,14 @@ namespace Gui
     {
         PEAK, RMS, VU
     };
+
+    std::unordered_map<MeterBallisticsType, int> MeterBallisticsTypeKey
+    {
+        {MeterBallisticsType::PEAK, 0},
+        {MeterBallisticsType::RMS, 1},
+        {MeterBallisticsType::VU, 2}
+    };
+
     static constexpr auto kMeterBallisticsTypeDefault = MeterBallisticsType::PEAK;
 
     struct BundleOfLevelValues

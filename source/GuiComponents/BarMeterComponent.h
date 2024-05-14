@@ -34,7 +34,7 @@ namespace Gui
         private juce::Timer
     {
     public:
-        explicit BarMeterComponent(PluginProcessor& p);
+        explicit BarMeterComponent();
         ~BarMeterComponent() override;
 
         //reset peak hold, resetMeters
@@ -64,18 +64,13 @@ namespace Gui
         void drawEverything(juce::Graphics& g);
         void setLevelValues(std::vector<float>& levelValues);
 
-        int M_RANDOMVALUEFORDEBUGGING = 0;
     // ================================================================================================================================
-    private:
-        std::function<float()> packagedValueSuppliers(PluginProcessor& p, MeterBallisticsType mbt, int channel);
 
+        static std::function<float()> packagedValueSuppliers(const std::vector<std::function<float()>>& funcVector, MeterBallisticsType mbt);
+        std::vector<std::function<float()>> valueSupplierFnVector;
+    private:
 
         MeterBallisticsType m_ballistics = MeterBallisticsType::VU;
-
-        std::function<float()> valueSupplierFn;
-
-        PluginProcessor& audioProcessor;
-
         bool useInternalTimer = true;
 
         //std::vector<float> m_LevelValuesInDecibels {0.0f, 0.0f};
