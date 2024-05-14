@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include "../PluginProcessor.h"
+//#include "../PluginProcessor.h"
 #include "BarMeterBar.h"
 #include "BarMeterHelper.h"
 #include "BarMeterOverloadLed.h"
@@ -34,8 +34,7 @@ namespace Gui
         private juce::Timer
     {
     public:
-        explicit BarMeterComponent(PluginProcessor&);
-        //BarMeterComponent(PluginProcessor& p, const juce::AudioChannelSet& channelFormat);
+        explicit BarMeterComponent(PluginProcessor& p);
         ~BarMeterComponent() override;
 
         //reset peak hold, resetMeters

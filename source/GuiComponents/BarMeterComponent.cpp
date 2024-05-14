@@ -69,17 +69,9 @@ namespace Gui
     }
     void BarMeterComponent::updateEverything()
     {
-        float randomValue =audioProcessor.m_nChannelRmsLevels[0]; //for textbox stuff
-        //printf("fed randomValue :: %3f...\n", randomValue );
-        //printf("~~update Everything\n"); pass
+
         this->horizontalMeterBar0.refreshMeterLevel();
         this->horizontalMeterBar1.refreshMeterLevel();
-
-        auto isOverloaded = [&](int ch){
-            if(audioProcessor.m_nChannelPeakLevels.at(ch) > -0.0f)
-                return 1;
-            return 0;
-        };
 
         this->channelOverloadLed0.setChannelInfo(0);
         this->channelOverloadLed1.setChannelInfo(1);

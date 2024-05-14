@@ -13,7 +13,7 @@
 using mat = juce::dsp::Matrix<float>;
 
 StateSpaceModelSimulation::StateSpaceModelSimulation() : stateSpaceModelChannels (0),
-                                                         sysDim(FlatsDsp::Constants::kSystemOrder),
+                                                         sysDim (FlatsDsp::Constants::kSystemOrder),
                                                          m (0),
                                                          n (0),
                                                          r (0),
@@ -59,8 +59,6 @@ void StateSpaceModelSimulation::setInitStateBuffer (juce::AudioBuffer<float>& in
 }
 //  ===================================================
 
-
-
 void StateSpaceModelSimulation::setSystemSize (size_t systemSize) noexcept
 {
     this->sysDim = systemSize;
@@ -73,13 +71,12 @@ void StateSpaceModelSimulation::setNumChannels (size_t channels) noexcept
 
 void StateSpaceModelSimulation::setMatrices (mat ssmA, mat ssmB, mat ssmC, mat ssmD, int systemSize)
 {
-    jassert(sysDim == systemSize);
-    this->A = std::move(ssmA);
-    this->B = std::move(ssmB);
-    this->C = std::move(ssmC);
-    this->D = std::move(ssmD);
+    jassert (sysDim == systemSize);
+    this->A = std::move (ssmA);
+    this->B = std::move (ssmB);
+    this->C = std::move (ssmC);
+    this->D = std::move (ssmD);
 }
-
 
 void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& initialStateBuffer)
 {
@@ -121,13 +118,11 @@ void StateSpaceModelSimulation::set_x (juce::AudioBuffer<float>& buffer)
     this->u = x_multi;
 }
 
-
 //run matrix operation with given four matrices =====================================
 void StateSpaceModelSimulation::runSimulation (int channel)
 {
-        auto& x_o = x_sim.at (channel);
-        auto& y_o = y_sim.at (channel);
-
+    auto& x_o = x_sim.at (channel);
+    auto& y_o = y_sim.at (channel);
 
     for (int t = 0; t < timeSamples; t++) //t is the "time" index.
     {
@@ -138,8 +133,8 @@ void StateSpaceModelSimulation::runSimulation (int channel)
             for (int row = 0; row < nRow; row++) //essentially when u = 0
             {
                 auto _x0 = x0.at (channel);
-                x_o(row, t) = _x0 (row, t);
-                y_o(row, t) = (C * _x0) (row, t);
+                x_o (row, t) = _x0 (row, t);
+                y_o (row, t) = (C * _x0) (row, t);
             }
         }
         else
@@ -152,7 +147,7 @@ void StateSpaceModelSimulation::runSimulation (int channel)
         }
     }
     //last 4 samples from x_o need to be stored in heapboxes
-}//run simulation End
+} //run simulation End
 
 std::vector<mat> StateSpaceModelSimulation::getSimulatedOutputMatrix()
 {
@@ -160,22 +155,19 @@ std::vector<mat> StateSpaceModelSimulation::getSimulatedOutputMatrix()
 }
 
 juce::AudioBuffer<float> StateSpaceModelSimulation::getSimulatedOutputBuffer()
-{   //output will replace using result::makeCopyOf(buffer_copy)
-    auto numSamples = static_cast<int>(y_sim.at(0).getNumColumns());
-    auto numCh = static_cast<int>(y_sim.size());
-    auto bufferOut = juce::AudioBuffer<float>(numCh, numSamples);
+{ //output will replace using result::makeCopyOf(buffer_copy)
+    auto numSamples = static_cast<int> (y_sim.at (0).getNumColumns());
+    auto numCh = static_cast<int> (y_sim.size());
+    auto bufferOut = juce::AudioBuffer<float> (numCh, numSamples);
 
-    for(int ch = 0;ch<numCh;++ch)
+    for (int ch = 0; ch < numCh; ++ch)
     {
-        float* in = bufferOut.getWritePointer(ch);
-        auto y_sim_mono = y_sim.at(ch);
+        float* in = bufferOut.getWritePointer (ch);
+        auto y_sim_mono = y_sim.at (ch);
         for (int t = 0; t < numSamples; ++t)
         {
-            in[t] = y_sim_mono(0,t);
+            in[t] = y_sim_mono (0, t);
         }
     }
     return bufferOut;
 }
-
-
-

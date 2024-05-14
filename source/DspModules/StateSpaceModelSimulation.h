@@ -10,9 +10,9 @@
 
 #pragma once
 
+#include "../DspModules/DspModulesHelper.h"
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
-#include "../DspModules/DspModulesHelper.h"
 
 //==============================================================================
 /*
@@ -33,7 +33,7 @@
 
 using mat = juce::dsp::Matrix<float>;
 
-class StateSpaceModelSimulation  : public juce::Component
+class StateSpaceModelSimulation : public juce::Component
 {
 public:
     StateSpaceModelSimulation();
@@ -42,40 +42,35 @@ public:
 
     //==============================================================================
 
-    void setSystemSize(size_t systemSize) noexcept;
+    void setSystemSize (size_t systemSize) noexcept;
 
-    void setNumChannels(size_t channels) noexcept;
+    void setNumChannels (size_t channels) noexcept;
 
     //void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> z1, juce::HeapBlock<float> z2, juce::HeapBlock<float> z3, juce::HeapBlock<float> z4 );
 
-
     //sets x0 with buffer
-    void setInitStateBuffer(juce::AudioBuffer<float> &initialBuffer, size_t systemSize);
-    
+    void setInitStateBuffer (juce::AudioBuffer<float>& initialBuffer, size_t systemSize);
+
     //sets x0 with matrix vector
-    void set_x0(juce::AudioBuffer<float> &initialStateBuffer);
+    void set_x0 (juce::AudioBuffer<float>& initialStateBuffer);
 
     //Audio buffer to (1x*samples)*ch mat vector u
-    void set_x(juce::AudioBuffer<float>& buffer);
+    void set_x (juce::AudioBuffer<float>& buffer);
 
-    void setMatrices(mat ssmA, mat ssmB, mat ssmC, mat ssmD, int sysDim);
+    void setMatrices (mat ssmA, mat ssmB, mat ssmC, mat ssmD, int sysDim);
 
     //stateSpaceModel for mono channel
-    void runSimulation(int channel);
-
+    void runSimulation (int channel);
 
     std::vector<mat> getSimulatedOutputMatrix();
 
     //matrix to buffer
     juce::AudioBuffer<float> getSimulatedOutputBuffer();
 
-
-    //audioBuffer to n channel vector 
+    //audioBuffer to n channel vector
     //std::vector<std::vector<float>> convertBufferToVector(juce::AudioBuffer<float>& buffer);
 
     //float arr[] for juce::dsp::Matrix constructor input argument.
-
-
 
     //==============================================================================
 private:

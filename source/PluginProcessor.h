@@ -11,12 +11,15 @@
 #include<juce_audio_processors/juce_audio_processors.h>
 #include<juce_dsp/juce_dsp.h>
 #include "LevelMeter.h"
+#include "DspModules/DspModulesHelper.h"
 
 #if (MSVC)
 #include "ipps.h"
 #endif
 
 //==============================================================================
+class AnalogVuMeterProcessor;
+
 struct Parameters
 {
     float param_gain;
@@ -62,8 +65,7 @@ class PluginProcessor : public juce::AudioProcessor,
     //==============================================================================
     //added member fns>>>
 
-    FlatsDsp::AnalogVuMeterProcessor analogVuMeterProcessor{*this,
-        juce::dsp::ProcessSpec{1024, 1024, 2}};
+    std::unique_ptr<AnalogVuMeterProcessor> m_vuMeterDspProcessorPtr;
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;
