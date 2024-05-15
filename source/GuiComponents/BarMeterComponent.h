@@ -19,6 +19,7 @@
 #include "BarMeterHelper.h"
 #include "BarMeterOverloadLed.h"
 #include "TinyStripComponent.h"
+#include "../DspModules/DspModulesHelper.h"
 //#include "FlatsLookAndFeel.h"
 //#include "GainKnob.h"
 
@@ -68,9 +69,9 @@ namespace Gui
         // ================================================================================================================================
         int m_mbtValue;
         void setMbtKey(int mbtKeyInput);
-        std::function<float()> supplySupplierFnFromMbtKeys(std::string& mbtKey, int channel);
-        void setSupplierFnVector(std::function<float()>&& fn, std::string& keyName, int channel);
-        std::vector<std::tuple<int, int, std::function<float()>>> valueSupplierFnVector; //VSFV :: pair<functor, channel>
+        void setSupplierFnFromMbtKeys(FlatsDsp::MeterBallisticsTypeEnumerator mbte, int channel);
+        void setSupplierFnVector(std::function<float()>&& fn, FlatsDsp::MeterBallisticsTypeEnumerator mbte, int channel);
+        std::vector<FlatsDsp::MeterBallisticsValueSupplierMemberFnEncoder> valueSupplierFnVectorEncoded; //VSFV :: pair<functor, channel>
         // ================================================================================================================================
 
     private:

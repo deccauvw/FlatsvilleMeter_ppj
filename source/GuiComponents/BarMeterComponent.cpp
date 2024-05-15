@@ -194,37 +194,30 @@ namespace Gui
 //        return std::function<float()>();
 //    }
 
-    void BarMeterComponent::setSupplierFnVector(std::function<float()>&& fn, std::string& keyName, int channel)
+    void BarMeterComponent::setSupplierFnVector(std::function<float()>&& fn, FlatsDsp::MeterBallisticsTypeEnumerator mbte, int channel)
     {
         //how vectors are mapped
         //v[val][ch] == keyname (~val) 's ch-channel functor
-        auto f = std::move(fn);
-        int val = Gui::Helpers().MeterBallisticsType[keyName];
-        std::tuple<int, int, std::function<float()>> t {val, channel, f};
-        valueSupplierFnVector.push_back(t);
+        auto fnEncoder = FlatsDsp::MeterBallisticsValueSupplierMemberFnEncoder(mbte, channel, fn);
+        this->valueSupplierFnVectorEncoded.push_back(fnEncoder);
     }
 
-    std::function<float()> BarMeterComponent::supplySupplierFnFromMbtKeys(std::string& mbtKey, int channel)
+    //refer to DspModules/DspModulesHelper.h
+    void BarMeterComponent::setSupplierFnFromMbtKeys(FlatsDsp::MeterBallisticsTypeEnumerator mbte, int channel)
     {
-//        MeterBallisticsType = std::unordered_map<std::string, int>
-//            {
-//                {"PEAK", 0},
-//                {"RMS", 1},
-//                {"VU", 2}
-//            };
-//      vector v <- keyVal (from MBT tag)  channel  functor
-        auto &vect = valueSupplierFnVector;
-        auto val = Gui::Helpers().MeterBallisticsType[mbtKey];
-
-        auto it = std::find(
-            vect.begin(),
-            vect.end(),
-            [&val, &channel](std::tuple<int, int, std::function<float()>>& e){v});
+        auto &V = valueSupplierFnVectorEncoded;
+        int keyVal = mbte;
 
 
-        auto returningFunction =  [mbtValue, &v]() -> float
+
+        auto returningFunction =  [&mbte, &V, &channel]() -> float
         {
-            return v.at(mbtValue)();
+            auto pred = []()
+            auto it = std::find_if(V.begin(), V.end(),
+                [&mbte, &channel]()->FlatsDsp::MeterBallisticsTypeEnumerator
+                {
+
+                    ;});
         };
 
         return returningFunction;

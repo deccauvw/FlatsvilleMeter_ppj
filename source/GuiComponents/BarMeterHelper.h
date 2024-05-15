@@ -199,33 +199,19 @@ namespace Gui
         topToBottom1, topToBottom2, none
     };
 //=====================================================
-    enum MeterBallistics{
-        BLANK = 0,
-        PEAK = 1,
-        RMS = 2,
-        VU = 3,
-        LAST
-    };
+
+
     class Helpers
     {
         typedef std::unordered_map<std::string, int> MBT;
     public:
         Helpers() : MeterBallisticsType()
         {
-            for(int i = MeterBallistics::NONE, i != )
         }
         ~Helpers() = default;
 
         MBT MeterBallisticsType {};
 
-        struct ValueSupplierMemberFunctions
-        {
-            std::function<float()> func;
-            int meterTypeEncoded;
-            int channelNumber;
-            ValueSupplierMemberFunctions():meterTypeEncoded(MeterBallisticsType["NA"]), channelNumber(0), func([]()->float{return 0.0f;}){}
-            ValueSupplierMemberFunctions(std::string meterTypeStr, int channel, std::function<float()> functor):
-        };
 
 
 

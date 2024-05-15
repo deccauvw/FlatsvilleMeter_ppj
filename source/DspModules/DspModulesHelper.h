@@ -155,4 +155,36 @@ namespace FlatsDsp
 //        mat ssm_i2a_D;
 //    private:
 //    };
+    enum MeterBallisticsTypeEnumerator
+    {
+        TYPE_BLANK = 0,
+        TYPE_PEAK = 1,
+        TYPE_RMS = 2,
+        TYPE_VU = 3,
+        TYPE_LAST
+    };
+
+    struct MeterBallisticsValueSupplierMemberFnEncoder
+    {
+        MeterBallisticsTypeEnumerator MBTenum;
+        int mbtEncodedValue;
+        int channelNumber;
+        std::function<float()> fn;
+        MeterBallisticsValueSupplierMemberFnEncoder():  MBTenum(TYPE_BLANK),
+                                                        mbtEncodedValue(TYPE_BLANK),
+                                                        channelNumber(0),
+                                                        fn([]()->float{return 0.0f;})
+                                                            {};
+
+        MeterBallisticsValueSupplierMemberFnEncoder(
+            MeterBallisticsTypeEnumerator MBTenumInput,
+            int channelNumberInput,
+            std::function<float()>& valueSupplierInput):
+                                                           MBTenum(MBTenumInput),
+                                                           mbtEncodedValue(MBTenumInput),
+                                                           channelNumber(channelNumberInput),
+                                                           fn(std::move(valueSupplierInput))
+                                                               {};
+    };
+
 } // FlatsDsp
