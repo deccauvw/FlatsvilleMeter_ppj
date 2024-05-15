@@ -7,10 +7,10 @@
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent (PluginProcessor& p): audioProcessor(p),
-                                             horizontalMeterBar0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
-                                             horizontalMeterBar1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
-                                            channelOverloadLed0(0, [&](){return audioProcessor.getLevelValuePeak(0);}),
-                                            channelOverloadLed1(1, [&](){return audioProcessor.getLevelValuePeak(1);}),
+                                             horizontalMeterBar0(0, [&](){return audioProcessor.getLevelValueVu(0);}),
+                                             horizontalMeterBar1(1, [&](){return audioProcessor.getLevelValueVu(1);}),
+                                            channelOverloadLed0(0, [&](){return audioProcessor.getLevelValueVu(0);}),
+                                            channelOverloadLed1(1, [&](){return audioProcessor.getLevelValueVu(1);}),
                                              tinyStripComponent([&](){
                                                                     auto value = audioProcessor.parameters.param_gain;
                                                                     std::vector<float> values = {value};
@@ -76,7 +76,7 @@ namespace Gui
     }
     void BarMeterComponent::updateEverything()
     {
-        float randomValue =audioProcessor.m_nChannelRmsLevels[0]; //for textbox stuff
+        //float randomValue =audioProcessor.m_nChannelRmsLevels[0]; //for textbox stuff
         //printf("fed randomValue :: %3f...\n", randomValue );
         //printf("~~update Everything\n"); pass
         this->horizontalMeterBar0.refreshMeterLevel();
@@ -159,7 +159,7 @@ namespace Gui
         if (isTimerInternal)
         {
             stopTimer();
-            startTimerHz (Constants::kInitialRefreshRateHz);
+            startTimerHz ((int)Constants::kInitialRefreshRateHz);
             //printf("using internal timing for BMC...\n");
         }
         else

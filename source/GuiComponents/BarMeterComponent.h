@@ -71,7 +71,7 @@ namespace Gui
         void drawEverything(juce::Graphics& g);
         void setLevelValues(std::vector<float>& levelValues);
 
-        int M_RANDOMVALUEFORDEBUGGING = 0;
+        //int M_RANDOMVALUEFORDEBUGGING = 0;
     // ================================================================================================================================
     private:
         PluginProcessor& audioProcessor;

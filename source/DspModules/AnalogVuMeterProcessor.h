@@ -1,15 +1,18 @@
 #pragma once
 
-#include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
+//#include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
 #include "StateSpaceModelSimulation.h"
 #include "DspModulesHelper.h"
 //==============================================================================
-class AnalogVuMeterProcessor  : public juce::Component, private DspLine::SystemMatrices
+class AnalogVuMeterProcessor  : public juce::Component//, private DspLine::SystemMatrices
 {
 public:
-    AnalogVuMeterProcessor();
+    AnalogVuMeterProcessor()
+    {
+    }
+    AnalogVuMeterProcessor(juce::AudioBuffer<float>& buffer, double sampleRate);
     ~AnalogVuMeterProcessor() override;
     //JUCE functions=========================
     void prepareToPlay(double  SampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock);
@@ -31,14 +34,14 @@ public:
 
 private:
     //system dimension = 4
-    const int sysDim = static_cast<int>(SystemMatrices::systemDim);
+    const int sysDim = static_cast<int>(DspLine::Constants::kSystemOrder);
     //systemMatricesInit
     DspLine::SystemMatrices systemMatrices;
 
     //state space model simulation classes for stereo
-    StateSpaceModelSimulation ssms;
-    StateSpaceModelSimulation ssms_v2i; //for n-channels
-    StateSpaceModelSimulation ssms_i2a; //for n-channels
+    StateSpaceModelSimulation m_ssms;
+    StateSpaceModelSimulation m_ssms_v2i; //for n-channels
+    StateSpaceModelSimulation m_ssms_i2a; //for n-channels
 
     //memory for System II from system I
     juce::HeapBlock<float> z1;

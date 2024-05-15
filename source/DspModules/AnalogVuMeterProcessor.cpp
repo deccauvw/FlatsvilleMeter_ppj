@@ -15,7 +15,7 @@
 using mat = juce::dsp::Matrix<float>;
 
 //default constructors destructors========================================================
-AnalogVuMeterProcessor::AnalogVuMeterProcessor()
+AnalogVuMeterProcessor::AnalogVuMeterProcessor(juce::AudioBuffer<float>& buffer, double sampleRate)
 {
     // If this class is used without caution and processBlock
     // is called before prepareToPlay, divisions by zero
@@ -23,10 +23,10 @@ AnalogVuMeterProcessor::AnalogVuMeterProcessor()
     // To prevent this, prepareToPlay is called here with
     // some arbitrary arguments.
     systemMatrices.setMatrices();
-    spec.numChannels = (juce::uint32)2;
-    spec.maximumBlockSize = (juce::uint32)1024;
-    spec.sampleRate = (juce::uint32)48000;
-    prepareToPlay(48000, 2,1024); //arbitrary input
+    this->spec.numChannels = buffer.getNumChannels();
+    this->spec.maximumBlockSize = buffer.getNumSamples();
+    this->spec.sampleRate = sampleRate;
+    prepareToPlay(spec.sampleRate,spec.numChannels,spec.maximumBlockSize); //arbitrary input
 }
 
 AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
@@ -87,16 +87,17 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
 
 
     //init. every matrix required
-    systemMatrices.setMatrices();
+    //systemMatrices.setMatrices();
     //matrices for system I (voltage to current)
     //matrices for system II(current to galvanometer)
 
 
-    ssms_v2i.setMatrices(DspLine::SystemMatrices::ssm_v2i_A, DspLine::SystemMatrices::ssm_v2i_B, DspLine::SystemMatrices::ssm_v2i_C, DspLine::SystemMatrices::ssm_v2i_D, sysDim);
-    ssms_i2a.setMatrices(DspLine::SystemMatrices::ssm_v2i_A, DspLine::SystemMatrices::ssm_v2i_B, DspLine::SystemMatrices::ssm_v2i_C, DspLine::SystemMatrices::ssm_v2i_D, sysDim);
+    //m_ssms_v2i.setMatrices(DspLine::SystemMatrices::ssm_v2i_A, DspLine::SystemMatrices::ssm_v2i_B, DspLine::SystemMatrices::ssm_v2i_C, DspLine::SystemMatrices::ssm_v2i_D, sysDim);
+    //m_ssms_i2a.setMatrices(DspLine::SystemMatrices::ssm_v2i_A, DspLine::SystemMatrices::ssm_v2i_B, DspLine::SystemMatrices::ssm_v2i_C, DspLine::SystemMatrices::ssm_v2i_D, sysDim);
 }
 
 
+//virtually the main function ====================================================
 //virtually the main function ====================================================
 void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float>& p1, juce::HeapBlock<float>& p2, juce::HeapBlock<float>& p3, juce::HeapBlock<float>& p4 )
 {
@@ -111,8 +112,8 @@ void AnalogVuMeterProcessor::createInitialStateBuffer(juce::AudioBuffer<float>& 
     }
 }
 
-
-void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& buffer) //  virtually A processBlock
+//processBlock(&buffer)
+void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& buffer)
 {
     /*buffer := audio buffer input
      * systemSize (=4) := order of the steady state model
@@ -126,33 +127,33 @@ void AnalogVuMeterProcessor::feedToSteadyStateModel(juce::AudioBuffer<float>& bu
 
 
     createInitialStateBuffer(initialStateBufferForSystemI, z1, z2, z3, z4);
-    ssms_v2i.set_x0(initialStateBufferForSystemI);
+    m_ssms_v2i.set_x0(initialStateBufferForSystemI);
     createInitialStateBuffer(initialStateBufferForSystemII, w1,w2,w3,w4);
-    ssms_i2a.set_x0(initialStateBufferForSystemII);
+    m_ssms_i2a.set_x0(initialStateBufferForSystemII);
 
     //  System I Voltage To Current
-    ssms_v2i.set_x(buffer);
+    m_ssms_v2i.set_x(buffer);
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {
         //channel-wise simulation will be stored in the class
-        ssms_v2i.runSimulation(ch);
+        m_ssms_v2i.runSimulation(ch);
     }
 
-    outputBufferSystemI = ssms_v2i.getSimulatedOutputBuffer();
+    outputBufferSystemI = m_ssms_v2i.getSimulatedOutputBuffer();
     recordPreviousStateForNextSystem(z1, z2, z3, z4, outputBufferSystemI);
-    DBG("System 1 ends here");
+    //DBG("System 1 ends here");
     //  System II Current to Angular Displacement
-    ssms_i2a.set_x(outputBufferSystemI);
+    m_ssms_i2a.set_x(outputBufferSystemI);
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {
         //channel-wise simulation will be stored in the class
-        ssms_i2a.runSimulation(ch);
+        m_ssms_i2a.runSimulation(ch);
     }
 
-    outputBufferSystemII = ssms_v2i.getSimulatedOutputBuffer();
+    outputBufferSystemII = m_ssms_v2i.getSimulatedOutputBuffer();
     recordPreviousStateForNextSystem(w1, w2, w3, w4, outputBufferSystemII);
 
-    DBG("System 2 ends here");
+    //DBG("System 2 ends here");
     //acquire channel-wise VU levels
 
     //outputBufferSystemII should hold the VU level

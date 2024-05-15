@@ -25,5 +25,5 @@
 //#include "Components/HorizontalBarMetersComponent.h"
 
 //dsp line
-//#include "DspModules/DspModulesHelper.h"
-//#include "DspModules/AnalogVuMeterProcessor.h"
+#include "DspModules/DspModulesHelper.h"
+#include "DspModules/AnalogVuMeterProcessor.h"

@@ -17,7 +17,8 @@ PluginProcessor::PluginProcessor()
       m_RmsLevelChannel1 (-INFINITY),
       m_peakLevelChannel0 (-INFINITY),
       m_peakLevelChannel1 (-INFINITY),
-      apvts(*this, nullptr, "Parameters", createParameters())
+      apvts(*this, nullptr, "Parameters", createParameters()),
+      m_vuMeterProcessor(AnalogVuMeterProcessor())
 {
 //    addParameter(param_gain = new juce::AudioParameterFloat())
 }
@@ -110,7 +111,8 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     this->specs.numChannels = 2; //assume and FIX as stereo only plugin
     m_nChannelPeakLevels.resize(specs.numChannels);
     m_nChannelRmsLevels.resize(specs.numChannels);
-    bufferForMeter.clear();
+    bufferForMeter.setSize(specs.numChannels,specs.maximumBlockSize);
+    m_vuMeterProcessor.prepareToPlay(specs.sampleRate, specs.numChannels, specs.maximumBlockSize);
 }
 
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
@@ -168,6 +170,13 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
     }
 
+    m_vuMeterProcessor.feedToSteadyStateModel(bufferForMeter);
+    auto processedVuBuffer = m_vuMeterProcessor.getOutputBuffer();
+    for(auto ch = 0; ch<numChannels; ++ch)
+    {
+        auto m_iVuLevel = processedVuBuffer.getRMSLevel (ch, 0, processedVuBuffer.getNumSamples());
+        m_nChannelVuLevels.at(ch) = m_iVuLevel;
+    }
 }
 
 //==============================================================================
@@ -238,10 +247,16 @@ float PluginProcessor::getLevelValuePeak (const int channel) const
     return m_nChannelPeakLevels.at(channel);
 }
 
+float PluginProcessor::getLevelValueVu (const int channel) const
+{
+    jassert (channel == 0 || channel == 1);
+    return m_nChannelVuLevels.at(channel);
+}
+
 APVTS::ParameterLayout PluginProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
-    params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -18.0f, +18.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -24.0f, +24.0f, 0.0f));
     return{params.begin(), params.end()};
 }
 

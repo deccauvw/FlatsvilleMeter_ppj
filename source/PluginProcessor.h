@@ -9,6 +9,7 @@
 #pragma once
 #include<juce_audio_processors/juce_audio_processors.h>
 #include<juce_dsp/juce_dsp.h>
+#include "DspModules/AnalogVuMeterProcessor.h"
 //#include "DspModules/AnalogVuMeterProcessor.h"
 #if (MSVC)
 #include "ipps.h"
@@ -63,6 +64,7 @@ class PluginProcessor : public juce::AudioProcessor,
 
     std::vector<float> m_nChannelRmsLevels {};
     std::vector<float> m_nChannelPeakLevels {};
+    std::vector<float> m_nChannelVuLevels {};
     float m_RmsLevelChannel0 = 0.0;
     float m_RmsLevelChannel1= 0.0;
     float m_peakLevelChannel0 = 0.0;
@@ -73,12 +75,14 @@ class PluginProcessor : public juce::AudioProcessor,
 
     float getLevelValueRms (int channel) const;
     float getLevelValuePeak (int channel) const;
+    float getLevelValueVu (int channel) const;
 
 
     APVTS apvts;
     Parameters parameters;
 
 private:
+    AnalogVuMeterProcessor m_vuMeterProcessor;
     APVTS::ParameterLayout createParameters();
 
     bool isBufferEmpty(const juce::AudioBuffer<float>& buffer);

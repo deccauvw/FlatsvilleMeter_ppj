@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "juce_audio_processors/juce_audio_processors.h"
+//#include "juce_audio_processors/juce_audio_processors.h"
 #include "juce_dsp/juce_dsp.h"
 #include <vector>
 
@@ -17,7 +17,7 @@ namespace DspLine
         static constexpr auto kSystemOrder = 4;
         static constexpr auto kMinimalReturnValue = -20.0f;
         //Matrix element data for System Voltage to Current (System I) ==================================
-        float v2i_A[kSystemOrder * kSystemOrder] = {
+        static float v2i_A[kSystemOrder * kSystemOrder] = {
             -10.0f,
             0.0f,
             0.0f,
@@ -39,26 +39,26 @@ namespace DspLine
             -0.21f
         };
 
-        float v2i_B[kSystemOrder] = {
+        static float v2i_B[kSystemOrder] = {
             10.0f,
             9.671e+6f,
             21.28f,
             0.01f
         };
 
-        float v2i_C[kSystemOrder] = {
+        static float v2i_C[kSystemOrder] = {
             8.674e-19f,
             -8.674e-19f,
             8.078e-28f,
             -1.654e-24f
         };
 
-        float v2i_D[kSystemOrder] = {
+        static float v2i_D[kSystemOrder] = {
             -8.674e-19f
         };
 
         //state space equation matrices for CUR -> ANGLE : system II=====================================
-        float i2a_A[kSystemOrder * kSystemOrder] = {
+        static float i2a_A[kSystemOrder * kSystemOrder] = {
             -19.84f,
             8.746f,
             -39.940f,
@@ -80,21 +80,21 @@ namespace DspLine
             0.0f
         };
 
-        float i2a_B[kSystemOrder] = {
+        static float i2a_B[kSystemOrder] = {
             0.2572f,
             0.f,
             0.f,
             0.f,
         };
 
-        float i2a_C[kSystemOrder] = {
+        static float i2a_C[kSystemOrder] = {
             1.696f,
             0.0f,
             4.567f,
             140.8f
         };
 
-        float i2a_D[kSystemOrder] = {
+        static float i2a_D[kSystemOrder] = {
             0.0f
         };
 
