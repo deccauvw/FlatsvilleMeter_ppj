@@ -106,10 +106,10 @@ namespace Gui
         static constexpr auto kOverLoadLedLineThickness = 2.0f;
 
         //combo box constants
-        static constexpr auto kComboBoxPositionX = 890;
-        static constexpr auto kComboBoxPositionY = 175;
-        static constexpr auto kComboBoxWidth = 61;
-        static constexpr auto kComboBoxHeight = 23;
+        static constexpr auto kComboBoxPositionX = 870;
+        static constexpr auto kComboBoxPositionY = 85;
+        static constexpr auto kComboBoxWidth = 101;
+        static constexpr auto kComboBoxHeight = 33;
 
 
 

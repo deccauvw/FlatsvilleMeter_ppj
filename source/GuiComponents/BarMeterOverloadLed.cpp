@@ -177,10 +177,10 @@ namespace Gui
         repaint();
     }
 
-//    void BarMeterOverloadLed::setBundleSupplier()
-//    {
-//        this->bundleOfValues = valueSupplierFn();
-//    }
+    void BarMeterOverloadLed::setValueSupplier(std::function<float()>&& valueSupplier)
+    {
+        this->valueSupplierFn = valueSupplier;
+    }
 
 
 } // Gui

@@ -20,7 +20,8 @@ PluginProcessor::PluginProcessor()
       m_vuLevelChannel0(-INFINITY),
       m_vuLevelChannel1(-INFINITY),
       apvts(*this, nullptr, "Parameters", createParameters()),
-      m_vuMeterDspProcessor(FlatsDsp::AnalogVuMeterProcessor())
+      m_vuMeterDspProcessor(FlatsDsp::AnalogVuMeterProcessor()),
+      mbt(Gui::MeterBallisticsType::PEAK)
 {
 }
 
@@ -264,10 +265,20 @@ APVTS::ParameterLayout PluginProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -24.0f, +24.0f, 0.0f));
-    params.push_back(std::make_unique<juce::AudioParameterInt>("METEROPTIONS", "MeterOptions", 0, 2, 0));
+    params.push_back(std::make_unique<juce::AudioParameterInt>("METEROPTIONS", "MeterOptions", 1, 3, 3));
     return{params.begin(), params.end()};
 }
-
+//
+//void PluginProcessor::comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged)
+//{
+//    switch(comboBoxThatHasChanged->getSelectedId())
+//    {
+//        case 1: mbt = Gui::MeterBallisticsType::RMS; break;
+//        case 2: mbt = Gui::MeterBallisticsType::VU; break;
+//        case 3: mbt = Gui::MeterBallisticsType::PEAK; break;
+//        default: jassert("invalid mbt data"); break;
+//    }
+//}
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

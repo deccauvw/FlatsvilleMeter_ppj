@@ -25,7 +25,7 @@ namespace Gui
         void drawPeakValue (juce::Graphics& g);
 
         void setMeterLevelValueDecibels (float value);
-        void setValuesSupplier(std::function<float()>&& valueSuppliersForTheBundle);
+        void setValueSupplier (std::function<float()>&& valueSupplierFn);
         [[nodiscard]] float getMeterLevelValueDecibels();
         void refreshMeterLevel();
         [[nodiscard]] float getMeterLevel() const noexcept;

@@ -3,7 +3,6 @@
 //
 
 #include "BarMeterComponent.h"
-#include <stdio.h>
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent ():
@@ -27,7 +26,7 @@ namespace Gui
                                             channelOverloadLed1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
                                             tinyStripComponent([&apvts]()->float{
                                                                                                 auto v = apvts.getRawParameterValue("GAIN")->load();
-                                                                                                printf("%f\n",v);
+                                                                                                //printf("%f\n",v);
                                                                                                 return v * 100.f;
                                                                                             }),
 //                                            tinyStripLevelOptionDisplay([&apvts]()->float{
@@ -60,8 +59,7 @@ namespace Gui
             &horizontalMeterBar1,
             &channelOverloadLed0,
             &channelOverloadLed1,
-            &tinyStripComponent,
-            //&tinyStripLevelOptionDisplay
+            &tinyStripComponent
         };
         return listOfComponent;
     }
@@ -183,16 +181,13 @@ namespace Gui
     //===================================================================
     void BarMeterComponent::timerCallback()
     {
-        //printf("BarMeterComponent timerCallback called\n");
-        //updateEverything();
-        //repaintEverything();
-        //printf("Global timerCallback ==================================\n");
-    }
-    //===================================================================
-    void BarMeterComponent::setLevelValues(std::vector<float>& levelValues) //acquire value from audioprocessor.
-    {
-        jassert(m_levelValues.size() == levelValues.size());
-        m_levelValues = levelValues;
+        auto valueFn = packagedValueSuppliers(valueSupplierFnVector, m_ballistics);
+        horizontalMeterBar0.setValueSupplier ([&valueFn](){return valueFn();});
+        horizontalMeterBar1.setValueSupplier ([&valueFn](){return valueFn();});
+        channelOverloadLed0.setValueSupplier([&valueFn](){return valueFn();});
+        channelOverloadLed1.setValueSupplier([&valueFn](){return valueFn();});
+
+
     }
 //    std::function<float()> BarMeterComponent::packagedValueSuppliers (std::vector<std::function<float()>>& funcVector, MeterBallisticsType mbt, int channel)
 //    {
@@ -225,5 +220,10 @@ namespace Gui
         };
 
         return returningFunction;
+    }
+
+    void BarMeterComponent::setMbtData (Gui::MeterBallisticsType mbtInput)
+    {
+        this->m_ballistics = mbtInput;
     }
 } // Gui

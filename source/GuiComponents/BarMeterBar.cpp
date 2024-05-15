@@ -101,7 +101,7 @@ namespace Gui
         return m_meterLevelDb;
     }
     //=========================================================
-    void BarMeterBar::setValuesSupplier (std::function<float()>&& valueSupplierFn)
+    void BarMeterBar::setValueSupplier (std::function<float()>&& valueSupplierFn)
     {
         this->valueSupplier = std::move(valueSupplierFn);
     }

@@ -37,8 +37,8 @@ private:
     {
         return static_cast<PluginProcessor&> (m_audioProcessor);
     }
-
     //controllable parameters
+    Gui::MeterBallisticsType mbt;
     juce::Slider sliderGain;
     std::unique_ptr<APVTS::SliderAttachment>sliderGainAttachment;
     juce::ComboBox comboBoxMeterType;

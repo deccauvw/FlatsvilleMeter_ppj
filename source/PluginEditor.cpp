@@ -18,16 +18,20 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     sliderGain.addListener(this);
     addAndMakeVisible(sliderGain);
     sliderGainAttachment = std::make_unique<APVTS::SliderAttachment>(m_audioProcessor.apvts, "GAIN", sliderGain);
+
+
     //initialize parameters := combobox
-    comboBoxMeterType.addItem("OptionRMS", 1);
-    comboBoxMeterType.addItem("OptionVU", 2);
-    comboBoxMeterType.addItem("OptionPEAK", 3);
+    comboBoxMeterType.addItem("RMS", 1);
+    comboBoxMeterType.addItem("VU", 2);
+    comboBoxMeterType.addItem("PEAK", 3);
     comboBoxMeterType.setSelectedId(3); //default selection
     comboBoxMeterType.setBounds(Gui::Constants::kComboBoxPositionX, Gui::Constants::kComboBoxPositionY,Gui::Constants::kComboBoxWidth, Gui::Constants::kComboBoxHeight);
     comboBoxMeterType.addListener(this);
+    comboBoxMeterType.onChange = [this]{ comboBoxChanged(&comboBoxMeterType);};
     addAndMakeVisible(comboBoxMeterType);
 
-    //initialize parameters := label for metertype display
+
+    //initialize parameters := label for metertype display (old tinystrip)
     labelMeterType.setFont(juce::Font(Gui::Constants::kDefaultTypeFace,  13, 1));
     auto getStringForLabel = m_audioProcessor.apvts.getRawParameterValue("METEROPTIONS")->load();
     labelMeterType.setText(juce::String(getStringForLabel), juce::NotificationType::dontSendNotification);
@@ -47,7 +51,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     setSize (Gui::Constants::kGuiSizeWidth, Gui::Constants::kGuiSizeHeight);
     setResizable(false, false);
-    startTimerHz(Gui::Constants::kInitialRefreshRateHz);
+    startTimerHz((int)Gui::Constants::kInitialRefreshRateHz);
 }//constructor
 
 PluginEditor::~PluginEditor()
@@ -67,10 +71,23 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderLastChanged)
 
 void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
 {
-    if(comboBoxThatHasChanged == &comboBoxMeterType)
+    if (comboBoxThatHasChanged == &comboBoxMeterType)
     {
-        int selectedId = comboBoxThatHasChanged->getSelectedId();
-        m_audioProcessor.parameters.param_meterBallisticsType = selectedId;
+        switch (comboBoxMeterType.getSelectedId())
+        {
+            case 1:
+                mbt = Gui::MeterBallisticsType::RMS;
+                break;
+            case 2:
+                mbt = Gui::MeterBallisticsType::VU;
+                break;
+            case 3:
+                mbt = Gui::MeterBallisticsType::PEAK;
+                break;
+            default:
+                jassert ("invalid mbt data");
+                break;
+        }
     }
 }
 //=============================================================
@@ -91,11 +108,21 @@ void PluginEditor::resized()
 
 void PluginEditor::timerCallback()
 {
-    auto getStringForLabel = m_audioProcessor.apvts.getRawParameterValue("METEROPTIONS")->load();
-    labelMeterType.setText(juce::String(getStringForLabel), juce::NotificationType::dontSendNotification);
+    std::string s;
+    if(mbt == Gui::MeterBallisticsType::RMS)
+    {
+        s = "RMS";
+    }
+    else if(mbt == Gui::MeterBallisticsType::VU)
+    {
+        s = "VU";
+    }
+    else if(mbt == Gui::MeterBallisticsType::PEAK)
+    {
+        s = "PEAK";
+    }
+    labelMeterType.setText(juce::String(s), juce::NotificationType::dontSendNotification);
+    barMeterComponent.setMbtData(mbt);
     repaint();
 
-    //barMeterComponent.setLevelValues(m_audioProcessor.m_nChannelPeakLevels);
-//    barMeterComponent.updateEverything();
-//    barMeterComponent.repaintEverything();
 }

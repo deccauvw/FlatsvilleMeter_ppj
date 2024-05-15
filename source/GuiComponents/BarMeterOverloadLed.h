@@ -41,7 +41,7 @@ namespace Gui
         void setMeterOptions(Options meterOptions);
         Options getMeterOptions();
 
-        //void setBundleSupplier();
+        void setValueSupplier(std::function<float()>&&);
         // ============
         void timerCallback() override;
         // ==================================

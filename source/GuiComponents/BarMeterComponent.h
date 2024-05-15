@@ -63,8 +63,9 @@ namespace Gui
 //        template<typename T>
 //        std::vector<T*> addAndMakeVisibleEveryUniquePtrThrower();
         void drawEverything(juce::Graphics& g);
-        void setLevelValues(std::vector<float>& levelValues);
+        //void setLevelValues(std::vector<float>& levelValues);
 
+        void setMbtData(Gui::MeterBallisticsType mbtInput);
     // ================================================================================================================================
 
         static std::function<float()> packagedValueSuppliers(const std::vector<std::function<float()>>& funcVector, MeterBallisticsType mbt);
