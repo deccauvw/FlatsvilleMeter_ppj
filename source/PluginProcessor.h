@@ -65,7 +65,8 @@ class PluginProcessor : public juce::AudioProcessor,
     //==============================================================================
     //added member fns>>>
 
-    std::unique_ptr<AnalogVuMeterProcessor> m_vuMeterDspProcessorPtr;
+    //static std::unique_ptr<AnalogVuMeterProcessor> m_vuMeterDspProcessorPtr;
+    AnalogVuMeterProcessor m_vuMeterDspProcessor;
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;

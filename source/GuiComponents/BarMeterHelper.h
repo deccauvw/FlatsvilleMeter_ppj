@@ -4,6 +4,7 @@
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <vector>
+#include <unordered_map>
 
 
 namespace Gui
@@ -116,12 +117,12 @@ namespace Gui
         PEAK, RMS, VU
     };
 
-    std::unordered_map<MeterBallisticsType, int> MeterBallisticsTypeKey
-    {
-        {MeterBallisticsType::PEAK, 0},
-        {MeterBallisticsType::RMS, 1},
-        {MeterBallisticsType::VU, 2}
-    };
+//    std::unordered_map<MeterBallisticsType, int> MeterBallisticsTypeKey
+//    {
+//        {MeterBallisticsType::PEAK, 0},
+//        {MeterBallisticsType::RMS, 1},
+//        {MeterBallisticsType::VU, 2}
+//    };
 
     static constexpr auto kMeterBallisticsTypeDefault = MeterBallisticsType::PEAK;
 

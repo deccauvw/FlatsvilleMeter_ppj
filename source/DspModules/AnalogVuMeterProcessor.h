@@ -2,11 +2,8 @@
 
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
-//#include "PluginProcessor.h"
-#include "../PluginProcessor.h"
 #include "DspModulesHelper.h"
 #include "StateSpaceModelSimulation.h"
-#include "juce_audio_processors/juce_audio_processors.h"
 #include <vector>
 //==============================================================================
 
@@ -15,6 +12,7 @@ class PluginProcessor;
 class AnalogVuMeterProcessor : public juce::Component, private FlatsDsp::SystemMatrices
 {
 public:
+    AnalogVuMeterProcessor();
     explicit AnalogVuMeterProcessor (juce::dsp::ProcessSpec processSpec);
     ~AnalogVuMeterProcessor() override;
     //JUCE functions=========================

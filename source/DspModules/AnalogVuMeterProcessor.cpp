@@ -15,6 +15,13 @@
 using mat = juce::dsp::Matrix<float>;
 
 //default constructors destructors========================================================
+AnalogVuMeterProcessor::AnalogVuMeterProcessor()
+{
+    juce::dsp::ProcessSpec s;
+    s.numChannels = 2;
+    s.maximumBlockSize = 1024;
+    s.sampleRate = 48000;
+}
 AnalogVuMeterProcessor::AnalogVuMeterProcessor (juce::dsp::ProcessSpec processSpec) : m_spec (processSpec)
 {
     // If this class is used without caution and processBlock
@@ -41,7 +48,7 @@ AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
 void AnalogVuMeterProcessor::prepareToPlay (juce::dsp::ProcessSpec spec)
 {
     //init. spec
-    auto sampleRate = spec.sampleRate;
+    //auto sampleRate = spec.sampleRate;
     auto numberOfInputChannels = spec.numChannels;
     auto estimatedSamplesPerBlock = spec.maximumBlockSize;
 

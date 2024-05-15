@@ -6,13 +6,16 @@
 
 namespace Gui
 {
-    BarMeterComponent::BarMeterComponent()
+    BarMeterComponent::BarMeterComponent ():
+                                            valueSupplierFnVector(std::vector<std::function<float()>>{[]()->float{return 0.0f;}}),
+                                            horizontalMeterBar0(0, []()->float{return 0.0f;}),
+                                            horizontalMeterBar1(1, []()->float{return 0.0f;}),
+                                            channelOverloadLed0(0, []()->float{return 0.0f;}),
+                                            channelOverloadLed1(1, []()->float{return 0.0f;}),
+                                            tinyStripComponent([]()->float{return 0.0f;}),
+                                            m_useInternalTimer(false)
     {
-        //add dummy vsfv here
-        auto dummySupplierFn = []()->float {return 0.0f;};
-
-        horizontalMeterBar0(0, dummySupplierFn);
-
+        useInternalTiming(m_useInternalTimer); //startTimerHz
     }
 
     BarMeterComponent::BarMeterComponent (const std::vector<std::function<float()>>& vsfv, juce::AudioProcessorValueTreeState& apvts):
@@ -194,7 +197,16 @@ namespace Gui
          * .at(1) : rms
          * .at(2) : vu
          */
+
+        std::unordered_map<MeterBallisticsType, int> MeterBallisticsTypeKey
+            {
+                {MeterBallisticsType::PEAK, 0},
+                {MeterBallisticsType::RMS, 1},
+                {MeterBallisticsType::VU, 2}
+            };
         auto mbtKey = MeterBallisticsTypeKey.at(mbt);
+
+
         auto returningFunction =  [mbtKey, &funcVector]() -> float
         {
             return funcVector[mbtKey]();

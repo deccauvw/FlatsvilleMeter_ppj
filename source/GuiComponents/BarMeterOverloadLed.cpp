@@ -68,7 +68,7 @@ namespace Gui
 
     void BarMeterOverloadLed::setIsChannelOverloaded()
     {
-        float* desiredValue;
+        float* desiredValue = nullptr;
 
         switch(m_meterBallisticsType)
         {
@@ -82,7 +82,7 @@ namespace Gui
                 desiredValue = &bundleOfValues.valueVU;
                 break;
             default:
-                *desiredValue = 0.0f;
+                jassert("invalid mbt");
                 break;
         }
 
