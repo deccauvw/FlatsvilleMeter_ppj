@@ -20,7 +20,7 @@ PluginProcessor::PluginProcessor()
       m_vuLevelChannel0(-INFINITY),
       m_vuLevelChannel1(-INFINITY),
       apvts(*this, nullptr, "Parameters", createParameters()),
-      m_vuMeterDspProcessor(AnalogVuMeterProcessor())
+      m_vuMeterDspProcessor(FlatsDsp::AnalogVuMeterProcessor())
 {
 }
 

@@ -17,7 +17,7 @@ namespace FlatsDsp
         static constexpr auto kSystemOrder = 4;
         static constexpr auto kMinimalReturnValue = -20.0f;
         //Matrix element data for System Voltage to Current (System I) ==================================
-        float v2i_A[kSystemOrder * kSystemOrder] = {
+        static float v2i_A[kSystemOrder * kSystemOrder] = {
             -10.0f,
             0.0f,
             0.0f,
@@ -39,26 +39,26 @@ namespace FlatsDsp
             -0.21f
         };
 
-        float v2i_B[kSystemOrder] = {
+        static float v2i_B[kSystemOrder] = {
             10.0f,
             9.671e+6f,
             21.28f,
             0.01f
         };
 
-        float v2i_C[kSystemOrder] = {
+        static float v2i_C[kSystemOrder] = {
             8.674e-19f,
             -8.674e-19f,
             8.078e-28f,
             -1.654e-24f
         };
 
-        float v2i_D[kSystemOrder] = {
+        static float v2i_D[kSystemOrder] = {
             -8.674e-19f
         };
 
         //state space equation matrices for CUR -> ANGLE : system II=====================================
-        float i2a_A[kSystemOrder * kSystemOrder] = {
+        static float i2a_A[kSystemOrder * kSystemOrder] = {
             -19.84f,
             8.746f,
             -39.940f,
@@ -80,21 +80,21 @@ namespace FlatsDsp
             0.0f
         };
 
-        float i2a_B[kSystemOrder] = {
+        static float i2a_B[kSystemOrder] = {
             0.2572f,
             0.f,
             0.f,
             0.f,
         };
 
-        float i2a_C[kSystemOrder] = {
+        static float i2a_C[kSystemOrder] = {
             1.696f,
             0.0f,
             4.567f,
             140.8f
         };
 
-        float i2a_D[kSystemOrder] = {
+        static float i2a_D[kSystemOrder] = {
             0.0f
         };
 
@@ -102,32 +102,57 @@ namespace FlatsDsp
 
 //Matrix initializing=============================================================================
     //using namespace Constants;
-    class SystemMatrices
+    struct SystemMatrices
     {
-    public:
-        using mat = juce::dsp::Matrix<float>;
-        explicit SystemMatrices();
-        ~SystemMatrices();
-        //member functions ====
-        void setMatrices();
+        explicit SystemMatrices() : systemDim(Constants::kSystemOrder){};
+        SystemMatrices(int  d) : systemDim(d){};
 
-        //member variables ====
-        //for system I
+        using mat = juce::dsp::Matrix<float>;
         size_t systemDim;
 
-        mat ssm_v2i_x;
-        mat ssm_v2i_x0;
-        mat ssm_v2i_A;
-        mat ssm_v2i_B;
-        mat ssm_v2i_C;
-        mat ssm_v2i_D;
-        //for system II
-        mat ssm_i2a_x;
-        mat ssm_i2a_x0;
-        mat ssm_i2a_A;
-        mat ssm_i2a_B;
-        mat ssm_i2a_C;
-        mat ssm_i2a_D;
-    private:
+        mat ssm_v2i_x = mat(systemDim, 1);
+        mat ssm_v2i_x0 = mat(systemDim, 1);
+
+        mat ssm_v2i_A = mat(systemDim, systemDim, Constants::v2i_A);
+        mat ssm_v2i_B = mat(systemDim, 1, Constants::v2i_B);
+        mat ssm_v2i_C = mat(1, systemDim, Constants::v2i_C);
+        mat ssm_v2i_D = mat(1, 1, Constants::v2i_D);
+
+        mat ssm_i2a_x = mat(systemDim, 1);
+        mat ssm_i2a_x0 = mat(systemDim, 1);
+
+        mat ssm_i2a_A = mat(systemDim, systemDim, Constants::i2a_A);
+        mat ssm_i2a_B = mat(systemDim, 1, Constants::i2a_B);
+        mat ssm_i2a_C = mat(1, systemDim, Constants::i2a_C);
+        mat ssm_i2a_D = mat(1, 1, Constants::i2a_D);
+
     };
+//    class SystemMatrices
+//    {
+//    public:
+//        using mat = juce::dsp::Matrix<float>;
+//        explicit SystemMatrices();
+//        ~SystemMatrices();
+//        //member functions ====
+//        void setMatrices();
+//
+//        //member variables ====
+//        //for system I
+//        size_t systemDim;
+//
+//        mat ssm_v2i_x;
+//        mat ssm_v2i_x0;
+//        mat ssm_v2i_A;
+//        mat ssm_v2i_B;
+//        mat ssm_v2i_C;
+//        mat ssm_v2i_D;
+//        //for system II
+//        mat ssm_i2a_x;
+//        mat ssm_i2a_x0;
+//        mat ssm_i2a_A;
+//        mat ssm_i2a_B;
+//        mat ssm_i2a_C;
+//        mat ssm_i2a_D;
+//    private:
+//    };
 } // FlatsDsp

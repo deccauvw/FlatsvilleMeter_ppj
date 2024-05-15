@@ -31,59 +31,62 @@
 
 */
 
-using mat = juce::dsp::Matrix<float>;
-
-class StateSpaceModelSimulation : public juce::Component
+namespace FlatsDsp
 {
-public:
-    StateSpaceModelSimulation();
+    using mat = juce::dsp::Matrix<float>;
 
-    ~StateSpaceModelSimulation() override;
+    class StateSpaceModelSimulation : public juce::Component
+    {
+    public:
+        StateSpaceModelSimulation();
 
-    //==============================================================================
+        ~StateSpaceModelSimulation() override;
 
-    void setSystemSize (size_t systemSize) noexcept;
+        //==============================================================================
 
-    void setNumChannels (size_t channels) noexcept;
+        void setSystemSize (size_t systemSize) noexcept;
 
-    //void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> z1, juce::HeapBlock<float> z2, juce::HeapBlock<float> z3, juce::HeapBlock<float> z4 );
+        void setNumChannels (size_t channels) noexcept;
 
-    //sets x0 with buffer
-    void setInitStateBuffer (juce::AudioBuffer<float>& initialBuffer, size_t systemSize);
+        //void createInitialStateBuffer(juce::AudioBuffer<float>& initialStateBuffer, juce::HeapBlock<float> z1, juce::HeapBlock<float> z2, juce::HeapBlock<float> z3, juce::HeapBlock<float> z4 );
 
-    //sets x0 with matrix vector
-    void set_x0 (juce::AudioBuffer<float>& initialStateBuffer);
+        //sets x0 with buffer
+        void setInitStateBuffer (juce::AudioBuffer<float>& initialBuffer, size_t systemSize);
 
-    //Audio buffer to (1x*samples)*ch mat vector u
-    void set_x (juce::AudioBuffer<float>& buffer);
+        //sets x0 with matrix vector
+        void set_x0 (juce::AudioBuffer<float>& initialStateBuffer);
 
-    void setMatrices (mat ssmA, mat ssmB, mat ssmC, mat ssmD, int sysDim);
+        //Audio buffer to (1x*samples)*ch mat vector u
+        void set_x (juce::AudioBuffer<float>& buffer);
 
-    //stateSpaceModel for mono channel
-    void runSimulation (int channel);
+        void setMatrices (mat ssmA, mat ssmB, mat ssmC, mat ssmD, int sysDim);
 
-    std::vector<mat> getSimulatedOutputMatrix();
+        //stateSpaceModel for mono channel
+        void runSimulation (int channel);
 
-    //matrix to buffer
-    juce::AudioBuffer<float> getSimulatedOutputBuffer();
+        std::vector<mat> getSimulatedOutputMatrix();
 
-    //audioBuffer to n channel vector
-    //std::vector<std::vector<float>> convertBufferToVector(juce::AudioBuffer<float>& buffer);
+        //matrix to buffer
+        juce::AudioBuffer<float> getSimulatedOutputBuffer();
 
-    //float arr[] for juce::dsp::Matrix constructor input argument.
+        //audioBuffer to n channel vector
+        //std::vector<std::vector<float>> convertBufferToVector(juce::AudioBuffer<float>& buffer);
 
-    //==============================================================================
-private:
-    size_t stateSpaceModelChannels;
-    size_t sysDim;
-    size_t m, n, r, timeSamples;
-    mat A, B, C, D;
-    std::vector<mat> x0; //init state vector for multichannel matrix input
-    std::vector<mat> u; //input sequence vectors for multi channel scalar input
+        //float arr[] for juce::dsp::Matrix constructor input argument.
 
-    std::vector<mat> x_sim; //state vector simulated
-    std::vector<mat> y_sim; //ouput matrix simulated
-    mat timeRowVector;
+        //==============================================================================
+    private:
+        size_t stateSpaceModelChannels;
+        size_t sysDim;
+        size_t m, n, r, timeSamples;
+        mat A, B, C, D;
+        std::vector<mat> x0; //init state vector for multichannel matrix input
+        std::vector<mat> u; //input sequence vectors for multi channel scalar input
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StateSpaceModelSimulation)
-};
+        std::vector<mat> x_sim; //state vector simulated
+        std::vector<mat> y_sim; //ouput matrix simulated
+        mat timeRowVector;
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StateSpaceModelSimulation)
+    };
+}//FlatsDsp

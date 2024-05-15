@@ -43,11 +43,11 @@ namespace Gui
 //            return;
 
         g.drawFittedText (stringContent,
-            Gui::Constants::kTinyStripTextPositionX,
-            Gui::Constants::kTinyStripTextPositionY,
-            Gui::Constants::kTinyStripTextPositionWidth - Gui::Constants::kTinyStripTextMargin,
-            Gui::Constants::kTinyStripTextPositionHeight,
-            juce::Justification::centredRight,
+            Gui::Constants::kGainKnobPositionX,
+            Gui::Constants::kGainKnobPositionY,
+            Gui::Constants::kGainKnobWidth - Gui::Constants::kTinyStripTextMargin,
+            Gui::Constants::kGainKnobHeight,
+            juce::Justification::centred,
             true);
     }
 
@@ -73,7 +73,7 @@ namespace Gui
     {
         std::string valueFormattedCh0 = std::format("{:.0f}", values);
         std::string valueUnit = " dB";
-        auto s = juce::String(valueFormattedCh0) + juce::String("\t\t") + juce::String(valueUnit);
+        auto s = juce::String(valueFormattedCh0) ;//+ juce::String("\t\t") + juce::String(valueUnit);
         stringContent = juce::String(s);
     }
 
