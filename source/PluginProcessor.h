@@ -71,7 +71,7 @@ class PluginProcessor : public juce::AudioProcessor,
     void parameterGestureChanged(int parameterIndex, bool starting) override;
     //void comboBoxChanged(juce::ComboBox *comboBoxThatHasChanged) override;
 
-    Gui::MeterBallisticsType mbt;
+    int meterBallisticsTypeKey;
 
     std::vector<float> m_nChannelRmsLevels {};
     std::vector<float> m_nChannelPeakLevels {};

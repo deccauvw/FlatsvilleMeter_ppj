@@ -9,7 +9,7 @@
 #include <juce_events/juce_events.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_graphics/juce_graphics.h>
-
+#include "juce_audio_processors/juce_audio_processors.h"
 
 //meter "needle point" line
 #include "GuiComponents/BarMeterComponent.h"
@@ -18,13 +18,11 @@
 
 #include "GuiModules/FacePlateGui.h"
 //#include <stdio.h>
-//#include "Components/HorizontalBarMeterHelpers.h"
-//#include "Components/HorizontalBarMeterChannel.h"
-//#include "Components/HorizontalBarMeterLevel.h"
-//#include "Components/HorizontalBarMeterHeader.h"
-//#include "Components/HorizontalBarMeterSegment.h"
-//#include "Components/HorizontalBarMetersComponent.h"
 
 //FlatsDsp
 //#include "DspModules/DspModulesHelper.h"
 #include "DspModules/AnalogVuMeterProcessor.h"
+
+#include <vector>
+#include <unordered_map>
+#include <algorithm>

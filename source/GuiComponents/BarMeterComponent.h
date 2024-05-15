@@ -65,16 +65,16 @@ namespace Gui
         void drawEverything(juce::Graphics& g);
         //void setLevelValues(std::vector<float>& levelValues);
 
-        void setMbtData(Gui::MeterBallisticsType mbtInput);
-    // ================================================================================================================================
-
-        static std::function<float()> packagedValueSuppliers(const std::vector<std::function<float()>>& funcVector, MeterBallisticsType mbt);
-        std::vector<std::function<float()>> valueSupplierFnVector; //VSFV
+        // ================================================================================================================================
+        int m_mbtValue;
+        void setMbtKey(int mbtKeyInput);
+        std::function<float()> supplySupplierFnFromMbtKeys(std::string& mbtKey, int channel);
+        void setSupplierFnVector(std::function<float()>&& fn, std::string& keyName, int channel);
+        std::vector<std::tuple<int, int, std::function<float()>>> valueSupplierFnVector; //VSFV :: pair<functor, channel>
         // ================================================================================================================================
 
     private:
 
-        MeterBallisticsType m_ballistics = MeterBallisticsType::VU;
         bool m_useInternalTimer;
 
         //std::vector<float> m_LevelValuesInDecibels {0.0f, 0.0f};

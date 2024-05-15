@@ -3,8 +3,7 @@
 #pragma once
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
-#include <vector>
-#include <unordered_map>
+
 
 
 namespace Gui
@@ -117,28 +116,17 @@ namespace Gui
         static constexpr auto kMetersId = "meters_panel";
         static constexpr auto kLabelstripId = "label_strip";
 
+        //for meter ballistics
+        static constexpr auto kMeterBallisticsTypeDefault = 0;
+
     }
 
-    enum MeterBallisticsType
-    {
-        PEAK, RMS, VU
-    };
-
-//    std::unordered_map<MeterBallisticsType, int> MeterBallisticsTypeKey
+//    enum MeterBallisticsType
 //    {
-//        {MeterBallisticsType::PEAK, 0},
-//        {MeterBallisticsType::RMS, 1},
-//        {MeterBallisticsType::VU, 2}
+//        PEAK, RMS, VU
 //    };
 
-    static constexpr auto kMeterBallisticsTypeDefault = MeterBallisticsType::PEAK;
 
-    struct BundleOfLevelValues
-    {
-        float valueRMS, valueVU, valuePEAK;
-        BundleOfLevelValues():valueRMS(0.0f), valueVU(0.0f), valuePEAK(0.0f){};
-        BundleOfLevelValues(float rms, float vu, float peak):valueRMS(rms), valueVU(vu), valuePEAK(peak){};
-    };
 
 
     struct SegmentOptions{
@@ -206,16 +194,41 @@ namespace Gui
         };
     };
 
+
     enum class LabelStripPosition{
         topToBottom1, topToBottom2, none
     };
-
+//=====================================================
+    enum MeterBallistics{
+        BLANK = 0,
+        PEAK = 1,
+        RMS = 2,
+        VU = 3,
+        LAST
+    };
     class Helpers
     {
-        private:
-        Helpers() = default;
+        typedef std::unordered_map<std::string, int> MBT;
+    public:
+        Helpers() : MeterBallisticsType()
+        {
+            for(int i = MeterBallistics::NONE, i != )
+        }
         ~Helpers() = default;
-        public:
+
+        MBT MeterBallisticsType {};
+
+        struct ValueSupplierMemberFunctions
+        {
+            std::function<float()> func;
+            int meterTypeEncoded;
+            int channelNumber;
+            ValueSupplierMemberFunctions():meterTypeEncoded(MeterBallisticsType["NA"]), channelNumber(0), func([]()->float{return 0.0f;}){}
+            ValueSupplierMemberFunctions(std::string meterTypeStr, int channel, std::function<float()> functor):
+        };
+
+
+
         [[nodiscard]] static constexpr bool containsUpTo(juce::Range<float> levelRange, float levelDb) noexcept
         {
             return levelDb > levelRange.getStart() && levelDb <= levelRange.getEnd();

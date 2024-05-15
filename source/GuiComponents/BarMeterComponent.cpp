@@ -20,10 +20,10 @@ namespace Gui
 
     BarMeterComponent::BarMeterComponent (const std::vector<std::function<float()>>& vsfv, juce::AudioProcessorValueTreeState& apvts):
                                             valueSupplierFnVector(vsfv),
-                                             horizontalMeterBar0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
-                                             horizontalMeterBar1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
-                                            channelOverloadLed0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
-                                            channelOverloadLed1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
+                                             horizontalMeterBar0(0, packagedValueSuppliers(vsfv, Constants::kMeterBallisticsTypeDefault)),
+                                             horizontalMeterBar1(1, packagedValueSuppliers(vsfv, Constants::kMeterBallisticsTypeDefault)),
+                                            channelOverloadLed0(0, packagedValueSuppliers(vsfv, Constants::kMeterBallisticsTypeDefault)),
+                                            channelOverloadLed1(1, packagedValueSuppliers(vsfv, Constants::kMeterBallisticsTypeDefault)),
                                             tinyStripComponent([&apvts]()->float{
                                                                                                 auto v = apvts.getRawParameterValue("GAIN")->load();
                                                                                                 //printf("%f\n",v);
@@ -181,7 +181,7 @@ namespace Gui
     //===================================================================
     void BarMeterComponent::timerCallback()
     {
-        auto valueFn = packagedValueSuppliers(valueSupplierFnVector, m_ballistics);
+        auto valueFn = supplySupplierFnFromMbtKeys(m_mbtValue);
         horizontalMeterBar0.setValueSupplier ([&valueFn](){return valueFn();});
         horizontalMeterBar1.setValueSupplier ([&valueFn](){return valueFn();});
         channelOverloadLed0.setValueSupplier([&valueFn](){return valueFn();});
@@ -194,36 +194,44 @@ namespace Gui
 //        return std::function<float()>();
 //    }
 
-    std::function<float()> BarMeterComponent::packagedValueSuppliers(
-        const std::vector<std::function<float()>>& funcVector,
-        MeterBallisticsType mbt)
+    void BarMeterComponent::setSupplierFnVector(std::function<float()>&& fn, std::string& keyName, int channel)
     {
-        /*
-         * funcVector will have N-types of value Suppliers as element.
-         * .at(0) : peak
-         * .at(1) : rms
-         * .at(2) : vu
-         */
+        //how vectors are mapped
+        //v[val][ch] == keyname (~val) 's ch-channel functor
+        auto f = std::move(fn);
+        int val = Gui::Helpers().MeterBallisticsType[keyName];
+        std::tuple<int, int, std::function<float()>> t {val, channel, f};
+        valueSupplierFnVector.push_back(t);
+    }
 
-        std::unordered_map<MeterBallisticsType, int> MeterBallisticsTypeKey
-            {
-                {MeterBallisticsType::PEAK, 0},
-                {MeterBallisticsType::RMS, 1},
-                {MeterBallisticsType::VU, 2}
-            };
-        auto mbtKey = MeterBallisticsTypeKey.at(mbt);
+    std::function<float()> BarMeterComponent::supplySupplierFnFromMbtKeys(std::string& mbtKey, int channel)
+    {
+//        MeterBallisticsType = std::unordered_map<std::string, int>
+//            {
+//                {"PEAK", 0},
+//                {"RMS", 1},
+//                {"VU", 2}
+//            };
+//      vector v <- keyVal (from MBT tag)  channel  functor
+        auto &vect = valueSupplierFnVector;
+        auto val = Gui::Helpers().MeterBallisticsType[mbtKey];
+
+        auto it = std::find(
+            vect.begin(),
+            vect.end(),
+            [&val, &channel](std::tuple<int, int, std::function<float()>>& e){v});
 
 
-        auto returningFunction =  [mbtKey, &funcVector]() -> float
+        auto returningFunction =  [mbtValue, &v]() -> float
         {
-            return funcVector[mbtKey]();
+            return v.at(mbtValue)();
         };
 
         return returningFunction;
     }
 
-    void BarMeterComponent::setMbtData (Gui::MeterBallisticsType mbtInput)
+    void BarMeterComponent::setMbtKey (int mbtKeyInput)
     {
-        this->m_ballistics = mbtInput;
+        this->m_mbtValue = mbtKeyInput;
     }
 } // Gui

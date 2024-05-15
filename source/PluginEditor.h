@@ -1,10 +1,11 @@
 
 #pragma once
+#include <juce_audio_processors/juce_audio_processors.h>
 #include "PluginProcessor.h"
-#include "juce_audio_processors/juce_audio_processors.h"
 #include "LevelMeter.h"
 //==============================================================================
 using APVTS = juce::AudioProcessorValueTreeState;
+//using namespace juce;
 struct ControlParameters
 {
     ControlParameters(APVTS& state, juce::String paramID): attachment(state, paramID, slider){}
@@ -15,14 +16,17 @@ struct ControlParameters
 
 //==============================================================================
 class PluginEditor :
+    public juce::AudioProcessor,
     public juce::AudioProcessorEditor, //has component class included
     private juce::Timer,
     public juce::Slider::Listener,
-    public juce::ComboBox::Listener
+    public juce::ComboBox::Listener,
+    private juce::ValueTree::Listener
 {
 public:
     explicit PluginEditor (PluginProcessor&);
     ~PluginEditor() override;
+    //PluginProcessor* AudioProcessorEditor;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -33,14 +37,16 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     PluginProcessor& m_audioProcessor;
-    PluginProcessor& getProcessor() const
-    {
-        return static_cast<PluginProcessor&> (m_audioProcessor);
-    }
+    Gui::Helpers helpers;
+//    [[nodiscard]] PluginProcessor& getProcessor() const
+//    {
+//        return static_cast<PluginProcessor&> (m_audioProcessor);
+//    }
+    static int MeterBallisticsTypeKey; // the MBT key -> value [key]
+
     //controllable parameters
-    Gui::MeterBallisticsType mbt;
-    juce::Slider sliderGain;
     std::unique_ptr<APVTS::SliderAttachment>sliderGainAttachment;
+    juce::Slider sliderGain;
     juce::ComboBox comboBoxMeterType;
     juce::Label labelMeterType;
     //Gui components

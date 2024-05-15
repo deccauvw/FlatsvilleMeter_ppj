@@ -1,13 +1,10 @@
 #pragma once
 #include "PluginEditor.h"
-#include "PluginProcessor.h"
-#include "LevelMeter.h"
-//using APVTS = juce::AudioProcessorValueTreeState;
 
 PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), m_audioProcessor(p)
+    : m_audioProcessor(p), AudioProcessorEditor(&p)
+      //initialize parameters := dials
 {
-    //initialize parameters := dials
     sliderGain.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
     sliderGain.setTextBoxStyle(
         juce::Slider::NoTextBox,
@@ -73,21 +70,9 @@ void PluginEditor::comboBoxChanged (juce::ComboBox* comboBoxThatHasChanged)
 {
     if (comboBoxThatHasChanged == &comboBoxMeterType)
     {
-        switch (comboBoxMeterType.getSelectedId())
-        {
-            case 1:
-                mbt = Gui::MeterBallisticsType::RMS;
-                break;
-            case 2:
-                mbt = Gui::MeterBallisticsType::VU;
-                break;
-            case 3:
-                mbt = Gui::MeterBallisticsType::PEAK;
-                break;
-            default:
-                jassert ("invalid mbt data");
-                break;
-        }
+        auto key = comboBoxMeterType.getSelectedId();
+        jassert(key >= 0 || key <= 2);
+        this->MeterBallisticsTypeKey = key;
     }
 }
 //=============================================================
@@ -108,21 +93,9 @@ void PluginEditor::resized()
 
 void PluginEditor::timerCallback()
 {
-    std::string s;
-    if(mbt == Gui::MeterBallisticsType::RMS)
-    {
-        s = "RMS";
-    }
-    else if(mbt == Gui::MeterBallisticsType::VU)
-    {
-        s = "VU";
-    }
-    else if(mbt == Gui::MeterBallisticsType::PEAK)
-    {
-        s = "PEAK";
-    }
+    auto s = helpers.MeterBallisticsType[MeterBallisticsTypeKey];
     labelMeterType.setText(juce::String(s), juce::NotificationType::dontSendNotification);
-    barMeterComponent.setMbtData(mbt);
+    barMeterComponent.setMbtData(s);
     repaint();
 
 }
