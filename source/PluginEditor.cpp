@@ -18,7 +18,6 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     sliderGain.addListener(this);
     addAndMakeVisible(sliderGain);
     sliderGainAttachment = std::make_unique<APVTS::SliderAttachment>(m_audioProcessor.apvts, "GAIN", sliderGain);
-
     //initialize parameters := combobox
     comboBoxMeterType.addItem("OptionRMS", 1);
     comboBoxMeterType.addItem("OptionVU", 2);
@@ -27,6 +26,15 @@ PluginEditor::PluginEditor (PluginProcessor& p)
     comboBoxMeterType.setBounds(Gui::Constants::kComboBoxPositionX, Gui::Constants::kComboBoxPositionY,Gui::Constants::kComboBoxWidth, Gui::Constants::kComboBoxHeight);
     comboBoxMeterType.addListener(this);
     addAndMakeVisible(comboBoxMeterType);
+
+    //initialize parameters := label for metertype display
+    labelMeterType.setFont(juce::Font(Gui::Constants::kDefaultTypeFace,  13, 1));
+    auto getStringForLabel = m_audioProcessor.apvts.getRawParameterValue("METEROPTIONS")->load();
+    labelMeterType.setText(juce::String(getStringForLabel), juce::NotificationType::dontSendNotification);
+    labelMeterType.setJustificationType(juce::Justification::centred);
+    labelMeterType.setBounds(Gui::Constants::kTinyStripTextPositionX, Gui::Constants::kTinyStripTextPositionY, Gui::Constants::kTinyStripTextPositionWidth, Gui::Constants::kTinyStripTextPositionHeight);
+    addAndMakeVisible(labelMeterType);
+
 
     //show displays from barMeterComponent
     for(auto* c : barMeterComponent.addAndMakeVisibleEverythingThrower())
@@ -39,7 +47,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     setSize (Gui::Constants::kGuiSizeWidth, Gui::Constants::kGuiSizeHeight);
     setResizable(false, false);
-    startTimerHz(24);
+    startTimerHz(Gui::Constants::kInitialRefreshRateHz);
 }//constructor
 
 PluginEditor::~PluginEditor()
@@ -73,6 +81,7 @@ void PluginEditor::paint (juce::Graphics& g)
     // render everything here
     facePlateGui.paint(g); //faceplate render
     barMeterComponent.paint(g); //everything else render
+    comboBoxMeterType.paint(g);
 }
 
 void PluginEditor::resized()
@@ -82,8 +91,10 @@ void PluginEditor::resized()
 
 void PluginEditor::timerCallback()
 {
+    auto getStringForLabel = m_audioProcessor.apvts.getRawParameterValue("METEROPTIONS")->load();
+    labelMeterType.setText(juce::String(getStringForLabel), juce::NotificationType::dontSendNotification);
     repaint();
-    //printf("mainEditor callback called....................\n");
+
     //barMeterComponent.setLevelValues(m_audioProcessor.m_nChannelPeakLevels);
 //    barMeterComponent.updateEverything();
 //    barMeterComponent.repaintEverything();

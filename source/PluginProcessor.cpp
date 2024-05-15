@@ -264,6 +264,7 @@ APVTS::ParameterLayout PluginProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
     params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -24.0f, +24.0f, 0.0f));
+    params.push_back(std::make_unique<juce::AudioParameterInt>("METEROPTIONS", "MeterOptions", 0, 2, 0));
     return{params.begin(), params.end()};
 }
 

@@ -35,12 +35,12 @@ namespace Gui
         static constexpr auto kHeaderChannelTypeWidth = 12;
         static constexpr auto kHeaderChannelTypeFontHeight = 12.0f;
 
-        static constexpr auto kTinyStripFontHeight = 20.0f;
+        static constexpr auto kTinyStripFontHeight = 130 - 87;//20.0f;
         static constexpr auto kTinyStripTextPositionX = 660;
         static constexpr auto kTinyStripTextPositionY = 175;
         static constexpr auto kTinyStripTextPositionWidth = 167;
         static constexpr auto kTinyStripTextPositionHeight = 23;
-        static constexpr auto kTinyStripTextMargin = 45;
+        static constexpr auto kTinyStripTextMargin =0;//45;
 
 //        static constexpr auto kTinyStripFontHeight = 20.0f;
 //        static constexpr auto kTinyStripTextPositionX = 660;
@@ -92,10 +92,10 @@ namespace Gui
         static constexpr auto kLabelStripTextPadding = 2.0f;
 
         //gain knob constants
-        static constexpr auto kGainKnobPositionX = 700;
-        static constexpr auto kGainKnobPositionY = 54;
-        static constexpr auto kGainKnobWidth = 145;
-        static constexpr auto kGainKnobHeight = 145;
+        static constexpr auto kGainKnobPositionX = 666;
+        static constexpr auto kGainKnobPositionY = 30;
+        static constexpr auto kGainKnobWidth = 815-666;//145;
+        static constexpr auto kGainKnobHeight = 815-666;//145;
 
 
         //aesthetics for "0VU" indicator (flashy orb) the Overload warning led
@@ -184,6 +184,7 @@ namespace Gui
         juce::Colour colourLabelStrip = juce::Colours::orange; //-20 ~ 0dB
         juce::Colour colourLabelStripOverZero = juce::Colours::orangered; //+1 2 3dB
         juce::Colour colourText = juce::Colours::aliceblue; //indigo screen with aqua color
+        juce::Colour colourTextGainKnob = juce::Colours::darkgoldenrod;
         juce::Colour colourTickMark = juce::Colours::white; //colour of tickMarks
         juce::Colour colourPeakHold = juce::Colours::orange; //colour of the peakHold indicator.
         juce::Colour colourLedOptimal = juce::Colours::aliceblue.withBrightness(0.2f);

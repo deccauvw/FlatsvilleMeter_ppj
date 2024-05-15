@@ -42,7 +42,7 @@ private:
     juce::Slider sliderGain;
     std::unique_ptr<APVTS::SliderAttachment>sliderGainAttachment;
     juce::ComboBox comboBoxMeterType;
-
+    juce::Label labelMeterType;
     //Gui components
     Gui::BarMeterComponent barMeterComponent; //everything that "moves"
     Face::FacePlateGui facePlateGui; //replacing the opaque background : default skin

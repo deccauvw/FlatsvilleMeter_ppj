@@ -3,7 +3,7 @@
 //
 
 #include "BarMeterComponent.h"
-
+#include <stdio.h>
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent ():
@@ -13,6 +13,7 @@ namespace Gui
                                             channelOverloadLed0(0, []()->float{return 0.0f;}),
                                             channelOverloadLed1(1, []()->float{return 0.0f;}),
                                             tinyStripComponent([]()->float{return 0.0f;}),
+                                             //tinyStripLevelOptionDisplay([]()->float{return 0.0f;}),
                                             m_useInternalTimer(false)
     {
         useInternalTiming(m_useInternalTimer); //startTimerHz
@@ -24,7 +25,15 @@ namespace Gui
                                              horizontalMeterBar1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
                                             channelOverloadLed0(0, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
                                             channelOverloadLed1(1, packagedValueSuppliers(vsfv, kMeterBallisticsTypeDefault)),
-                                            tinyStripComponent([&apvts]()->float{return apvts.getRawParameterValue("GAIN")->load();}),
+                                            tinyStripComponent([&apvts]()->float{
+                                                                                                auto v = apvts.getRawParameterValue("GAIN")->load();
+                                                                                                printf("%f\n",v);
+                                                                                                return v * 100.f;
+                                                                                            }),
+//                                            tinyStripLevelOptionDisplay([&apvts]()->float{
+//                                                                                                        auto v = apvts.getRawParameterValue("METEROPTIONS")->load();
+//                                                                                                        return v;
+//                                                                                                        }),
                                             m_useInternalTimer(false)
     {
         useInternalTiming(m_useInternalTimer); //startTimerHz
@@ -51,7 +60,8 @@ namespace Gui
             &horizontalMeterBar1,
             &channelOverloadLed0,
             &channelOverloadLed1,
-            &tinyStripComponent
+            &tinyStripComponent,
+            //&tinyStripLevelOptionDisplay
         };
         return listOfComponent;
     }
@@ -75,6 +85,7 @@ namespace Gui
         channelOverloadLed0.paint(g);
         channelOverloadLed1.paint(g);
         tinyStripComponent.paint(g);
+        //tinyStripLevelOptionDisplay.paint(g);
     }
     void BarMeterComponent::updateEverything()
     {
@@ -96,6 +107,7 @@ namespace Gui
         this->channelOverloadLed0.repaint();
         this->channelOverloadLed1.repaint();
         this->tinyStripComponent.repaint();
+        //this->tinyStripLevelOptionDisplay.repaint();
         //repaint();
     }
     //===================================================================
