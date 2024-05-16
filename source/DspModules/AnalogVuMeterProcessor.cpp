@@ -62,6 +62,7 @@ void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputC
     m_spec.maximumBlockSize = estimatedSamplesPerBlock;
 
     //create empty buffer following specs
+    DBG("flag\tVU\tprepareToPlay setSize");
     m_bufferProcessResult.setSize(numberOfInputChannels, systemOrder + estimatedSamplesPerBlock);
     m_bufferProcessResult.clear();
 
@@ -142,7 +143,7 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel(
     //class m_buffer dimension = systemSize + numSamples
     const int numberOfChannels = rawBuffer.getNumChannels();
 //    const int numberOfSamples = m_buffer.getNumSamples();
-    printf("runS imlation of the  buffer..\n");
+    printf("run Simlation of the  buffer..\n");
 
     for(int ch = 0 ; ch<numberOfChannels;++ch)
     {

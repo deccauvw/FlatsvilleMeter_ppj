@@ -65,12 +65,7 @@ class PluginProcessor : public juce::AudioProcessor,
     std::vector<float> m_nChannelRmsLevels {};
     std::vector<float> m_nChannelPeakLevels {};
     std::vector<float> m_nChannelVuLevels {};
-    float m_RmsLevelChannel0 = 0.0;
-    float m_RmsLevelChannel1= 0.0;
-    float m_peakLevelChannel0 = 0.0;
-    float m_peakLevelChannel1 = 0.0;
-//    float m_vuLevelChannel0 = 0.0f;
-//    float m_vuLevelChannel1 = 0.0f;
+
 
 
     float getLevelValueRms (int channel) const;
@@ -82,11 +77,11 @@ class PluginProcessor : public juce::AudioProcessor,
     Parameters parameters;
 
 private:
-    AnalogVuMeterProcessor m_vuMeterProcessor;
+    std::unique_ptr<AnalogVuMeterProcessor> m_vuMeterProcessor;
     APVTS::ParameterLayout createParameters();
 
     bool isBufferEmpty(const juce::AudioBuffer<float>& buffer);
-    juce::AudioBuffer<float> bufferForMeter;
+    //juce::AudioBuffer<float> bufferForMeter;
 
 
     float levelRmsLeft = 0.0f;
