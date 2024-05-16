@@ -41,7 +41,8 @@ private:
     juce::Slider sliderGain;
     std::unique_ptr<APVTS::SliderAttachment>sliderGainAttachment;
 
-    //Gui components
+    //Gui component
+    // s
     Gui::BarMeterComponent barMeterComponent; //everything that "moves"
     Face::FacePlateGui facePlateGui; //replacing the opaque background : default skin
 

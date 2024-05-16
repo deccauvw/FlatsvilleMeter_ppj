@@ -15,10 +15,12 @@
 using mat = juce::dsp::Matrix<float>;
 
 //default constructors destructors========================================================
-AnalogVuMeterProcessor::AnalogVuMeterProcessor():m_spec(juce::dsp::ProcessSpec{0, 0, 0})
-{}
+AnalogVuMeterProcessor::AnalogVuMeterProcessor() : systemOrder(DspLine::Constants::kSystemOrder),
+                                                   m_spec (juce::dsp::ProcessSpec { 0, 0, 0 })
+{
+}
 
-AnalogVuMeterProcessor::AnalogVuMeterProcessor(juce::dsp::ProcessSpec spec): m_spec(spec)
+AnalogVuMeterProcessor::AnalogVuMeterProcessor (juce::dsp::ProcessSpec spec) : m_spec (spec)
 {
     // If this class is used without caution and processBlock
     // is called before prepareToPlay, divisions by zero
@@ -27,24 +29,17 @@ AnalogVuMeterProcessor::AnalogVuMeterProcessor(juce::dsp::ProcessSpec spec): m_s
     // some arbitrary arguments.
     m_systemMatrices.setMatrices();
     this->systemOrder = DspLine::Constants::kSystemOrder;
-    prepareToPlay(m_spec.sampleRate,m_spec.numChannels,m_spec.maximumBlockSize); //arbitrary input
+    prepareToPlay (m_spec.sampleRate, m_spec.numChannels, m_spec.maximumBlockSize); //arbitrary input
 }
 
 AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
 {
     //past 4 values for v2i System I
-//    z1.free();
-//    w1.free();
+    //    z1.free();
+    //    w1.free();
     bufferPreSysI.free();
     bufferPreSysII.free();
-//    z2.free();
-//    z3.free();
-//    z4.free();
 
-    //past 4 values for i2a system II
-//    w2.free();
-//    w3.free();
-//    w4.free();
 }
 
 juce::AudioBuffer<float> AnalogVuMeterProcessor::getOutputBuffer()
@@ -54,38 +49,35 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::getOutputBuffer()
 
 //JUCE related functions ========================================================
 //this prepareToPlay is called exactly once. Will be called right off the bat when the object is created.
-void AnalogVuMeterProcessor::prepareToPlay(double sampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock)
+void AnalogVuMeterProcessor::prepareToPlay (double sampleRate, int numberOfInputChannels, int estimatedSamplesPerBlock)
 {
     //init. spec
-    m_spec.sampleRate =sampleRate;
+    m_spec.sampleRate = sampleRate;
     m_spec.numChannels = numberOfInputChannels;
     m_spec.maximumBlockSize = estimatedSamplesPerBlock;
 
     //create empty buffer following specs
-    DBG("flag\tVU\tprepareToPlay setSize");
-    m_bufferProcessResult.setSize(numberOfInputChannels, systemOrder + estimatedSamplesPerBlock);
+    DBG ("flag\tVU\tprepareToPlay setSize");
+    m_bufferProcessResult.setSize (numberOfInputChannels, systemOrder + estimatedSamplesPerBlock);
     m_bufferProcessResult.clear();
 
     //for state space equation : 4 past values for "next init x0 for system I / II"
     //index will be done like `channelNumber * numberOfInputChannels + desiredIndex`
-    z1.calloc(numberOfInputChannels * systemOrder, sizeof(float));
-    w1.calloc(numberOfInputChannels * systemOrder, sizeof(float));
-    bufferPreSysI.calloc(1, sizeof(juce::AudioBuffer<float>));
-    bufferPreSysII.calloc(1, sizeof(juce::AudioBuffer<float>));
+
+    bufferPreSysI.calloc (numberOfInputChannels * systemOrder, sizeof (float));
+    bufferPreSysII.calloc (numberOfInputChannels * systemOrder, sizeof (float));
 
     //initialize buffer with 4 more spaces
-    m_ssms_v2i = std::make_unique<StateSpaceModelSimulation>(m_spec);
-    m_ssms_i2a = std::make_unique<StateSpaceModelSimulation>(m_spec);
-    m_ssms_v2i->setMatrices(m_systemMatrices.returnAllSystemMatrices(1), systemOrder);
-    m_ssms_i2a->setMatrices(m_systemMatrices.returnAllSystemMatrices(2), systemOrder);
+    m_ssms_v2i = std::make_unique<StateSpaceModelSimulation> (m_spec);
+    m_ssms_i2a = std::make_unique<StateSpaceModelSimulation> (m_spec);
+    m_ssms_v2i->setMatrices (m_systemMatrices.returnAllSystemMatrices (1), systemOrder);
+    m_ssms_i2a->setMatrices (m_systemMatrices.returnAllSystemMatrices (2), systemOrder);
 
 
-//    m_initialStateBufferForSystemI.setSize(numberOfInputChannels, estimatedSamplesPerBlock + systemOrder);
-//    m_initialStateBufferForSystemII.setSize(numberOfInputChannels, estimatedSamplesPerBlock + systemOrder);
-//    m_initialStateBufferForSystemI.clear();
-//    m_initialStateBufferForSystemII.clear();
-}
-//prepareToPlay End
+}//prepareToPlay End
+
+
+
 
 //from outsize this will be called for the first time.
 void AnalogVuMeterProcessor::processBlock (juce::AudioBuffer<float>& rawBuffer)
@@ -94,15 +86,18 @@ void AnalogVuMeterProcessor::processBlock (juce::AudioBuffer<float>& rawBuffer)
     //m_buffer must follow and be prepared to deal with the input buffer : matching the dimension accordingly;
     //buffer is the RAW buffer for og signal retaining.
     //channel wise filling m_heap with 4 previous value
-    bufferPreSysI->makeCopyOf(rawBuffer);
-    auto bufferPostI = feedToSteadyStateModel(*m_ssms_v2i, rawBuffer, bufferPreSysI);
-    auto bufferPostII = feedToSteadyStateModel(*m_ssms_i2a, bufferPostI, bufferPreSysII);
-    m_bufferProcessResult = bufferPostII;
+    DBG ("VU\tprocessBlock...");
+    //bufferPreSysI->makeCopyOf(rawBuffer);
+    DBG ("VU\t\tbufferPost1...");
+    auto bufferPostI = feedToSteadyStateModel (*m_ssms_v2i, rawBuffer, bufferPreSysI);
+    DBG ("VU\t\tbufferPost2...");
 
+    auto bufferPostII = feedToSteadyStateModel (*m_ssms_i2a, bufferPostI, bufferPreSysII);
+    m_bufferProcessResult = bufferPostII;
 }
 // ====================================================
 //this function will be used inside feedtoSteadyStateModel() fn.
-juce::AudioBuffer<float> AnalogVuMeterProcessor::initializeBufferWithHeapBlock(juce::AudioBuffer<float>& rawBuffer, juce::HeapBlock<juce::AudioBuffer<float>>& b)
+juce::AudioBuffer<float> AnalogVuMeterProcessor::generateAugmentedBufferWithHeapBlock (juce::AudioBuffer<float>& rawBuffer, juce::HeapBlock<float>& h)
 {
     //m_buffer :: extended Buffer
     auto sysDim = DspLine::Constants::kSystemOrder;
@@ -110,49 +105,70 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::initializeBufferWithHeapBlock(j
     auto numSamples = rawBuffer.getNumSamples();
 
     juce::AudioBuffer<float> returningBuffer;
-    returningBuffer.setSize(numChannels, numSamples);
+    returningBuffer.setSize (numChannels, numSamples + sysDim);
     returningBuffer.clear();
+    DBG("\t\t\t\t\tset size and clear returning buffer");
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
-        auto sampleIn = rawBuffer.getWritePointer(channel);
-        auto sampleOut = returningBuffer.getWritePointer(channel);
-        auto heap = b->getWritePointer(channel);
+        float* sample = returningBuffer.getWritePointer(channel);
+        DBG("\t\t\t\t\t\tusing heap");
+        for (int i = 0; i < numChannels; ++i)
+        { //range :: -4 ~ 0 : acquire from the heap `h`
+            sample[i] = h[_heapIdx(i, channel)];
+        }
+        DBG("\t\t\t\t\t\tusing rest");
 
-        //filling 4 beginning values into the sample
-        for(auto n = 0; n < sysDim ; ++n) //systemSize == 4
-            sampleOut[n] = heap[numSamples - sysDim + n];
-
-        //filling everything else
-        for(auto n = sysDim; n < numSamples + sysDim; ++n)
-        {
-            sampleOut[n] = sampleIn[n - sysDim];
+        for (int i = 0; i < numChannels; ++i)
+        { //range :: 0 ~ numChannels
+            returningBuffer.copyFrom (i, systemOrder, rawBuffer, channel , systemOrder, numSamples - systemOrder);
         }
     }
-    b->makeCopyOf(returningBuffer); //updating heap `b` with output before return
+
+    //store [-4 : -1] values from returningBuffer. updating heap `h` with output before return
+    for(int channel = 0; channel < numChannels; ++channel)
+    {
+        const float* sample = returningBuffer.getReadPointer(channel);
+        for(int i = 0; i < systemOrder; ++i)
+        {
+            auto j = numSamples - 4 + i;
+            h[_heapIdx(i, channel)] = sample[j];
+        }
+    }
     return returningBuffer;
 }
 
 //takes in systemI or II and corresponding heapBlock for recording last 4 outputs.
-juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel(
+juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
     StateSpaceModelSimulation& ssms,
     juce::AudioBuffer<float>& rawBuffer,
-    juce::HeapBlock<juce::AudioBuffer<float>> &h)
+    juce::HeapBlock<float>& h)
 {
-    //this should output buffer for next system.
-    //class m_buffer dimension = systemSize + numSamples
-    const int numberOfChannels = rawBuffer.getNumChannels();
-//    const int numberOfSamples = m_buffer.getNumSamples();
-    printf("run Simlation of the  buffer..\n");
 
-    for(int ch = 0 ; ch<numberOfChannels;++ch)
+
+    // rawBuffer dimension = numSamples
+    // augBuffer dimension = systemSize + numSamples
+    const int numberOfChannels = rawBuffer.getNumChannels();
+    const int numberOfSamples = rawBuffer.getNumSamples();
+    DBG ("\t\t\tfeed to SSM...");
+    DBG ("\t\t\tcreate augBuffer...");
+
+    // build makeshift sysOrder buffer for set_x0 : augBuffer
+    auto augBuffer = generateAugmentedBufferWithHeapBlock(rawBuffer, h);
+
+    DBG ("\t\t\tcreate augBuffer...E");
+
+    for (int ch = 0; ch < numberOfChannels; ++ch)
     {
-        ssms.set_x0 (*h, ch);
-       ssms.processBlock (rawBuffer);
+        DBG ("\t\t\t\tset the x0");
+        ssms.set_x0 (augBuffer, ch);
+        DBG ("\t\t\t\tprocess augBuffer");
+        ssms.processBlock (augBuffer);
+        DBG ("\t\t\t\tprocess augBuffer...E");
+
     }
+    DBG ("\t\t\t\tretrieving buffer from augBuffer...");
     auto outputBuffer = ssms.retrieveSystemResultBuffer();
+    DBG ("\t\t\t\tretrieving buffer from augBuffer...E");
     return outputBuffer;
 }
-
-
-

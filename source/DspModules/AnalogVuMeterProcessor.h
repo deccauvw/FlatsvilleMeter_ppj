@@ -35,22 +35,13 @@ private:
     std::unique_ptr<StateSpaceModelSimulation> m_ssms_i2a;
 
     //memory for System II from system I
-    juce::HeapBlock<float> z1;
-    juce::HeapBlock<float> w1;
-    juce::HeapBlock<juce::AudioBuffer<float>> bufferPreSysI;
-    juce::HeapBlock<juce::AudioBuffer<float>> bufferPreSysII;
+    juce::HeapBlock<float> bufferPreSysI;
+    juce::HeapBlock<float> bufferPreSysII;
+    int _heapIdx(int idx, int channel){return systemOrder * channel + idx;}
 
-//    juce::HeapBlock<float> z2;
-//    juce::HeapBlock<float> z3;
-//    juce::HeapBlock<float> z4;
-
-    //memory for next block of System I from system II
-//    juce::HeapBlock<float> w2;
-//    juce::HeapBlock<float> w3;
-//    juce::HeapBlock<float> w4;
     //member functions=========================
-    juce::AudioBuffer<float> initializeBufferWithHeapBlock(juce::AudioBuffer<float>& buffer, juce::HeapBlock<juce::AudioBuffer<float>>& b);
-    juce::AudioBuffer<float> feedToSteadyStateModel(StateSpaceModelSimulation& ssms, juce::AudioBuffer<float>& rawBuffer,  juce::HeapBlock<juce::AudioBuffer<float>>& b);
+    juce::AudioBuffer<float> generateAugmentedBufferWithHeapBlock(juce::AudioBuffer<float>& buffer, juce::HeapBlock<float>& h);
+    juce::AudioBuffer<float> feedToSteadyStateModel(StateSpaceModelSimulation& ssms, juce::AudioBuffer<float>& rawBuffer,  juce::HeapBlock<float>& h);
 
     //static void recordHeapForNextSystem(juce::AudioBuffer<float>& buffer, juce::HeapBlock<float> &z);
 

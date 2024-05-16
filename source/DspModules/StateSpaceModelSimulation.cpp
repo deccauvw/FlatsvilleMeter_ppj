@@ -112,7 +112,7 @@ void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& buffer)
     for(auto ch = 0 ; ch < numChannels ; ++ch)
     {
         juce::AudioBuffer<float> bufferMono(1, numSamples);
-        bufferMono.copyFrom(1, 0, buffer, ch, 0, numSamples);
+        bufferMono.copyFrom(0, 0, buffer, ch, 0, numSamples);
         set_x0 (bufferMono, ch);
         set_u (bufferMono, ch);
         auto simulatedBufferMono  = runSimulation(bufferMono, ch);

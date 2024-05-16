@@ -107,6 +107,7 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     this->specs.numChannels = 2; //assume and FIX as stereo only plugin
     m_nChannelPeakLevels.resize(specs.numChannels);
     m_nChannelRmsLevels.resize(specs.numChannels);
+    m_nChannelVuLevels.resize(specs.numChannels);
     //bufferForMeter.setSize(specs.numChannels,samplesPerBlock);
 
     m_vuMeterProcessor = std::make_unique<AnalogVuMeterProcessor>(this->specs);
@@ -162,25 +163,14 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         //make copy of scaled buffer
         bufferForMeter.makeCopyOf (buffer);
 
-
-        //vu stuff
-        DBG("flag\tVU meter operation from here");
-        m_vuMeterProcessor->processBlock(bufferForMeter);
-        auto processedVuBuffer = m_vuMeterProcessor->getOutputBuffer();
-        for(auto ch = 0; ch<specs.numChannels; ++ch)
-        {
-            auto m_iVuLevel = processedVuBuffer.getRMSLevel (ch, 0, processedVuBuffer.getNumSamples());
-            m_nChannelVuLevels.at(ch) = m_iVuLevel;
-        }
-
-        DBG("flag\tVU meter operation terminates");
     }
 
+    //from here the buffer is at least filled with zeros
 
     auto numSamples = bufferForMeter.getNumSamples();
     auto numChannels = bufferForMeter.getNumChannels();
 
-
+    DBG("flag\ttrivial meter level acquisition here");
     for (auto ch = 0; ch < numChannels; ch++)
     {
         auto m_iRmsLevel = bufferForMeter.getRMSLevel(ch, 0, numSamples);
@@ -188,8 +178,22 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         m_nChannelPeakLevels.at(ch) = m_iPeakLevel;
         m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
     }
+    DBG("flag\ttrivial meter level acquisition here...E");
 
 
+    //vu stuff
+    DBG("flag\tVU meter operation from here!!");
+    DBG(bufferForMeter.getNumSamples());
+    m_vuMeterProcessor->processBlock(bufferForMeter);
+    DBG("flag\tVU meter operation returning result");
+    auto processedVuBuffer = m_vuMeterProcessor->getOutputBuffer();
+    for(auto ch = 0; ch<specs.numChannels; ++ch)
+    {
+        auto m_iVuLevel = processedVuBuffer.getMagnitude(ch, 0, processedVuBuffer.getNumSamples());
+        m_nChannelVuLevels.at(ch) = m_iVuLevel;
+    }
+
+    DBG("flag\tALL processBlock ends here");
 }
 
 //==============================================================================
