@@ -170,7 +170,8 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
     }
 
-    m_vuMeterProcessor.feedToSteadyStateModel(bufferForMeter);
+    //vu stuff
+    m_vuMeterProcessor.processBlock(bufferForMeter);
     auto processedVuBuffer = m_vuMeterProcessor.getOutputBuffer();
     for(auto ch = 0; ch<numChannels; ++ch)
     {

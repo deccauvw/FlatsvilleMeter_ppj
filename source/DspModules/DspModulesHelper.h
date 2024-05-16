@@ -15,7 +15,7 @@ namespace DspLine
     {
         //System Dimension (Order 4) =====================================================================
         static constexpr auto kSystemOrder = 4;
-        static constexpr auto kMinimalReturnValue = -20.0f;
+        static constexpr auto kMinimalReturnValue = -INFINITY;
         //Matrix element data for System Voltage to Current (System I) ==================================
         static float v2i_A[kSystemOrder * kSystemOrder] = {
             -10.0f,
@@ -110,7 +110,7 @@ namespace DspLine
         ~SystemMatrices();
         //member functions ====
         void setMatrices();
-
+        std::vector<mat> returnAllSystemMatrices(int systemNumber);
         //member variables ====
         //for system I
         size_t systemDim;
@@ -129,5 +129,6 @@ namespace DspLine
         mat ssm_i2a_C;
         mat ssm_i2a_D;
     private:
+        void fillElementsWithArray(mat &matrix, float arr[], int numOfElements);
     };
 } // DspLine
