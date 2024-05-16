@@ -42,7 +42,7 @@ AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
 
 }
 
-juce::AudioBuffer<float> AnalogVuMeterProcessor::getOutputBuffer()
+juce::AudioBuffer<float> AnalogVuMeterProcessor::getSystemOutputBufferBlockWise()
 {
     return m_bufferProcessResult;
 }
@@ -86,12 +86,11 @@ void AnalogVuMeterProcessor::processBlock (juce::AudioBuffer<float>& rawBuffer)
     //m_buffer must follow and be prepared to deal with the input buffer : matching the dimension accordingly;
     //buffer is the RAW buffer for og signal retaining.
     //channel wise filling m_heap with 4 previous value
-    DBG ("VU\tprocessBlock...");
+    //DBG ("VU\tprocessBlock...");
     //bufferPreSysI->makeCopyOf(rawBuffer);
-    DBG ("VU\t\tbufferPost1...");
+    //DBG ("VU\t\tbufferPost1...");
     auto bufferPostI = feedToSteadyStateModel (*m_ssms_v2i, rawBuffer, bufferPreSysI);
-    DBG ("VU\t\tbufferPost2...");
-
+   // DBG ("VU\t\tbufferPost2...");
     auto bufferPostII = feedToSteadyStateModel (*m_ssms_i2a, bufferPostI, bufferPreSysII);
     m_bufferProcessResult = bufferPostII;
 }
@@ -107,17 +106,17 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::generateAugmentedBufferWithHeap
     juce::AudioBuffer<float> returningBuffer;
     returningBuffer.setSize (numChannels, numSamples + sysDim);
     returningBuffer.clear();
-    DBG("\t\t\t\t\tset size and clear returning buffer");
+   // DBG("\t\t\t\t\tset size and clear returning buffer");
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
         float* sample = returningBuffer.getWritePointer(channel);
-        DBG("\t\t\t\t\t\tusing heap");
+        //DBG("\t\t\t\t\t\tusing heap");
         for (int i = 0; i < numChannels; ++i)
         { //range :: -4 ~ 0 : acquire from the heap `h`
             sample[i] = h[_heapIdx(i, channel)];
         }
-        DBG("\t\t\t\t\t\tusing rest");
+       // DBG("\t\t\t\t\t\tusing rest");
 
         for (int i = 0; i < numChannels; ++i)
         { //range :: 0 ~ numChannels
@@ -150,25 +149,29 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
     // augBuffer dimension = systemSize + numSamples
     const int numberOfChannels = rawBuffer.getNumChannels();
     const int numberOfSamples = rawBuffer.getNumSamples();
-    DBG ("\t\t\tfeed to SSM...");
-    DBG ("\t\t\tcreate augBuffer...");
+//    printf("!!feed to ssm\n");
+//    DBG ("\t\t\tfeed to SSM...");
+//    DBG ("\t\t\tcreate augBuffer...");
 
     // build makeshift sysOrder buffer for set_x0 : augBuffer
     auto augBuffer = generateAugmentedBufferWithHeapBlock(rawBuffer, h);
 
-    DBG ("\t\t\tcreate augBuffer...E");
+    //......so far so good
 
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {
-        DBG ("\t\t\t\tset the x0");
+        DBG ("\t\t\t\tset the x0 and u");
         ssms.set_x0 (augBuffer, ch);
-        DBG ("\t\t\t\tprocess augBuffer");
-        ssms.processBlock (augBuffer);
-        DBG ("\t\t\t\tprocess augBuffer...E");
-
+        ssms.set_u(augBuffer,ch);
     }
-    DBG ("\t\t\t\tretrieving buffer from augBuffer...");
+    //DBG("processing aug buffer");
+
+
+    ssms.processBlock(augBuffer); //augBuffer is NOT modified from here
+
+    //DBG("process ends : retrieving buffer from aug Buffer....");
+    //DBG ("\t\t\t\tretrieving buffer from augBuffer...");
     auto outputBuffer = ssms.retrieveSystemResultBuffer();
-    DBG ("\t\t\t\tretrieving buffer from augBuffer...E");
+    //DBG ("\t\t\t\tretrieving buffer from augBuffer...E");
     return outputBuffer;
 }

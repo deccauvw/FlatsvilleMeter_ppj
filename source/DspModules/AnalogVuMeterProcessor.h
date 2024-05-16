@@ -18,7 +18,7 @@ public:
     void processBlock(juce::AudioBuffer<float> &buffer);
 
 
-    juce::AudioBuffer<float> getOutputBuffer();
+    juce::AudioBuffer<float> getSystemOutputBufferBlockWise();
 
 
 private:

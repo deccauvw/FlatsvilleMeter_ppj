@@ -47,7 +47,7 @@ public:
 
     void setNumChannels(size_t channels) noexcept;
 
-    void processBlock(juce::AudioBuffer<float> &buffer);
+    void processBlock(juce::AudioBuffer<float> &buffer); //buffer is here for spec reference purpose.
 
     //==============================================================================
 
@@ -66,7 +66,7 @@ public:
     //==============================================================================
 
     //stateSpaceModel for mono channel
-    juce::AudioBuffer<float> runSimulation(juce::AudioBuffer<float>& bufferMono, int channel);
+    juce::AudioBuffer<float> runSimulation(int channel);
 
     //matrix to buffer
     juce::AudioBuffer<float> getSimulatedOutputBufferFromMatrixMono(int channel);
@@ -85,6 +85,9 @@ private:
 
     std::vector<mat> x_sim; //state vector simulated channelwise
     std::vector<mat> y_sim; //output matrix simulated channelwise
+    std::unique_ptr<std::vector<mat>> x_sim_ptr;
+    std::unique_ptr<std::vector<mat>> y_sim_ptr;
+
     mat timeRowVector; // the `'python linspace()`
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StateSpaceModelSimulation)

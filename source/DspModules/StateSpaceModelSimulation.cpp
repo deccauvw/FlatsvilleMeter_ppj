@@ -101,32 +101,45 @@ void StateSpaceModelSimulation::setNumChannels (size_t channels) noexcept
 }
 
 //must come after `setEverything` :: buffer here should NOT contain init state data.
-void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& buffer)
+void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffer)
 {
+    DBG("SSMS processBlock\t");
    //auto sysDim = DspLine::Constants::kSystemOrder;
-    auto numChannels = buffer.getNumChannels();
-    auto numSamples = buffer.getNumSamples();
+    auto numChannels = refBuffer.getNumChannels();
+    auto numSamples = refBuffer.getNumSamples();
+
    juce::AudioBuffer<float> outputBuffer;
-   outputBuffer.makeCopyOf(buffer);
+   outputBuffer.setSize(numChannels, numSamples - m_sysDim);
+   outputBuffer.clear();
+   DBG("SSMS processBlock\toutputBuffer copied from refBuffer and zeroized");
+
 
     for(auto ch = 0 ; ch < numChannels ; ++ch)
     {
+        DBG("SSMS processBlock\t\tgenerate bufferMono");
         juce::AudioBuffer<float> bufferMono(1, numSamples);
-        bufferMono.copyFrom(0, 0, buffer, ch, 0, numSamples);
-        set_x0 (bufferMono, ch);
-        set_u (bufferMono, ch);
-        auto simulatedBufferMono  = runSimulation(bufferMono, ch);
+        DBG("SSMS processBlock\t\tcopy to bufferMono");
+        //!
+
+        //bufferMono.copyFrom(0, 0, refBuffer, ch, 0, numSamples);
+        DBG("SSMS processBlock\t\tsimulate block based on X0 and u");
+        auto simulatedBufferMono  = runSimulation(ch);
+
+        //!!! SSIMULATION is not doing so good
+
 
         auto monoOut = simulatedBufferMono.getWritePointer(0);
         auto out = outputBuffer.getWritePointer(ch);
 
-        for(auto t = 0; t<numSamples;++t)
+        for(auto t = 0; t < numSamples;++t)
         {
+            DBG("stuffing samples for out #" + juce::String(t));
             out[t] = monoOut[t];
         }
     }//end ch iter
 
     //class member output buffer set
+    DBG("saving outputBuffer @ m_outputBuffer");
     m_outputBuffer = std::move(outputBuffer);
 }
 
@@ -142,99 +155,136 @@ void StateSpaceModelSimulation::setMatrices (std::vector<mat> matrixSupplierVect
 }
 
 //this will logically require buffers form heap.
-void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& buffer, int channel)
+void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& augBuffer, int channel)
 {
     std::vector<mat> x0_multi;
-    for (int ch = 0; ch < m_numChannels; ++ch)
+    auto numChannels = augBuffer.getNumChannels();
+    DBG("\t\t\t\t\t\taugBuffer size ===" + juce::String(augBuffer.getNumSamples()));
+
+    for (int ch = 0; ch < numChannels; ++ch)
     {
         mat x0_mono (m_sysDim, 1);
-        const float* in = buffer.getReadPointer (channel);
+        const float* in = augBuffer.getReadPointer (channel);
+
         for (size_t i = 0; i < m_sysDim; i++)
         {
+            //DBG(juce::String(ch) + " channel\t\t\t\t\t\taugBuffer in : " + juce::String(in[i]));
             x0_mono (i, 0) = in[i];
         }
         x0_multi.push_back (x0_mono);
+        //("filling x0 end @ channel " + juce::String(ch));
     }
-
     this->x0 = x0_multi;
 }
 
 //set u from audioBuffer<float> : set u[n] : set inputSequence =====================================
-void StateSpaceModelSimulation::set_u (juce::AudioBuffer<float>& buffer, int channel)
+void StateSpaceModelSimulation::set_u (juce::AudioBuffer<float>& augBuffer, int channel)
 {
-    auto numSamples = buffer.getNumSamples();
-    //jassert (buffer.getNumChannels() == m_numChannels);
+    //DBG("\t\t\t\tset u");
+    auto numSamples = augBuffer.getNumSamples(); //blocksize + sysorder
+
 
     std::vector<mat> u_multi;
 
-   const float* in = buffer.getReadPointer (channel);
-    mat u_inputTrain (1, numSamples);
-    for (int i = 0; i < numSamples; ++i)
+    const float* in = augBuffer.getReadPointer (channel);
+    //mat u_inputTrain (1, numSamples); // 1 * TIME matrix : horizontal vector.
+
+    DBG("\t\t\t\tset u\tfilling inputTrain. vector of mat u (1x1)");
+    for (int i = m_sysDim; i < numSamples; ++i) // in[] :: m_sysdim(4) to "End + m_sysDim"
     {
-        u_inputTrain (0, i) = in[i];
+        //DBG("input index == " + juce::String(i));
+        mat u_inputTrain(1, 1);
+        u_inputTrain (0, 0) = in[i];
+        u_multi.push_back(u_inputTrain);
     }
-    u_multi.push_back (u_inputTrain);
 
 
+    //DBG("filling U done");
     this->u = u_multi;
+    //DBG("assigning U done");
+
 }
 
 //run matrix operation with given four matrices =====================================
-juce::AudioBuffer<float> StateSpaceModelSimulation::runSimulation(juce::AudioBuffer<float>& bufferMono, int channel)
+juce::AudioBuffer<float> StateSpaceModelSimulation::runSimulation(int channel)
 {
-
+    DBG("SIM\tPREP X0 and U for SIMULATION");
     //output matrix to store result. each matrix has collumns for time steps. 1st row should be the buffer
-        auto& x_o = x_sim.at (channel); //this was done from heap to mat by set_x0 fn.
-        auto& y_o = y_sim.at (channel); //this will be used for generating reeturning buffer
+
+    //init state matrix
+    //do we have a stereo pair of these? probably not
+    // because we initialize beforehand everything right off the bat after channel changes.
+    auto X0 = x0.at(channel); //this was done from heap to mat by set_x0 fn.
+    //auto U = u.at (channel); //this will be used for generating reeturning buffer
+    auto nTimeStep = u.size();
+
+    //diomension of Y must be : (1, nTimestep)
+
+    mat X(m_sysDim, nTimeStep);
+    mat Y(1, nTimeStep);
+    X.clear();
+    Y.clear();
+
+        //loop under
+
     //input matrix U to excite the system.
-        set_x0( bufferMono, channel);
-        set_u(bufferMono, channel);
 
-
-    for (int t = 0; t < timeSamples; t++) //t is the "time" index.
+    //timestep!! //timestep!! //timestep!! //timestep!! //timestep!! //timestep!! //timestep!!
+    for (int t = 0; t < timeSamples; t++) //t is the "time" index. : u will iterate
     {
-        auto nRow = y_o.getNumColumns(); //systemSize ~= 4
-
         if (t == 0)
         {
-            for (int row = 0; row < nRow; row++) //essentially when u = 0
-            {
-                auto _x0 = x0.at (channel);
-                x_o(row, t) = _x0 (row, t);
-                y_o(row, t) = (C * _x0) (row, t);
-            }
+            for (int row = 0; row < m_sysDim; ++row)
+                X(row, t) = X0 (row, t);
+            Y(0, t) = (C * X0) (0, 0);
         }
-        else
+        else // t > 0
         {
-            for (int row = 0; row < nRow; row++)
+            float dpx = 0.0;
+            for (int i = 0; i < m_sysDim; ++i)
             {
-                x_o (row, t) = (A * x_o + B * u.at (channel) (0, t)) (row, t);
-                y_o (row, t) = (C * x_o + D * u.at (channel) (0, t)) (row, t);
-            }
-        }
-    }
+                for (int j = 0; j < m_sysDim; ++j)
+                    dpx += A (i, j) * X(i, t-1) + B(i, 0) * u[t-1](0, 0);
 
+                X(i, t) = dpx;
+            }
+
+            float dpy = 0.0;
+            for (int k = 0; k < m_sysDim; ++k)
+            {
+                dpy += C (0, k) * X (k, t) +
+                       D (0, 0) * u[t](0, 0);
+            }
+            Y (0, t) = dpy;
+        }
+    } //end of timestep
+
+    DBG("\t\t\t\t\t\t\tmatrix op end");
     //last 4 samples from x_o need to be stored in heapboxes
     //entire buffer excluding first 4
     //getSimulatedOutput...() will use the y_sim to generate "bufferOut"
     auto bufferOut = getSimulatedOutputBufferFromMatrixMono(channel);
+    DBG("buffer out created");
     return bufferOut;
 }//run simulation End
 //==============================================================================
 
 juce::AudioBuffer<float> StateSpaceModelSimulation::getSimulatedOutputBufferFromMatrixMono(int channel)
 {   //output will replace using result::makeCopyOf(buffer_copy)
-    auto numSamples = static_cast<int>(y_sim.at(0).getNumColumns());
-    auto numChannels = static_cast<int>(y_sim.size());
+    DBG("make a buffer out of everything you just did with matrix");
+    auto numSamples = static_cast<int>(this->u.size());
+    auto numChannels = m_numChannels;
     auto bufferOut = juce::AudioBuffer<float>(numChannels, numSamples);
 
 
     float* in = bufferOut.getWritePointer(channel);
-    auto y_sim_mono = y_sim.at(channel);
-    for (int t = 0; t < numSamples; ++t)
+
+    for(int t = 0;t<numSamples;++t)
     {
-        in[t] = y_sim_mono(0,t);
+        in[t] = u[t](0,0);
     }
+
+    DBG("buffer successfully created");
 
     return bufferOut;
 }
