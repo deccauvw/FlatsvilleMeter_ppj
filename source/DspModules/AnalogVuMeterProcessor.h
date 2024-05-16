@@ -18,7 +18,7 @@ public:
     void processBlock(juce::AudioBuffer<float> &buffer);
 
 
-    juce::AudioBuffer<float> getSystemOutputBufferBlockWise();
+    std::vector<float> getVuLevelValue();
 
 
 private:
@@ -48,11 +48,7 @@ private:
     //==============================================================================
     int systemOrder;
     juce::AudioBuffer<float> m_bufferProcessResult; //every last buffer result will be stored in this location refreshed.
-//    juce::AudioBuffer<float> m_outputBufferSystemI;
-//    juce::AudioBuffer<float> m_outputBufferSystemII;
-//
-//    juce::AudioBuffer<float> m_initialStateBufferForSystemI; //previous 4 samples
-//    juce::AudioBuffer<float> m_initialStateBufferForSystemII; //previous 4 samples
+    std::vector<float> m_levelValuesVu = {0.0f, 0.0f};
     juce::dsp::ProcessSpec m_spec; //sample rate etc.
    //std::vector<float> m_needlePointsValuesVector; //channel-wise values vector
 

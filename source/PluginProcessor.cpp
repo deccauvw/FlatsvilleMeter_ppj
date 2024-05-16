@@ -154,11 +154,11 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
             bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
-        DBG("flag\tE buffer");
+        //DBG("flag\tE buffer");
     }
     else
     {
-        DBG("flag\tNE buffer");
+        //DBG("flag\tNE buffer");
         //write everything here if and only if buffer is loaded
         //make copy of scaled buffer
         bufferForMeter.makeCopyOf (buffer);
@@ -170,7 +170,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto numSamples = bufferForMeter.getNumSamples();
     auto numChannels = bufferForMeter.getNumChannels();
 
-    DBG("flag\ttrivial meter level acquisition here");
+    //DBG("flag\ttrivial meter level acquisition here");
     for (auto ch = 0; ch < numChannels; ch++)
     {
         auto m_iRmsLevel = bufferForMeter.getRMSLevel(ch, 0, numSamples);
@@ -178,22 +178,17 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         m_nChannelPeakLevels.at(ch) = m_iPeakLevel;
         m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
     }
-    DBG("flag\ttrivial meter level acquisition here...E");
+    //DBG("flag\ttrivial meter level acquisition here...E");
 
 
     //vu stuff
-    DBG("flag\tVU meter operation from here!!");
+    //DBG("flag\tVU meter operation from here!!");
     DBG(bufferForMeter.getNumSamples());
     m_vuMeterProcessor->processBlock(bufferForMeter);
-    DBG("flag\tVU meter operation returning result");
-    auto processedVuBuffer = m_vuMeterProcessor->getOutputBuffer();
-    for(auto ch = 0; ch<specs.numChannels; ++ch)
-    {
-        auto m_iVuLevel = processedVuBuffer.getMagnitude(ch, 0, processedVuBuffer.getNumSamples());
-        m_nChannelVuLevels.at(ch) = m_iVuLevel;
-    }
+    //DBG("flag\tVU meter operation returning result");
+    m_nChannelVuLevels = m_vuMeterProcessor->getVuLevelValue();
 
-    DBG("flag\tALL processBlock ends here");
+    //DBG("flag\tALL processBlock ends here");
 }
 
 //==============================================================================

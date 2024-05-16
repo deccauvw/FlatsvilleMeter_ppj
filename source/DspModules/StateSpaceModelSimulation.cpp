@@ -103,7 +103,7 @@ void StateSpaceModelSimulation::setNumChannels (size_t channels) noexcept
 //must come after `setEverything` :: buffer here should NOT contain init state data.
 void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffer)
 {
-    DBG("SSMS processBlock\t");
+    //DBG("SSMS processBlock\t");
    //auto sysDim = DspLine::Constants::kSystemOrder;
     auto numChannels = refBuffer.getNumChannels();
     auto numSamples = refBuffer.getNumSamples();
@@ -111,35 +111,33 @@ void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffe
    juce::AudioBuffer<float> outputBuffer;
    outputBuffer.setSize(numChannels, numSamples - m_sysDim);
    outputBuffer.clear();
-   DBG("SSMS processBlock\toutputBuffer copied from refBuffer and zeroized");
+  // DBG("SSMS processBlock\toutputBuffer copied from refBuffer and zeroized");
 
 
+   //channel wise
     for(auto ch = 0 ; ch < numChannels ; ++ch)
     {
-        DBG("SSMS processBlock\t\tgenerate bufferMono");
+       // DBG("SSMS processBlock\t\tgenerate bufferMono");
         juce::AudioBuffer<float> bufferMono(1, numSamples);
-        DBG("SSMS processBlock\t\tcopy to bufferMono");
+        //DBG("SSMS processBlock\t\tcopy to bufferMono");
         //!
 
         //bufferMono.copyFrom(0, 0, refBuffer, ch, 0, numSamples);
-        DBG("SSMS processBlock\t\tsimulate block based on X0 and u");
+        //DBG("SSMS processBlock\t\tsimulate block based on X0 and u");
         auto simulatedBufferMono  = runSimulation(ch);
-
-        //!!! SSIMULATION is not doing so good
-
 
         auto monoOut = simulatedBufferMono.getWritePointer(0);
         auto out = outputBuffer.getWritePointer(ch);
 
         for(auto t = 0; t < numSamples;++t)
         {
-            DBG("stuffing samples for out #" + juce::String(t));
+            //DBG("stuffing samples for out #" + juce::String(t));
             out[t] = monoOut[t];
         }
-    }//end ch iter
+    }//end channel wise iter
 
     //class member output buffer set
-    DBG("saving outputBuffer @ m_outputBuffer");
+    //DBG("saving outputBuffer @ m_outputBuffer");
     m_outputBuffer = std::move(outputBuffer);
 }
 
@@ -208,7 +206,7 @@ void StateSpaceModelSimulation::set_u (juce::AudioBuffer<float>& augBuffer, int 
 //run matrix operation with given four matrices =====================================
 juce::AudioBuffer<float> StateSpaceModelSimulation::runSimulation(int channel)
 {
-    DBG("SIM\tPREP X0 and U for SIMULATION");
+    //DBG("SIM\tPREP X0 and U for SIMULATION");
     //output matrix to store result. each matrix has collumns for time steps. 1st row should be the buffer
 
     //init state matrix
@@ -259,19 +257,19 @@ juce::AudioBuffer<float> StateSpaceModelSimulation::runSimulation(int channel)
         }
     } //end of timestep
 
-    DBG("\t\t\t\t\t\t\tmatrix op end");
+    //DBG("\t\t\t\t\t\t\tmatrix op end");
     //last 4 samples from x_o need to be stored in heapboxes
     //entire buffer excluding first 4
     //getSimulatedOutput...() will use the y_sim to generate "bufferOut"
     auto bufferOut = getSimulatedOutputBufferFromMatrixMono(channel);
-    DBG("buffer out created");
+    //DBG("buffer out created");
     return bufferOut;
 }//run simulation End
 //==============================================================================
 
 juce::AudioBuffer<float> StateSpaceModelSimulation::getSimulatedOutputBufferFromMatrixMono(int channel)
 {   //output will replace using result::makeCopyOf(buffer_copy)
-    DBG("make a buffer out of everything you just did with matrix");
+    //DBG("make a buffer out of everything you just did with matrix");
     auto numSamples = static_cast<int>(this->u.size());
     auto numChannels = m_numChannels;
     auto bufferOut = juce::AudioBuffer<float>(numChannels, numSamples);
@@ -284,8 +282,9 @@ juce::AudioBuffer<float> StateSpaceModelSimulation::getSimulatedOutputBufferFrom
         in[t] = u[t](0,0);
     }
 
-    DBG("buffer successfully created");
+   // DBG("buffer successfully created");
 
     return bufferOut;
 }
+
 ////=======================================================================

@@ -42,9 +42,15 @@ AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
 
 }
 
-juce::AudioBuffer<float> AnalogVuMeterProcessor::getSystemOutputBufferBlockWise()
+std::vector<float> AnalogVuMeterProcessor::getVuLevelValue()
 {
-    return m_bufferProcessResult;
+    auto &b =  m_bufferProcessResult; // is the result of the system
+    for (int ch = 0; ch < m_spec.numChannels ; ++ch)
+    {
+        auto value =  b.getMagnitude(ch, 0, b.getNumSamples());
+        m_levelValuesVu.at(ch) = value;
+    }
+    return m_levelValuesVu;
 }
 
 //JUCE related functions ========================================================
@@ -57,7 +63,7 @@ void AnalogVuMeterProcessor::prepareToPlay (double sampleRate, int numberOfInput
     m_spec.maximumBlockSize = estimatedSamplesPerBlock;
 
     //create empty buffer following specs
-    DBG ("flag\tVU\tprepareToPlay setSize");
+    //DBG ("flag\tVU\tprepareToPlay setSize");
     m_bufferProcessResult.setSize (numberOfInputChannels, systemOrder + estimatedSamplesPerBlock);
     m_bufferProcessResult.clear();
 
@@ -79,7 +85,7 @@ void AnalogVuMeterProcessor::prepareToPlay (double sampleRate, int numberOfInput
 
 
 
-//from outsize this will be called for the first time.
+//from outsize this will be called for the first tim.
 void AnalogVuMeterProcessor::processBlock (juce::AudioBuffer<float>& rawBuffer)
 {
     //assume everything is "cleared" from here.
@@ -148,7 +154,7 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
     // rawBuffer dimension = numSamples
     // augBuffer dimension = systemSize + numSamples
     const int numberOfChannels = rawBuffer.getNumChannels();
-    const int numberOfSamples = rawBuffer.getNumSamples();
+    //const int numberOfSamples = rawBuffer.getNumSamples();
 //    printf("!!feed to ssm\n");
 //    DBG ("\t\t\tfeed to SSM...");
 //    DBG ("\t\t\tcreate augBuffer...");
@@ -160,7 +166,7 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
 
     for (int ch = 0; ch < numberOfChannels; ++ch)
     {
-        DBG ("\t\t\t\tset the x0 and u");
+        //DBG ("\t\t\t\tset the x0 and u");
         ssms.set_x0 (augBuffer, ch);
         ssms.set_u(augBuffer,ch);
     }
