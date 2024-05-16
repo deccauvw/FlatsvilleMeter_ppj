@@ -52,7 +52,7 @@ void PluginEditor::sliderValueChanged (juce::Slider* sliderLastChanged)
 {
     if(sliderLastChanged == &sliderGain)
     {
-        m_audioProcessor.parameters.param_gain = sliderGain.getValue();
+        m_audioProcessor.parameters.param_gain = static_cast<float>(sliderGain.getValue());
     }
 }
 //=============================================================
