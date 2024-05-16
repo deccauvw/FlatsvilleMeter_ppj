@@ -54,7 +54,7 @@ public:
     void processBlock(juce::AudioBuffer<float> &buffer);
 
     //sets x0 with buffer
-    void setInitStateBuffer(juce::AudioBuffer<float> &buffer, size_t systemSize);
+    void setBufferInitialState (juce::AudioBuffer<float> &buffer);
     
     //sets x0 with matrix vector
     void set_x0(juce::AudioBuffer<float> &buffer, int channel);
@@ -65,13 +65,13 @@ public:
     void setMatrices(std::vector<mat> matrixSupplierVector, int sysDim);
 
     //stateSpaceModel for mono channel
-    void runSimulation(juce::AudioBuffer<float>& bufferMono, int channel);
+    juce::AudioBuffer<float> runSimulation(juce::AudioBuffer<float>& bufferMono, int channel);
 
 
     std::vector<mat> getSimulatedOutputMatrix();
 
     //matrix to buffer
-    juce::AudioBuffer<float> getSimulatedOutputBufferFromMatrixMono();
+    juce::AudioBuffer<float> getSimulatedOutputBufferFromMatrixMono(int channel);
 
 
     //audioBuffer to n channel vector 
@@ -90,8 +90,8 @@ private:
     std::vector<mat> x0; //init state vector for multichannel matrix input
     std::vector<mat> u; //input sequence vectors for multi channel scalar input
 
-    std::vector<mat> x_sim; //state vector simulated
-    std::vector<mat> y_sim; //ouput matrix simulated
+    std::vector<mat> x_sim; //state vector simulated channelwise
+    std::vector<mat> y_sim; //output matrix simulated channelwise
     mat timeRowVector;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StateSpaceModelSimulation)
