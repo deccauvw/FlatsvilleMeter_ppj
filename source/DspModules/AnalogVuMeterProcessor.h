@@ -4,8 +4,9 @@
 #include <vector>
 #include "StateSpaceModelSimulation.h"
 #include "DspModulesHelper.h"
+//#include "../LevelMeter.h"
 //==============================================================================
-class AnalogVuMeterProcessor  : public juce::Component//, private DspLine::SystemMatrices
+class AnalogVuMeterProcessor  : public juce::Component, private juce::Timer
 {
     using mat = juce::dsp::Matrix<float>;
 
@@ -54,7 +55,7 @@ private:
 
     static constexpr float m_minimalReturnLevelDecibels = DspLine::Constants::kMinimalReturnValue; // virtual -INF
 
-
+    void timerCallback() override;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalogVuMeterProcessor)
 };

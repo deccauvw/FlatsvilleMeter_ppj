@@ -30,6 +30,7 @@ AnalogVuMeterProcessor::AnalogVuMeterProcessor (juce::dsp::ProcessSpec spec) : m
     m_systemMatrices.setMatrices();
     this->systemOrder = DspLine::Constants::kSystemOrder;
     prepareToPlay (m_spec.sampleRate, m_spec.numChannels, m_spec.maximumBlockSize); //arbitrary input
+    startTimerHz(DspLine::Constants::kInitialRefreshRateHz);
 }
 
 AnalogVuMeterProcessor::~AnalogVuMeterProcessor()
@@ -48,7 +49,7 @@ std::vector<float> AnalogVuMeterProcessor::getVuLevelValue()
     for (int ch = 0; ch < m_spec.numChannels ; ++ch)
     {
         auto value =  b.getMagnitude(ch, 0, b.getNumSamples());
-        m_levelValuesVu.at(ch) = value;
+        m_levelValuesVu.at(ch) = juce::Decibels::gainToDecibels(value);
     }
     return m_levelValuesVu;
 }
@@ -149,18 +150,16 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
     juce::AudioBuffer<float>& rawBuffer,
     juce::HeapBlock<float>& h)
 {
-
-
     // rawBuffer dimension = numSamples
     // augBuffer dimension = systemSize + numSamples
     const int numberOfChannels = rawBuffer.getNumChannels();
     //const int numberOfSamples = rawBuffer.getNumSamples();
-//    printf("!!feed to ssm\n");
-//    DBG ("\t\t\tfeed to SSM...");
-//    DBG ("\t\t\tcreate augBuffer...");
+    //    printf("!!feed to ssm\n");
+    //    DBG ("\t\t\tfeed to SSM...");
+    //    DBG ("\t\t\tcreate augBuffer...");
 
     // build makeshift sysOrder buffer for set_x0 : augBuffer
-    auto augBuffer = generateAugmentedBufferWithHeapBlock(rawBuffer, h);
+    auto augBuffer = generateAugmentedBufferWithHeapBlock (rawBuffer, h);
 
     //......so far so good
 
@@ -168,12 +167,11 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
     {
         //DBG ("\t\t\t\tset the x0 and u");
         ssms.set_x0 (augBuffer, ch);
-        ssms.set_u(augBuffer,ch);
+        ssms.set_u (augBuffer, ch);
     }
     //DBG("processing aug buffer");
 
-
-    ssms.processBlock(augBuffer); //augBuffer is NOT modified from here
+    ssms.processBlock (augBuffer); //augBuffer is NOT modified from here
 
     //DBG("process ends : retrieving buffer from aug Buffer....");
     //DBG ("\t\t\t\tretrieving buffer from augBuffer...");
@@ -181,3 +179,8 @@ juce::AudioBuffer<float> AnalogVuMeterProcessor::feedToSteadyStateModel (
     //DBG ("\t\t\t\tretrieving buffer from augBuffer...E");
     return outputBuffer;
 }
+void AnalogVuMeterProcessor::timerCallback()
+{
+    getVuLevelValue();
+}
+

@@ -117,13 +117,8 @@ void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffe
    //channel wise
     for(auto ch = 0 ; ch < numChannels ; ++ch)
     {
-       // DBG("SSMS processBlock\t\tgenerate bufferMono");
         juce::AudioBuffer<float> bufferMono(1, numSamples);
-        //DBG("SSMS processBlock\t\tcopy to bufferMono");
-        //!
 
-        //bufferMono.copyFrom(0, 0, refBuffer, ch, 0, numSamples);
-        //DBG("SSMS processBlock\t\tsimulate block based on X0 and u");
         auto simulatedBufferMono  = runSimulation(ch);
 
         auto monoOut = simulatedBufferMono.getWritePointer(0);
@@ -131,13 +126,13 @@ void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffe
 
         for(auto t = 0; t < numSamples;++t)
         {
-            //DBG("stuffing samples for out #" + juce::String(t));
+
             out[t] = monoOut[t];
         }
     }//end channel wise iter
 
     //class member output buffer set
-    //DBG("saving outputBuffer @ m_outputBuffer");
+
     m_outputBuffer = std::move(outputBuffer);
 }
 
@@ -157,7 +152,7 @@ void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& augBuffer, int
 {
     std::vector<mat> x0_multi;
     auto numChannels = augBuffer.getNumChannels();
-    DBG("\t\t\t\t\t\taugBuffer size ===" + juce::String(augBuffer.getNumSamples()));
+    //DBG("\t\t\t\t\t\taugBuffer size ===" + juce::String(augBuffer.getNumSamples()));
 
     for (int ch = 0; ch < numChannels; ++ch)
     {
@@ -187,7 +182,7 @@ void StateSpaceModelSimulation::set_u (juce::AudioBuffer<float>& augBuffer, int 
     const float* in = augBuffer.getReadPointer (channel);
     //mat u_inputTrain (1, numSamples); // 1 * TIME matrix : horizontal vector.
 
-    DBG("\t\t\t\tset u\tfilling inputTrain. vector of mat u (1x1)");
+    //DBG("\t\t\t\tset u\tfilling inputTrain. vector of mat u (1x1)");
     for (int i = m_sysDim; i < numSamples; ++i) // in[] :: m_sysdim(4) to "End + m_sysDim"
     {
         //DBG("input index == " + juce::String(i));

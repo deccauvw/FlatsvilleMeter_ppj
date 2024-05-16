@@ -188,7 +188,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     //DBG("flag\tVU meter operation returning result");
     m_nChannelVuLevels = m_vuMeterProcessor->getVuLevelValue();
 
-    //DBG("flag\tALL processBlock ends here");
+    DBG("VUvalues::"+juce::String(m_nChannelVuLevels.at(0)) + juce::String("    ") + juce::String(m_nChannelVuLevels.at(1)));
 }
 
 //==============================================================================
