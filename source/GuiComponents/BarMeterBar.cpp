@@ -263,8 +263,6 @@ namespace Gui
         repaint();
     }
     //==
-//    void resized()
-//    {
-//        DBG("barmeterbar resized called");
+
 //    }
 } // Gui

@@ -62,12 +62,12 @@ class PluginProcessor : public juce::AudioProcessor,
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool starting) override;
 
-    std::vector<float> m_nChannelRmsLevels {};
-    std::vector<float> m_nChannelPeakLevels {};
-    std::vector<float> m_nChannelVuLevels {};
+    std::vector<float> m_nChannelRmsLevels {0.0f, 0.0f};
+    std::vector<float> m_nChannelPeakLevels {0.0f, 0.0f};
+    std::vector<float> m_nChannelVuLevels {0.0f, 0.0f};
 
 
-
+    //valueSuppliers must be in GAIN scale
     float getLevelValueRms (int channel) const;
     float getLevelValuePeak (int channel) const;
     float getLevelValueVu (int channel) const;
@@ -81,7 +81,7 @@ private:
     APVTS::ParameterLayout createParameters();
 
     bool isBufferEmpty(const juce::AudioBuffer<float>& buffer);
-    //juce::AudioBuffer<float> bufferForMeter;
+    juce::AudioBuffer<float> bufferForMeter;
 
 
     float levelRmsLeft = 0.0f;

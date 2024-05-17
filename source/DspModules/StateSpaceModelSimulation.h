@@ -15,7 +15,8 @@
 #include "juce_audio_processors/juce_audio_processors.h" //quasi juceheader
 #include "juce_dsp/juce_dsp.h"
 #include "../DspModules/DspModulesHelper.h"
-
+#include "juce_core/juce_core.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 //==============================================================================
 /*
 
@@ -76,9 +77,10 @@ public:
     //==============================================================================
 private:
     juce::AudioBuffer<float> m_outputBuffer;
+
     size_t m_numChannels;
     size_t m_sysDim;
-    size_t m, n, r, timeSamples; //timeSamples := the `[n]` part
+    //size_t timeSamples; //timeSamples := the `[n]` part //m, n, r,
     mat A, B, C, D;
     std::vector<mat> x0; //init state vector for mono channels matrix inputs time sequenced col wise
     std::vector<mat> u; //input sequence vectors for mono channels matrix inputs time sequenced col wise
@@ -87,6 +89,7 @@ private:
     std::vector<mat> y_sim; //output matrix simulated channelwise
     std::unique_ptr<std::vector<mat>> x_sim_ptr;
     std::unique_ptr<std::vector<mat>> y_sim_ptr;
+
 
     mat timeRowVector; // the `'python linspace()`
 

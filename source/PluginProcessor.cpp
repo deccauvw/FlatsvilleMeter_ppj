@@ -101,19 +101,17 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     //juce::ignoreUnused (sampleRate, samplesPerBlock);
-    DBG("flag\tPluginProcessor::prepareToPlay");
     this->specs.sampleRate = sampleRate;
     this->specs.maximumBlockSize = samplesPerBlock;
     this->specs.numChannels = 2; //assume and FIX as stereo only plugin
     m_nChannelPeakLevels.resize(specs.numChannels);
     m_nChannelRmsLevels.resize(specs.numChannels);
     m_nChannelVuLevels.resize(specs.numChannels);
-    //bufferForMeter.setSize(specs.numChannels,samplesPerBlock);
+    bufferForMeter.setSize(specs.numChannels,samplesPerBlock);
 
     m_vuMeterProcessor = std::make_unique<AnalogVuMeterProcessor>(this->specs);
     m_vuMeterProcessor->prepareToPlay(this->specs.sampleRate, this->specs.numChannels, this->specs.maximumBlockSize);
 
-    DBG("flag\tPluginProcessor::prepareToPlay E");
 
 }
 
@@ -142,11 +140,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
 
                                                              //============================parameters   <<
-    DBG("flag\tPluginProcessor::processBlock");
 
     buffer.applyGain(g);
-    juce::AudioBuffer<float> bufferForMeter;
-    bufferForMeter.makeCopyOf(buffer);
+    //juce::AudioBuffer<float> bufferForMeter;
+    //bufferForMeter.makeCopyOf(buffer, false);
     //if the plugin is NOT connected
 
     if (isBufferEmpty (buffer)) // not connected
@@ -154,14 +151,12 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         bufferForMeter = juce::AudioBuffer<float> (specs.numChannels, specs.maximumBlockSize);
         for (auto ch = totalNumInputChannels; ch < totalNumOutputChannels; ++ch)
             bufferForMeter.clear (ch, 0, bufferForMeter.getNumSamples());
-        //DBG("flag\tE buffer");
     }
     else
     {
-        //DBG("flag\tNE buffer");
         //write everything here if and only if buffer is loaded
         //make copy of scaled buffer
-        bufferForMeter.makeCopyOf (buffer);
+        bufferForMeter.makeCopyOf (buffer, false);
 
     }
 
@@ -170,7 +165,6 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto numSamples = bufferForMeter.getNumSamples();
     auto numChannels = bufferForMeter.getNumChannels();
 
-    //DBG("flag\ttrivial meter level acquisition here");
     for (auto ch = 0; ch < numChannels; ch++)
     {
         auto m_iRmsLevel = bufferForMeter.getRMSLevel(ch, 0, numSamples);
@@ -178,17 +172,13 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         m_nChannelPeakLevels.at(ch) = m_iPeakLevel;
         m_nChannelRmsLevels.at(ch) = m_iRmsLevel;
     }
-    //DBG("flag\ttrivial meter level acquisition here...E");
 
 
     //vu stuff
-    //DBG("flag\tVU meter operation from here!!");
-    DBG(bufferForMeter.getNumSamples());
     m_vuMeterProcessor->processBlock(bufferForMeter);
-    //DBG("flag\tVU meter operation returning result");
     m_nChannelVuLevels = m_vuMeterProcessor->getVuLevelValue();
 
-    DBG("VUvalues::"+juce::String(m_nChannelVuLevels.at(0)) + juce::String("    ") + juce::String(m_nChannelVuLevels.at(1)));
+    //DBG("VU  values::"+juce::String(m_nChannelVuLevels.at(0)) + juce::String("    ") + juce::String(m_nChannelVuLevels.at(1)));
 }
 
 //==============================================================================

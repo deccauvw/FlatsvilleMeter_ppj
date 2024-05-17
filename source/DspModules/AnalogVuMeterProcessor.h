@@ -4,6 +4,8 @@
 #include <vector>
 #include "StateSpaceModelSimulation.h"
 #include "DspModulesHelper.h"
+#include "juce_core/juce_core.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 //#include "../LevelMeter.h"
 //==============================================================================
 class AnalogVuMeterProcessor  : public juce::Component, private juce::Timer
@@ -43,8 +45,8 @@ private:
     //member functions=========================
     juce::AudioBuffer<float> generateAugmentedBufferWithHeapBlock(juce::AudioBuffer<float>& buffer, juce::HeapBlock<float>& h);
     juce::AudioBuffer<float> feedToSteadyStateModel(StateSpaceModelSimulation& ssms, juce::AudioBuffer<float>& rawBuffer,  juce::HeapBlock<float>& h);
-
-    //static void recordHeapForNextSystem(juce::AudioBuffer<float>& buffer, juce::HeapBlock<float> &z);
+    juce::AudioBuffer<float> m_augmentedBuffer;
+    void recordHeapForNextSystem(juce::AudioBuffer<float>& buffer, juce::HeapBlock<float> &h);
 
     //==============================================================================
     int systemOrder;

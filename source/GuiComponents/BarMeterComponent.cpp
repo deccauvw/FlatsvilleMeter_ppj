@@ -7,9 +7,9 @@
 namespace Gui
 {
     BarMeterComponent::BarMeterComponent (PluginProcessor& p): audioProcessor(p),
-                                             horizontalMeterBar0(0, [&](){return audioProcessor.getLevelValueVu(0);}),
+                                             horizontalMeterBar0(0, [&](){return audioProcessor.getLevelValueRms(0);}),
                                              horizontalMeterBar1(1, [&](){return audioProcessor.getLevelValueVu(1);}),
-                                            channelOverloadLed0(0, [&](){return audioProcessor.getLevelValueVu(0);}),
+                                            channelOverloadLed0(0, [&](){return audioProcessor.getLevelValueRms(0);}),
                                             channelOverloadLed1(1, [&](){return audioProcessor.getLevelValueVu(1);}),
                                              tinyStripComponent([&](){
                                                                     auto value = audioProcessor.parameters.param_gain;
