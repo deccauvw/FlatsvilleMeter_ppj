@@ -93,7 +93,8 @@ void AnalogVuMeterProcessor::prepareToPlay (double sampleRate, int numberOfInput
 //from outsize this will be called for the first tim.
 void AnalogVuMeterProcessor::processBlock (juce::AudioBuffer<float>& rawBuffer)
 {
-    //rawBuffer.applyGain(0.3); // 300mV sat point when buffer hits `1.0f`
+    auto gainCalibration = juce::Decibels::decibelsToGain(-1.0f * DspLine::Constants::kVuReferencePointInDb);
+    rawBuffer.applyGain(gainCalibration); // VU standard gain reference point
 
     //assume everything is "cleared" from here.
     //m_buffer must follow and be prepared to deal with the input buffer : matching the dimension accordingly;

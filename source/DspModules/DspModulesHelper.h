@@ -17,6 +17,7 @@ namespace DspLine
         static constexpr auto kSystemOrder = 4;
         static constexpr auto kMinimalReturnValue = -INFINITY;
         static constexpr auto kInitialRefreshRateHz = 30;
+        static constexpr auto kVuReferencePointInDb = -18.0f;
         //Matrix element data for System Voltage to Current (System I) ==================================
         static float v2i_A[kSystemOrder * kSystemOrder] = {
             -10.0f,
