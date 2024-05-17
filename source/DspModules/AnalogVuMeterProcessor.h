@@ -34,8 +34,8 @@ private:
     //StateSpaceModelSimulation m_ssms;
 //    StateSpaceModelSimulation m_ssms_v2i; //for n-channels
 //    StateSpaceModelSimulation m_ssms_i2a; //for n-channels
-    std::unique_ptr<StateSpaceModelSimulation> m_ssms_v2i;
-    std::unique_ptr<StateSpaceModelSimulation> m_ssms_i2a;
+    std::unique_ptr<StateSpaceModelSimulation[]> m_ssms_v2i;
+    std::unique_ptr<StateSpaceModelSimulation[]> m_ssms_i2a;
 
     //memory for System II from system I
     juce::HeapBlock<float> bufferPreSysI;

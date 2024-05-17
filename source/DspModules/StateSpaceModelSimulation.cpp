@@ -144,17 +144,16 @@ void StateSpaceModelSimulation::set_x0 (juce::AudioBuffer<float>& buffer, int ch
     std::vector<mat> x0_multi;
     auto numChannels = buffer.getNumChannels();
 
-    for (int ch = 0; ch < numChannels; ++ch)
-    {
-        mat x0_mono (m_sysDim, 1);
-        const float* in = buffer.getReadPointer (channel);
 
-        for (size_t i = 0; i < m_sysDim; i++)
-        {
-            x0_mono (i, 0) = in[i];
-        }
-        x0_multi.push_back (x0_mono);
+    mat x0_mono (m_sysDim, 1);
+    const float* in = buffer.getReadPointer (channel);
+
+    for (size_t i = 0; i < m_sysDim; i++)
+    {
+        x0_mono (i, 0) = in[i];
     }
+    x0_multi.push_back (x0_mono);
+
     this->x0 = x0_multi;
 }
 
