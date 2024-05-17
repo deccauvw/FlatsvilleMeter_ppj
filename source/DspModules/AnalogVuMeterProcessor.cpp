@@ -79,13 +79,12 @@ void AnalogVuMeterProcessor::prepareToPlay (double sampleRate, int numberOfInput
 
 
     //initialize buffer with 4 more spaces
-    m_ssms_v2i = std::make_unique<StateSpaceModelSimulation>(new StateSpaceModelSimulation(m_spec)(2));
-    m_ssms_i2a = std::make_unique<StateSpaceModelSimulation>(2);
+    m_ssms_v2i = std::make_unique<StateSpaceModelSimulation>(m_spec);
+    m_ssms_i2a = std::make_unique<StateSpaceModelSimulation>(m_spec);
 
-    m_ssms_v2i[0].setMatrices (m_systemMatrices.returnAllSystemMatrices (1), systemOrder);
-    m_ssms_v2i[1].setMatrices (m_systemMatrices.returnAllSystemMatrices (1), systemOrder);
-    m_ssms_i2a[0].setMatrices (m_systemMatrices.returnAllSystemMatrices (2), systemOrder);
-    m_ssms_i2a[1].setMatrices (m_systemMatrices.returnAllSystemMatrices (2), systemOrder);
+    m_ssms_v2i->setMatrices (m_systemMatrices.returnAllSystemMatrices (1), systemOrder);
+    m_ssms_i2a->setMatrices (m_systemMatrices.returnAllSystemMatrices (2), systemOrder);
+
 
 
 }//prepareToPlay End

@@ -105,7 +105,6 @@ void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffe
 
 
    //channel wise matrix to buffer
-
     for(auto ch = 0 ; ch < numChannels ; ++ch)
     {
         juce::AudioBuffer<float> bufferMono(1, numSamples);
@@ -121,6 +120,7 @@ void StateSpaceModelSimulation::processBlock (juce::AudioBuffer<float>& refBuffe
             out[t] = monoOut[t];
         }
     }//end channel wise iter
+
 
     //class member output buffer set
 
